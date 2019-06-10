@@ -1,0 +1,56 @@
+.dr-express-wrapper {
+
+    //
+    // Typography
+    // ===
+    //
+
+
+    //
+    // ## Base
+    //
+    button,
+    input,
+    select,
+    textarea {
+        font-family: $font-family-base;
+        font-size: $font-size-base;
+        line-height: $line-height-base;
+        color: $color-text-base;
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0;
+        -webkit-print-color-adjust: exact !important;
+    }
+
+    //
+    // ## Select
+    //
+
+    select.custom-select {
+        background-color: white;
+        height: 48px;
+        border-radius: 0;
+        color: #000000;
+
+        &:focus {
+            border: 1px solid #d1d1d1;
+            outline: 0;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+    }
+
+    //
+    // ## Paragraphs
+    //
+
+    p {
+        // margin: 0;
+
+        &:empty {
+            display: none;
+        }
+    }
+
+}

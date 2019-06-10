@@ -1,0 +1,112 @@
+<?php
+/**
+ * Handle ajax calls for large amount of data, preventing timeouts
+ *
+ * action:  "dr_express_ajx_action"
+ * step:    "init", "process", or "end"
+ *
+ * @link       https://www.digitalriver.com
+ * @since      1.0.0
+ *
+ * @package    DR_Express
+ * @subpackage DR_Express/includes
+ */
+
+class DR_Express_Ajx {
+	/**
+	 * Instance id of the current job
+	 */
+	public $instance_id;
+
+	/**
+	 * Initialize the class and set its properties.
+	 *
+	 * @since    1.0.0
+	 */
+	public function __construct( $args = array() ) {
+		$args = array_merge( self::default_args(), $args );
+
+		$this->instance_id = $args['instance_id'];
+
+		if ( is_admin() && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			add_action( "wp_ajax_dr_express_ajx_action", array( $this, 'ajax_action' )  );
+		}
+	}
+
+	/**
+	 * Default args needed
+	 *
+	 * @return array
+	 */
+	public static function default_args() {
+		return array(
+			'instance_id'   => false,
+		);
+	}
+
+	/**
+	 * Validate the instance_id arg
+	 *
+	 * @param $args
+	 * @return WP_Error
+	 */
+	public static function validate_args( $args ) {
+		if ( ! isset( $args['instance_id'] ) || ! $args['instance_id'] ) {
+			$error = isset( $error ) ? $error : new WP_Error;
+			$error->add( 'instance_id', 'instance_id is a required attribute for the importer ajax' );
+
+			return $error;
+		}
+	}
+
+	/**
+	 *  Create a slug version of the string
+	 *
+	 * @param $string
+	 * @return string
+	 */
+	public static function slugify( $string ) {
+		return str_replace(
+			'-', '_',
+			sanitize_title_with_dashes( $string, null, 'save' )
+		);
+	}
+
+	/**
+	 * Execute the ajax action
+	 */
+	public function ajax_action() {
+		$instance_id = self::get_post_value( 'instance_id' );
+
+		if ( ! $instance_id || $instance_id !== $this->instance_id ) {
+			return;
+		}
+
+		check_ajax_referer( 'dr_express_ajx', 'nonce' );
+		$step_slug = self::get_post_value( 'step' );
+
+		$steps = new DR_Express_Ajx_Importer( $instance_id );
+
+		if ( method_exists( $steps, $step_slug ) ) {
+			echo json_encode( $steps->$step_slug() );
+		}
+
+		die();
+	}
+
+	/**
+	 * Returns request POST value
+	 *
+	 * @param $key
+	 * @param bool $default
+	 *
+	 * @return bool|mixed
+	 */
+	public static function get_post_value( $key, $default = false ) {
+		if ( ! isset( $_POST[ $key ] ) ) {
+			return $default;
+		}
+		return $_POST[ $key ];
+	}
+
+}

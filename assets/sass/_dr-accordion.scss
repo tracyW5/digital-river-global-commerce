@@ -1,0 +1,126 @@
+.dr-accordion {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    font-family: Open Sans;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 16px;
+    text-transform: uppercase;
+
+    color: $gray-darkest;
+    background-color: #ffffff;
+    background-size: cover;
+    border: none;
+    outline: none;
+
+    &:focus {
+        background: transparent;
+        outline: none;
+    }
+
+    &__name {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    &__edit {
+        display: none;
+        font-family: Open Sans;
+        font-size: 16px;
+        color: $gray-darkest;
+        font-weight: 600;
+        line-height: 16px;
+    }
+
+    .active &,
+    .closed & {
+        border-bottom: 1px solid $gray-lighter;
+    }
+
+    .closed & {
+        &__edit {
+            display: block;
+        }
+    }
+
+    .closed &__edit,
+    .closed  &__name {
+        opacity: 0.5;
+    }
+
+    &__icon.email-icon,
+    &__icon.shipping-icon,
+    &__icon.delivery-icon,
+    &__icon.payment-icon {
+        display: block;
+        background-position: center;
+        background-size: cover;
+        margin-right: 15px;
+    }
+
+    &__icon.email-icon {
+        width: 32px;
+        height: 32px;
+
+        background: url("../images/email.svg");
+    }
+
+    &__icon.shipping-icon {
+        width: 25px;
+        height: 25px;
+
+        background: url("../images/address.svg");
+    }
+
+    &__icon.delivery-icon {
+        width: 34px;
+        height: 34px;
+
+        background: url("../images/delivery.svg");
+    }
+
+    &__icon.payment-icon {
+        width: 32px;
+        height: 32px;
+
+        background: url("../images/payment.svg");
+    }
+
+    .active &__icon.email-icon {
+        background: url("../images/email-active.svg");
+    }
+
+    .active &__icon.shipping-icon {
+        background: url("../images/address-active.svg");
+    }
+
+    .active &__icon.delivery-icon {
+        background: url("../images/delivery-active.svg");
+    }
+
+    .active &__icon.payment-icon {
+        background: url("../images/payment-active.svg");
+    }
+
+    .closed &__icon.email-icon {
+        background: url("../images/email-closed.svg");
+    }
+
+    .closed &__icon.shipping-icon {
+        background: url("../images/address-closed.svg");
+    }
+
+    .closed &__icon.delivery-icon {
+        background: url("../images/delivery-closed.svg");
+    }
+
+    .closed &__icon.payment-icon {
+        background: url("../images/payment-closed.svg");
+    }
+}

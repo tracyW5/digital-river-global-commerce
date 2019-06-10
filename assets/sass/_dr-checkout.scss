@@ -1,0 +1,74 @@
+//
+
+.dr-checkout {
+    width: 50%;
+
+    .d-none {
+        display: none !important;
+    }
+
+    @include for-tablet-portrait-down {
+        width: 100%;
+    }
+
+    &__email,
+    &__shipping,
+    &__delivery,
+    &__payment,
+    &__confirmation {
+        background: #ffffff;
+        margin-bottom: 20px;
+        padding: 0 10px;
+    }
+
+    &__shipping {
+        & .billing-section {
+            display: none;
+
+            &__name {
+                font-family: Open Sans;
+                font-size: 16px;
+                font-weight: 600;
+                line-height: 16px;
+                text-transform: uppercase;
+                color: #333;
+
+                margin: 16px 0;
+            }
+        }
+    }
+
+    .small-closed-left {
+        clear: both;
+        width: 48%;
+        float: left;
+        // margin-right: 0.5rem;
+
+    }
+
+    .small-closed-right {
+        width: 48%;
+        float: right;
+        // margin-left: 0.5rem;
+    }
+
+
+
+    .dr-accordion__title-long {
+        display: block;
+    }
+
+    .dr-accordion__title-short {
+        display: none;
+    }
+
+    .small-closed-left,
+    .small-closed-right {
+        .dr-accordion__title-long {
+            display: none;
+        }
+        .dr-accordion__title-short {
+            display: block;
+        }
+    }
+}
