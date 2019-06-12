@@ -121,7 +121,8 @@ class DR_Express_Authenticator extends AbstractHttpService {
 	 * @return mixed
 	 */
 	public function generate_dr_session_token() {
-		$url = "https://store.digitalriver.com/store/drdod15/SessionToken";
+		$site_id = get_option( 'dr_express_site_id' ) ?: 'drdod15';
+		$url = "https://store.digitalriver.com/store/" . $site_id . "/SessionToken";
 		return $this->dr_session_token = $this->get( $url )['session_token'];
 	}
 
