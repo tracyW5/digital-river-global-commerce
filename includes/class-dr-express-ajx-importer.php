@@ -98,7 +98,7 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 	 * @return array
 	 */
 	public function process( $product_data, $index, $persist = array() ) {
-
+    set_time_limit(100);
 		try {
 			$imported            = array();
 			$gc_id               = isset( $product_data['id'] ) ? absint( $product_data['id'] ) : 0;
