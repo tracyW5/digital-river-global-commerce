@@ -41,15 +41,19 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 	 * @param string $instance_id
 	 */
 	public function __construct( $instance_id ) {
+		$this->instance_id      = $instance_id;
+		$this->instance_slug    = DR_Express_Ajx::slugify( $instance_id );
+		$this->site_id          = get_option( 'dr_express_site_id' );
+		$this->api_key          = get_option( 'dr_express_api_key' );
+
 		$this->dr_products = wp_cache_get( 'dr_products' );
+
+		$token_response = $this->get_session_token();
+		$this->token = $token_response['access_token'];
 
 		if ( false === $this->dr_products ) {
 			$this->fetch_and_cache_products();
 		}
-
-		$this->instance_id      = $instance_id;
-		$this->instance_slug    = DR_Express_Ajx::slugify( $instance_id );
-		$this->api_key          = get_option( 'dr_express_api_key' );
 	}
 
 	/**
@@ -321,6 +325,21 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 			'dr_products',
 			$this->dr_products
 		);
+	}
+
+	public function get_session_token() {
+		$params = array(
+			'apiKey' => $this->api_key
+		);
+
+		$url = 'https://store.digitalriver.com/store/' . $this->site_id . '/SessionToken?' . http_build_query( $params );
+
+		try {
+			$res = $this->get( $url );
+			return $res;
+		} catch (\Exception $e) {
+			return false;
+		}
 	}
 
 	/**
