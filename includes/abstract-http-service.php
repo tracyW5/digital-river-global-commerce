@@ -115,8 +115,10 @@ abstract class AbstractHttpService {
     private function createClient(): Client {
         if ( $this->token ) {
             $this->config['headers']['Authorization'] = trim( ucfirst( $this->tokenType ) . ' ' . $this->token );
+        } else {
+            $this->config['headers']['Authorization'] = 'Basic '. base64_encode( get_option( 'dr_express_api_key' ) );
         }
-        
+
         return new Client($this->config);
     }
 
