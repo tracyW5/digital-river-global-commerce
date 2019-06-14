@@ -72,9 +72,10 @@ class DR_Express_Admin {
 	 * @param      string    $dr_express
 	 * @param      string    $version
 	 */
-	public function __construct( $dr_express, $version ) {
+	public function __construct( $dr_express, $version, $dr_ajx ) {
 		$this->dr_express = $dr_express;
 		$this->version = $version;
+		$this->dr_ajx = $dr_ajx;
 		$this->dr_express_site_id = get_option( 'dr_express_site_id' );
 		$this->dr_express_api_key = get_option( 'dr_express_api_key' );
 	}
@@ -104,7 +105,7 @@ class DR_Express_Admin {
 			array(
 				'api_key'               => $this->dr_express_api_key,
 				'site_id'               => $this->dr_express_site_id,
-				'dr_ajx_instance_id'    => DR_Express()->dr_ajx->instance_id,
+				'dr_ajx_instance_id'    => $this->dr_ajx->instance_id,
 				'ajax_url'              => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce'            => wp_create_nonce( 'dr_express_ajx' ),
 			)

@@ -252,7 +252,7 @@ class DR_Express {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
-		$plugin_admin = new DR_Express_Admin( $this->get_dr_express(), $this->get_version() );
+		$plugin_admin = new DR_Express_Admin( $this->get_dr_express(), $this->get_version(), $this->dr_ajx );
 
 		new DR_Express_Post_Types();
 
