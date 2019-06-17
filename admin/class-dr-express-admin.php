@@ -225,7 +225,7 @@ class DR_Express_Admin {
 	public function dr_express_site_id_cb() {
 		$site_id = get_option( $this->option_name . '_site_id' );
 		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_site_id' . '" id="' . $this->option_name . '_site_id' . '" value="' . $site_id . '"> ';
-		echo '<span class="description" id="site-id-description">' . __( 'For example:', 'dr-express' ) . ' sotw2</span>';
+		echo '<span class="description" id="site-id-description">' . __( 'For example:', 'dr-express' ) . ' drdod15</span>';
 	}
 
 	/**
@@ -236,7 +236,7 @@ class DR_Express_Admin {
 	public function dr_express_api_key_cb() {
 		$api_key = get_option( $this->option_name . '_api_key' );
 		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_api_key' . '" id="' . $this->option_name . '_api_key' . '" value="' . $api_key . '"> ';
-		echo '<span class="description" id="api-key-description">' . __( 'For example:', 'dr-express' ) . ' 6a0bb049109c4a0f8d8dff7db896254b</span>';
+		echo '<span class="description" id="api-key-description">' . __( 'For example:', 'dr-express' ) . ' 66243b2c142e41de9cc0373d5fe0b33c</span>';
 	}
 
 	/**
@@ -247,7 +247,7 @@ class DR_Express_Admin {
 	public function dr_express_domain_cb() {
 		$domain = get_option( $this->option_name . '_domain' );
 		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_domain' . '" id="' . $this->option_name . '_domain' . '" value="' . $domain . '"> ';
-		echo '<span class="description" id="api-key-description">' . __( 'For example:', 'dr-express' ) . ' store.digitalriver.com</span>';
+		echo '<span class="description" id="api-key-description">' . __( 'For example:', 'dr-express' ) . ' api.digitalriver.com</span>';
 	}
 
 	/**

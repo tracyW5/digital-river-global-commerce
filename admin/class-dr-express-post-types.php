@@ -205,7 +205,6 @@ class DR_Express_Post_Types {
 			if ( $key === 'date' ) {
 				$new_columns[ 'gc_product_id' ] = __( 'Product ID', 'dr-express' );
 				$new_columns[ 'sku' ] = __( 'SKU', 'dr-express' );
-				$new_columns[ 'price' ] = __( 'Price', 'dr-express' );
 			}
 			$new_columns[ $key ] = $title;
 		}
@@ -220,7 +219,6 @@ class DR_Express_Post_Types {
 	public function make_custom_columns_sortable( $columns ) {
 		$columns[ 'gc_product_id' ] = 'gc_product_id';
 		$columns[ 'sku' ] = 'sku';
-		$columns[ 'price' ] = 'price';
 		return $columns;
 	}
 
@@ -235,9 +233,6 @@ class DR_Express_Post_Types {
 		} elseif ( $orderby === 'sku' ) {
 			$query->set( 'meta_key', 'sku' );
 			$query->set( 'orderby', 'meta_value' );
-		} elseif ( $orderby === 'price' ) {
-			$query->set( 'meta_key', 'price' );
-			$query->set( 'orderby', 'meta_value_num' );
 		}
 	}
 
@@ -253,10 +248,6 @@ class DR_Express_Post_Types {
 				break;
 			case 'sku':
 				echo get_post_meta( $post_id, 'sku', true );
-				break;
-			case 'price':
-				$pricing = get_post_meta( $post_id, 'pricing', true );
-				echo isset( $pricing['formattedListPrice'] ) ? $pricing['formattedListPrice'] : '';
 				break;
 		}
 	}
