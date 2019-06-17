@@ -302,6 +302,7 @@ jQuery(document).ready(function ($) {
 
           if ($('.dr-cart__products').children().length <= 0) {
             $('.dr-cart__products').text('Your cart is empty!');
+            $('#cart-estimate').hide();
           }
         } // TODO: On Error give feedback
 
