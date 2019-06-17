@@ -201,7 +201,11 @@ jQuery(document).ready(($) => {
             `;
 
             $('form#checkout-delivery-form .dr-panel-edit__el').append(html);
+
         });
+        // Initial Shipping Option
+        let shippingInitID = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
+        applyShippingAndUpdateCart(shippingInitID);
     }
 
     // Submit delivery form
@@ -443,11 +447,6 @@ jQuery(document).ready(($) => {
             }
         });
     }
-    // Initial Shipping Option
-
-    let shippingInitID = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
-    applyShippingAndUpdateCart(shippingInitID);
-
 
     // Initial state for payPal
     if ( drExpressOptions.payPal.sourceId ) {

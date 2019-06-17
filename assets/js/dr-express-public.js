@@ -627,7 +627,10 @@ jQuery(document).ready(function ($) {
       if ($('input[type=radio]#' + option.id).length) return;
       var html = "\n                <div class=\"field-radio\">\n                    <input type=\"radio\"\n                        name=\"selector\"\n                        id=\"".concat(option.id, "\"\n                        data-cost=\"").concat(option.formattedCost, "\"\n                        data-id=\"").concat(option.id, "\"\n                        data-desc=\"").concat(option.description, "\"\n                        checked>\n                    <label for=\"radio-standart\">\n                        <span>\n                            ").concat(option.description, "\n                        </span>\n                        <span class=\"black\">\n                            ").concat(option.formattedCost, "\n                        </span>\n                        <span class=\"smoller\">\n                            Estimated Arrival:\n                        </span>\n                        <span class=\"black\">\n                            Apr 08 - Apr 11\n                        </span>\n                    </label>\n                </div>\n            ");
       $('form#checkout-delivery-form .dr-panel-edit__el').append(html);
-    });
+    }); // Initial Shipping Option
+
+    var shippingInitID = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
+    applyShippingAndUpdateCart(shippingInitID);
   } // Submit delivery form
 
 
@@ -842,11 +845,8 @@ jQuery(document).ready(function ($) {
         }
       }
     });
-  } // Initial Shipping Option
+  } // Initial state for payPal
 
-
-  var shippingInitID = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
-  applyShippingAndUpdateCart(shippingInitID); // Initial state for payPal
 
   if (drExpressOptions.payPal.sourceId) {
     $('.dr-checkout').children().addClass('closed');
