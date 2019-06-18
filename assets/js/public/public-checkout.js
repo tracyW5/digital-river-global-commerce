@@ -216,7 +216,6 @@ jQuery(document).ready(($) => {
 
         let $input = $(this).children().find('input:radio:checked').first();
         let button = $(this).find('button[type="submit"]').toggleClass('sending').blur();
-
         // Validate shipping option
         let data = {
             token           : drExpressOptions.accessToken,
@@ -240,8 +239,7 @@ jQuery(document).ready(($) => {
                 let nextSection =  section.next();
                 let prevSection = section.prev();
 
-                let resultText = $input > 0 ? `${$input.data('desc')} ${$input.data('cost')}` : 'Digital Product(s) Only';
-
+                let resultText = $input.length > 0 ? `${$input.data('desc')} ${$input.data('cost')}` : 'Digital Product(s) Only';
                 $(section).find('.dr-panel-result__text').text(resultText);
 
                 button.removeClass('sending').blur();
