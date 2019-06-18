@@ -299,11 +299,6 @@ jQuery(document).ready(function ($) {
         if (xhr.status === 204) {
           $(".dr-product[data-line-item-id=\"".concat(lineItemId, "\"]")).remove();
           fetchFreshCart();
-
-          if ($('.dr-cart__products').children().length <= 0) {
-            $('.dr-cart__products').text('Your cart is empty!');
-            $('#cart-estimate').hide();
-          }
         } // TODO: On Error give feedback
 
       },
@@ -424,6 +419,11 @@ jQuery(document).ready(function ($) {
         formattedSubtotal = _data$cart$pricing.formattedSubtotal;
     $('div.dr-summary__shipping .shipping-value').text(formattedShippingAndHandling);
     $('div.dr-summary__subtotal .subtotal-value').text(formattedSubtotal);
+
+    if ($('.dr-cart__products').children().length <= 0) {
+      $('.dr-cart__products').text('Your cart is empty!');
+      $('#cart-estimate').hide();
+    }
   }
 
   $('.dr-currency-select').on('change', function (e) {
