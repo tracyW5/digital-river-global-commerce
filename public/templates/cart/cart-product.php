@@ -35,24 +35,17 @@ $product_qty = $line_item['quantity'];
             <a class="product-name" href="<?php echo get_permalink( dr_get_product_by_sku( $product_sku ) ); ?>" >
                 <?php echo $product_name; ?>
             </a>
-            
-            <div class="product-color">
-
-                <span>Color | Black</span>
-
-            </div>
-
             <div class="product-sku">
-                
+
                 <span>Product </span>
 
                 <span>#<?php echo $product_sku; ?></span>
-                
+
             </div>
 
             <div class="product-qty">
 
-                <span class="qty-text">Qty <?php echo $product_qty; ?></span> 
+                <span class="qty-text">Qty <?php echo $product_qty; ?></span>
 
                 <span class="dr-pd-cart-qty-minus value-button-decrease"></span>
 
@@ -85,5 +78,5 @@ $product_qty = $line_item['quantity'];
         <span id="<?php echo $line_item['id']; ?>" class="regular-price"><?php echo $price; ?></span>
 
     </div>
-       
+
 </div>

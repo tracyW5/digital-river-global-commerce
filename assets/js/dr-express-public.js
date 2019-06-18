@@ -390,17 +390,40 @@ jQuery(document).ready(function ($) {
         return url;
       }(),
       success: function success(data) {
-        var _data$cart$pricing = data.cart.pricing,
-            formattedShippingAndHandling = _data$cart$pricing.formattedShippingAndHandling,
-            formattedSubtotal = _data$cart$pricing.formattedSubtotal;
-        $('div.dr-summary__shipping .shipping-value').text(formattedShippingAndHandling);
-        $('div.dr-summary__subtotal .subtotal-value').text(formattedSubtotal);
+        RenderCartProduct(data);
         displayMiniCart(data.cart);
       },
       error: function error(jqXHR) {
         console.log(jqXHR);
       }
     });
+  }
+
+  function RenderCartProduct(data) {
+    $('.dr-cart__products').html("");
+    console.log(data.cart);
+    $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
+      var permalink = '';
+      $.ajax({
+        type: 'POST',
+        async: false,
+        url: drExpressOptions.ajaxUrl,
+        data: {
+          action: 'get_permalink',
+          productID: lineitem.product.id
+        },
+        success: function success(response) {
+          permalink = response;
+          var lineItemHTML = "\n          <div data-line-item-id=\"".concat(lineitem.id, "\" class=\"dr-product\">\n            <div class=\"dr-product-content\">\n                <div class=\"dr-product__img\" style=\"background-image: url(").concat(lineitem.product.thumbnailImage, ")\"></div>\n                <div class=\"dr-product__info\">\n                    <a class=\"product-name\" href=\"").concat(permalink, "\">").concat(lineitem.product.displayName, "</a>\n                    <div class=\"product-sku\">\n                        <span>Product </span>\n                        <span>#").concat(lineitem.product.id, "</span>\n                    </div>\n                    <div class=\"product-qty\">\n                        <span class=\"qty-text\">Qty ").concat(lineitem.quantity, "</span>\n                        <span class=\"dr-pd-cart-qty-minus value-button-decrease\"></span>\n                        <input type=\"number\" class=\"product-qty-number\" step=\"1\" min=\"1\" max=\"999\" value=\"").concat(lineitem.quantity, "\" maxlength=\"5\" size=\"2\" pattern=\"[0-9]*\" inputmode=\"numeric\" readonly=\"true\">\n                        <span class=\"dr-pd-cart-qty-plus value-button-increase\"></span>\n                    </div>\n                </div>\n            </div>\n            <div class=\"dr-product__price\">\n                <button class=\"dr-prd-del remove-icon\"></button>\n                <span class=\"sale-price\">").concat(lineitem.pricing.formattedSalePriceWithQuantity, "</span>\n                <span class=\"regular-price\">").concat(lineitem.pricing.formattedListPriceWithQuantity, "</span>\n            </div>\n          </div>\n          ");
+          $('.dr-cart__products').append(lineItemHTML);
+        }
+      });
+    });
+    var _data$cart$pricing = data.cart.pricing,
+        formattedShippingAndHandling = _data$cart$pricing.formattedShippingAndHandling,
+        formattedSubtotal = _data$cart$pricing.formattedSubtotal;
+    $('div.dr-summary__shipping .shipping-value').text(formattedShippingAndHandling);
+    $('div.dr-summary__subtotal .subtotal-value').text(formattedSubtotal);
   }
 
   $('.dr-currency-select').on('change', function (e) {
@@ -464,7 +487,7 @@ jQuery(document).ready(function ($) {
           priceContent = formattedSalePrice;
         }
 
-        var miniCartLineItem = "\n                <li class=\"dr-minicart-item clearfix\">\n                    <div class=\"dr-minicart-item-thumbnail\">\n                        <img src=\"".concat(li.product.thumbnailImage, "\" alt=\"").concat(li.product.displayName, "\" />\n                    </div>\n                    <div class=\"dr-minicart-item-info\" data-product-id=\"").concat(productId, "\">\n                        <span class=\"dr-minicart-item-title\">").concat(li.product.displayName, "</span>\n                        <span class=\"dr-minicart-item-qty\">Qty.").concat(li.quantity, "</span>\n                        <p class=\"dr-pd-price dr-minicart-item-price\">").concat(priceContent, "</p>\n                    </div>\n                    <a href=\"#\" class=\"dr-minicart-item-remove-btn\" aria-label=\"Remove\" data-line-item-id=\"").concat(li.id, "\">Remove</a>\n                </li>");
+        var miniCartLineItem = "\n              <li class=\"dr-minicart-item clearfix\">\n                  <div class=\"dr-minicart-item-thumbnail\">\n                      <img src=\"".concat(li.product.thumbnailImage, "\" alt=\"").concat(li.product.displayName, "\" />\n                  </div>\n                  <div class=\"dr-minicart-item-info\" data-product-id=\"").concat(productId, "\">\n                      <span class=\"dr-minicart-item-title\">").concat(li.product.displayName, "</span>\n                      <span class=\"dr-minicart-item-qty\">Qty.").concat(li.quantity, "</span>\n                      <p class=\"dr-pd-price dr-minicart-item-price\">").concat(priceContent, "</p>\n                  </div>\n                  <a href=\"#\" class=\"dr-minicart-item-remove-btn\" aria-label=\"Remove\" data-line-item-id=\"").concat(li.id, "\">Remove</a>\n              </li>");
         miniCartLineItems += miniCartLineItem;
       });
       miniCartLineItems += '</ul>';
