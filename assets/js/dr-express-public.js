@@ -626,8 +626,9 @@ jQuery(document).ready(function ($) {
 
     $.each(shippingOptions.shippingOption, function (index, option) {
       if ($('input[type=radio]#' + option.id).length) return;
-      var html = "\n                <div class=\"field-radio\">\n                    <input type=\"radio\"\n                        name=\"selector\"\n                        id=\"".concat(option.id, "\"\n                        data-cost=\"").concat(option.formattedCost, "\"\n                        data-id=\"").concat(option.id, "\"\n                        data-desc=\"").concat(option.description, "\"\n                        checked>\n                    <label for=\"radio-standart\">\n                        <span>\n                            ").concat(option.description, "\n                        </span>\n                        <span class=\"black\">\n                            ").concat(option.formattedCost, "\n                        </span>\n                        <span class=\"smoller\">\n                            Estimated Arrival:\n                        </span>\n                        <span class=\"black\">\n                            Apr 08 - Apr 11\n                        </span>\n                    </label>\n                </div>\n            ");
+      var html = "\n                <div class=\"field-radio\">\n                    <input type=\"radio\"\n                        name=\"selector\"\n                        id=\"".concat(option.id, "\"\n                        data-cost=\"").concat(option.formattedCost, "\"\n                        data-id=\"").concat(option.id, "\"\n                        data-desc=\"").concat(option.description, "\"\n                        >\n                    <label for=\"radio-standart\">\n                        <span>\n                            ").concat(option.description, "\n                        </span>\n                        <span class=\"black\">\n                            ").concat(option.formattedCost, "\n                        </span>\n                        <span class=\"smoller\">\n                            Estimated Arrival:\n                        </span>\n                        <span class=\"black\">\n                            Apr 08 - Apr 11\n                        </span>\n                    </label>\n                </div>\n            ");
       $('form#checkout-delivery-form .dr-panel-edit__el').append(html);
+      $('form#checkout-delivery-form').children().find('input:radio').first().prop("checked", true);
     }); // Initial Shipping Option
 
     var shippingInitID = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
@@ -674,8 +675,8 @@ jQuery(document).ready(function ($) {
       }
     });
   });
-  $('form#checkout-delivery-form').click(function () {
-    var shippingObject = $(this).children().find('input:radio:checked').first();
+  $('form#checkout-delivery-form').on('change', 'input[type="radio"]', function () {
+    var shippingObject = $('form#checkout-delivery-form').children().find('input:radio:checked').first();
     var shippingoptionID = shippingObject.data('id');
     applyShippingAndUpdateCart(shippingoptionID);
   });
@@ -720,31 +721,11 @@ jQuery(document).ready(function ($) {
     $.ajax({
       type: 'POST',
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Accept: "application/json"
       },
       url: function () {
         var url = "".concat(apiBaseUrl, "/me/carts/active/apply-shipping-option?").concat($.param(data));
-        return url;
-      }(),
-      success: function success(data) {
-        fetchFreshBillingCart();
-      },
-      error: function error(jqXHR) {
-        console.log(jqXHR);
-      }
-    });
-  }
-
-  function fetchFreshBillingCart() {
-    $.ajax({
-      type: 'GET',
-      headers: {
-        "Accept": "application/json"
-      },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active?");
-        url += "&expand=all";
-        url += "&token=".concat(drExpressOptions.accessToken);
         return url;
       }(),
       success: function success(data) {
