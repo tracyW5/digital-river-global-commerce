@@ -661,7 +661,7 @@ jQuery(document).ready(function ($) {
         var section = $('.dr-checkout__delivery');
         var nextSection = section.next();
         var prevSection = section.prev();
-        var resultText = $input > 0 ? "".concat($input.data('desc'), " ").concat($input.data('cost')) : 'Digital Product(s) Only';
+        var resultText = $input.length > 0 ? "".concat($input.data('desc'), " ").concat($input.data('cost')) : 'Digital Product(s) Only';
         $(section).find('.dr-panel-result__text').text(resultText);
         button.removeClass('sending').blur();
         shouldPaymentOpen = true;
