@@ -20,12 +20,12 @@ $shipping_city = isset($order['order']['shippingAddress']['city']) ? $order['ord
 $shipping_code = isset($order['order']['shippingAddress']['postalCode']) ? $order['order']['shippingAddress']['postalCode'] : '';
 $shipping_country = isset($order['order']['shippingAddress']['countryName']) ? $order['order']['shippingAddress']['countryName'] : '';
 
-$billing_first_name = isset($order['order']['billingAddress']['firstName']) ? $order['order']['shippingAddress']['firstName'] : '' ;
-$billing_last_name = isset($order['order']['billingAddress']['lastName']) ? $order['order']['shippingAddress']['lastName'] : '';
-$billing_address1 = isset($order['order']['billingAddress']['line1']) ? $order['order']['shippingAddress']['line1'] : '';
-$billing_city = isset($order['order']['billingAddress']['city']) ? $order['order']['shippingAddress']['city'] : '';
-$billing_code = isset($order['order']['billingAddress']['postalCode']) ? $order['order']['shippingAddress']['postalCode'] : '';
-$billing_country = isset($order['order']['billingAddress']['countryName']) ? $order['order']['shippingAddress']['countryName'] : '';
+$billing_first_name = isset($order['order']['billingAddress']['firstName']) ? $order['order']['billingAddress']['firstName'] : '' ;
+$billing_last_name = isset($order['order']['billingAddress']['lastName']) ? $order['order']['billingAddress']['lastName'] : '';
+$billing_address1 = isset($order['order']['billingAddress']['line1']) ? $order['order']['billingAddress']['line1'] : '';
+$billing_city = isset($order['order']['billingAddress']['city']) ? $order['order']['billingAddress']['city'] : '';
+$billing_code = isset($order['order']['billingAddress']['postalCode']) ? $order['order']['billingAddress']['postalCode'] : '';
+$billing_country = isset($order['order']['billingAddress']['countryName']) ? $order['order']['billingAddress']['countryName'] : '';
 
 if($shipping_first_name !== '' && $shipping_last_name !== '') {
     $shipping_name = $shipping_first_name . ' ' . $shipping_last_name;
