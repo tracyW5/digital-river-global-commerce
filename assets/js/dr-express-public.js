@@ -864,12 +864,51 @@ jQuery(document).ready(function ($) {
       }(),
       data: JSON.stringify(data),
       success: function success() {
-        submitCart();
+        var billingSameAsShipping = $('[name="checkbox-billing"]').is(':checked');
+
+        if (billingSameAsShipping) {
+          submitCart();
+        } else {
+          applyBillingAddress(payload.billing).then(function () {
+            return submitCart();
+          });
+        }
       },
       error: function error(jqXHR) {
         $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
         $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
       }
+    });
+  }
+
+  function applyBillingAddress(billingAddress) {
+    return new Promise(function (resolve, reject) {
+      $.ajax({
+        type: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+        },
+        url: function () {
+          var url = "".concat(apiBaseUrl, "/me/carts/active?");
+          url += "&token=".concat(drExpressOptions.accessToken);
+          return url;
+        }(),
+        data: JSON.stringify({
+          cart: {
+            billingAddress: billingAddress
+          }
+        }),
+        success: function success(data) {
+          resolve(data);
+        },
+        error: function error(jqXHR) {
+          $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
+          $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
+          reject(jqXHR);
+        }
+      });
     });
   }
 

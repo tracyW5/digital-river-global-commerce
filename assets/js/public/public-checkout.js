@@ -106,9 +106,9 @@ jQuery(document).ready(($) => {
         }
 
         if ( billingSameAsShipping ) {
-            data.cart.billingAddress = payload['shipping']
+            data.cart.billingAddress = payload['shipping'];
         } else {
-            data.cart.billingAddress = payload['billing']
+            data.cart.billingAddress = payload['billing'];
         }
 
         $.ajax({
@@ -462,12 +462,48 @@ jQuery(document).ready(($) => {
             })(),
             data: JSON.stringify(data),
             success: () => {
-                submitCart();
+                const billingSameAsShipping = $('[name="checkbox-billing"]').is(':checked');
+                if (billingSameAsShipping) {
+                    submitCart();
+                } else {
+                    applyBillingAddress(payload.billing).then(() => submitCart());
+                }
             },
             error: (jqXHR) => {
                 $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
                 $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
             }
+        });
+    }
+
+    function applyBillingAddress(billingAddress) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type':'application/json',
+                    Authorization: `Bearer ${drExpressOptions.accessToken}`,
+                },
+                url: (() => {
+                    let url = `${apiBaseUrl}/me/carts/active?`;
+                    url += `&token=${drExpressOptions.accessToken}`;
+                    return url;
+                })(),
+                data: JSON.stringify({
+                    cart: {
+                        billingAddress
+                    }
+                }),
+                success: (data) => {
+                    resolve(data);
+                },
+                error: (jqXHR) => {
+                    $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
+                    $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
+                    reject(jqXHR);
+                }
+            });
         });
     }
 
