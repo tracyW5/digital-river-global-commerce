@@ -302,6 +302,7 @@ jQuery(document).ready(function ($) {
 
           if ($('.dr-cart__products').children().length <= 0) {
             $('.dr-cart__products').text('Your cart is empty!');
+            $('#cart-estimate').hide();
           }
         } // TODO: On Error give feedback
 
@@ -625,9 +626,13 @@ jQuery(document).ready(function ($) {
 
     $.each(shippingOptions.shippingOption, function (index, option) {
       if ($('input[type=radio]#' + option.id).length) return;
-      var html = "\n                <div class=\"field-radio\">\n                    <input type=\"radio\"\n                        name=\"selector\"\n                        id=\"".concat(option.id, "\"\n                        data-cost=\"").concat(option.formattedCost, "\"\n                        data-id=\"").concat(option.id, "\"\n                        data-desc=\"").concat(option.description, "\"\n                        checked>\n                    <label for=\"radio-standart\">\n                        <span>\n                            ").concat(option.description, "\n                        </span>\n                        <span class=\"black\">\n                            ").concat(option.formattedCost, "\n                        </span>\n                        <span class=\"smoller\">\n                            Estimated Arrival:\n                        </span>\n                        <span class=\"black\">\n                            Apr 08 - Apr 11\n                        </span>\n                    </label>\n                </div>\n            ");
+      var html = "\n                <div class=\"field-radio\">\n                    <input type=\"radio\"\n                        name=\"selector\"\n                        id=\"".concat(option.id, "\"\n                        data-cost=\"").concat(option.formattedCost, "\"\n                        data-id=\"").concat(option.id, "\"\n                        data-desc=\"").concat(option.description, "\"\n                        >\n                    <label for=\"radio-standart\">\n                        <span>\n                            ").concat(option.description, "\n                        </span>\n                        <span class=\"black\">\n                            ").concat(option.formattedCost, "\n                        </span>\n                        <span class=\"smoller\">\n                            Estimated Arrival:\n                        </span>\n                        <span class=\"black\">\n                            Apr 08 - Apr 11\n                        </span>\n                    </label>\n                </div>\n            ");
       $('form#checkout-delivery-form .dr-panel-edit__el').append(html);
-    });
+      $('form#checkout-delivery-form').children().find('input:radio').first().prop("checked", true);
+    }); // Initial Shipping Option
+
+    var shippingInitID = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
+    applyShippingAndUpdateCart(shippingInitID);
   } // Submit delivery form
 
 
@@ -670,6 +675,11 @@ jQuery(document).ready(function ($) {
       }
     });
   });
+  $('form#checkout-delivery-form').on('change', 'input[type="radio"]', function () {
+    var shippingObject = $('form#checkout-delivery-form').children().find('input:radio:checked').first();
+    var shippingoptionID = shippingObject.data('id');
+    applyShippingAndUpdateCart(shippingoptionID);
+  });
   $('form#checkout-payment-form').on('submit', function (e) {
     e.preventDefault();
     var $form = $('form#checkout-payment-form');
@@ -700,6 +710,36 @@ jQuery(document).ready(function ($) {
     $('#dr-payment-failed-msg').hide();
     sendPaymentData();
   });
+
+  function applyShippingAndUpdateCart(shippingoptionID) {
+    var data = {
+      token: drExpressOptions.accessToken,
+      expand: 'all',
+      fields: null,
+      shippingOptionId: shippingoptionID
+    };
+    $.ajax({
+      type: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      url: function () {
+        var url = "".concat(apiBaseUrl, "/me/carts/active/apply-shipping-option?").concat($.param(data));
+        return url;
+      }(),
+      success: function success(data) {
+        var _data$cart$pricing = data.cart.pricing,
+            formattedShippingAndHandling = _data$cart$pricing.formattedShippingAndHandling,
+            formattedOrderTotal = _data$cart$pricing.formattedOrderTotal;
+        $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
+        $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
+      },
+      error: function error(jqXHR) {
+        console.log(jqXHR);
+      }
+    });
+  }
 
   function sendPaymentData() {
     var cart = drExpressOptions.cart.cart;

@@ -7,7 +7,7 @@ jQuery(document).ready(($) => {
 
     //floating labels
     FloatLabel.init();
-    
+
     // Globals
     var digitalriverjs = new DigitalRiver(drExpressOptions.digitalRiverKey);
     var payload  = { shipping: {}, billing: {} };
@@ -94,17 +94,17 @@ jQuery(document).ready(($) => {
 
         payload['shipping']['emailAddress'] = emailPayload;
         payload['billing']['emailAddress'] = emailPayload;
-        
+
         let data = {
             cart: {
                 shippingAddress: payload['shipping']
             },
         };
-        
+
         if (data.cart.shippingAddress.country !== 'US') {
             delete data.cart.shippingAddress.countrySubdivision;
         }
-    
+
         if ( billingSameAsShipping ) {
             data.cart.billingAddress = payload['shipping']
         } else {
@@ -182,7 +182,7 @@ jQuery(document).ready(($) => {
                         data-cost="${option.formattedCost}"
                         data-id="${option.id}"
                         data-desc="${option.description}"
-                        checked>
+                        >
                     <label for="radio-standart">
                         <span>
                             ${option.description}
@@ -199,9 +199,13 @@ jQuery(document).ready(($) => {
                     </label>
                 </div>
             `;
-    
+
             $('form#checkout-delivery-form .dr-panel-edit__el').append(html);
+            $('form#checkout-delivery-form').children().find('input:radio').first().prop("checked", true);
         });
+        // Initial Shipping Option
+        let shippingInitID = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
+        applyShippingAndUpdateCart(shippingInitID);
     }
 
     // Submit delivery form
@@ -212,7 +216,7 @@ jQuery(document).ready(($) => {
 
         let $input = $(this).children().find('input:radio:checked').first();
         let button = $(this).find('button[type="submit"]').toggleClass('sending').blur();
-        
+
         // Validate shipping option
         let data = {
             token           : drExpressOptions.accessToken,
@@ -255,6 +259,14 @@ jQuery(document).ready(($) => {
         });
     });
 
+    $('form#checkout-delivery-form').on('change', 'input[type="radio"]', function() {
+      let shippingObject =  $('form#checkout-delivery-form').children().find('input:radio:checked').first();
+      let shippingoptionID = shippingObject.data('id');
+      applyShippingAndUpdateCart(shippingoptionID);
+    });
+
+
+
     $('form#checkout-payment-form').on('submit', function(e) {
         e.preventDefault();
         let $form = $('form#checkout-payment-form');
@@ -263,7 +275,7 @@ jQuery(document).ready(($) => {
         if ($form[0].checkValidity() === false) {
             return false;
         }
-        
+
         let formdata = $(this).serializeArray();
         paymentPayload = {};
         $(formdata).each(function(index, obj){
@@ -294,6 +306,37 @@ jQuery(document).ready(($) => {
         $('#dr-payment-failed-msg').hide();
         sendPaymentData();
     });
+
+    function applyShippingAndUpdateCart(shippingoptionID){
+      let data = {
+        token           : drExpressOptions.accessToken,
+        expand          : 'all',
+        fields          : null,
+        shippingOptionId: shippingoptionID
+      };
+
+
+      $.ajax({
+        type: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+        },
+        url: (() => {
+            let url = `${apiBaseUrl}/me/carts/active/apply-shipping-option?${$.param(data)}`;
+            return url;
+        })(),
+        success: (data) => {
+          let { formattedShippingAndHandling, formattedOrderTotal } = data.cart.pricing;
+          $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
+          $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
+        },
+        error: (jqXHR) => {
+            console.log(jqXHR);
+        }
+      });
+    }
+
 
     function sendPaymentData() {
         const cart = drExpressOptions.cart.cart;
@@ -334,7 +377,7 @@ jQuery(document).ready(($) => {
                     "unitAmount": item.product.inventoryStatus.availableQuantity
                 })
             });
-            
+
             digitalRiverPayload = {
                 "type": "payPal",
                 "amount": cart.pricing.orderTotal.value,
@@ -359,7 +402,7 @@ jQuery(document).ready(($) => {
                 }
             }
         }
-        
+
         digitalriverjs.createSource(digitalRiverPayload).then(function(result) {
             if (result.error) {
                 $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
@@ -523,7 +566,7 @@ jQuery(document).ready(($) => {
                 section.removeClass('small-closed-right');
             }
         } else {
-            section.removeClass('small-closed-left'); 
+            section.removeClass('small-closed-left');
             nextSection.removeClass('small-closed-right');
         }
     });

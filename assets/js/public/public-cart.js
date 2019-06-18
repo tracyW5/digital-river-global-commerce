@@ -3,7 +3,7 @@
 
 jQuery(document).ready(($) => {
     const apiBaseUrl = 'https://api.digitalriver.com/v1/shoppers';
-    
+
     // Very basic throttle function,
     // does not store calls white in limit period
     const throttle = (func, limit) => {
@@ -44,6 +44,7 @@ jQuery(document).ready(($) => {
 
                     if ($('.dr-cart__products').children().length <= 0) {
                         $('.dr-cart__products').text('Your cart is empty!');
+                        $('#cart-estimate').hide();
                     }
                 }
                 // TODO: On Error give feedback
@@ -136,7 +137,7 @@ jQuery(document).ready(($) => {
                 let { formattedShippingAndHandling, formattedSubtotal } = data.cart.pricing;
                 $('div.dr-summary__shipping .shipping-value').text(formattedShippingAndHandling);
                 $('div.dr-summary__subtotal .subtotal-value').text(formattedSubtotal);
-                
+
                 displayMiniCart(data.cart);
             },
             error: (jqXHR) => {
