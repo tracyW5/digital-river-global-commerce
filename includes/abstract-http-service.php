@@ -3,6 +3,7 @@
 require_once dirname( dirname(__FILE__) ).'/vendor/autoload.php';
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Promise;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -202,6 +203,37 @@ abstract class AbstractHttpService {
         $this->validateStatusCode( $response );
 
         return $this->getResponseData( $response );
+    }
+
+    /**
+     * @param string $uri
+     * @param array  $data
+     *
+     * @return array
+     */
+    protected function getAsync( string $uri = '', array $data = array() ): array {
+        $client = $this->createClient();
+        $uri = $this->normalizeUri( $uri );
+        $promises = [];
+        $products = [];
+        $result = [];
+
+        foreach ( $data as $value ) {
+            $promises[] = $client->requestAsync( 'GET', $uri . '&' . $value );
+        }
+
+        $responses = Promise\unwrap( $promises );
+
+        foreach ( $responses as $response ) {
+            if ( 200 === $response->getStatusCode() ) {
+                $products = array_merge( $products, $this->getResponseData( $response )['products']['product'] );
+                $result = array_merge( $result, $this->getResponseData( $response ) );
+            }
+        }
+
+        $result['products']['product'] = $products;
+
+        return $result;
     }
 
     /**
