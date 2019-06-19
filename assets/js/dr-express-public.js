@@ -385,7 +385,7 @@ jQuery(document).ready(function ($) {
         return url;
       }(),
       success: function success(data) {
-        RenderCartProduct(data);
+        renderCartProduct(data);
         displayMiniCart(data.cart);
       },
       error: function error(jqXHR) {
@@ -394,7 +394,7 @@ jQuery(document).ready(function ($) {
     });
   }
 
-  function RenderCartProduct(data) {
+  function renderCartProduct(data) {
     $('.dr-cart__products').html("");
     console.log(data.cart);
     $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
@@ -495,7 +495,10 @@ jQuery(document).ready(function ($) {
       $footer.append(miniCartViewCartBtn, miniCartCheckoutBtn);
       $display.append($body, $footer);
     }
-  }
+  } //init Cart via JS
+
+
+  fetchFreshCart();
 });
 "use strict";
 

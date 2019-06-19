@@ -130,7 +130,7 @@ jQuery(document).ready(($) => {
               return url;
           })(),
           success: (data) => {
-              RenderCartProduct(data);
+              renderCartProduct(data);
               displayMiniCart(data.cart);
           },
           error: (jqXHR) => {
@@ -139,7 +139,7 @@ jQuery(document).ready(($) => {
       });
   }
 
-  function RenderCartProduct(data){
+  function renderCartProduct(data){
     $('.dr-cart__products').html("");
     console.log(data.cart);
     $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
@@ -280,4 +280,7 @@ jQuery(document).ready(($) => {
           $display.append($body, $footer);
       }
   }
+
+  //init Cart via JS
+  fetchFreshCart();
 });
