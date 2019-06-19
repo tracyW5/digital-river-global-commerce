@@ -41,11 +41,6 @@ jQuery(document).ready(($) => {
                 if ( xhr.status === 204 ) {
                     $(`.dr-product[data-line-item-id="${lineItemId}"]`).remove();
                     fetchFreshCart();
-
-                    if ($('.dr-cart__products').children().length <= 0) {
-                        $('.dr-cart__products').text('Your cart is empty!');
-                        $('#cart-estimate').hide();
-                    }
                 }
                 // TODO: On Error give feedback
             },
@@ -134,16 +129,67 @@ jQuery(document).ready(($) => {
                 return url;
             })(),
             success: (data) => {
-                let { formattedShippingAndHandling, formattedSubtotal } = data.cart.pricing;
-                $('div.dr-summary__shipping .shipping-value').text(formattedShippingAndHandling);
-                $('div.dr-summary__subtotal .subtotal-value').text(formattedSubtotal);
-
+                renderCartProduct(data);
                 displayMiniCart(data.cart);
             },
             error: (jqXHR) => {
                 console.log(jqXHR);
             }
         });
+    }
+
+    function renderCartProduct(data){
+      $('.dr-cart__products').html("");
+      console.log(data.cart);
+      $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
+        let permalink = '';
+        $.ajax({
+          type: 'POST',
+          async: false,
+          url: drExpressOptions.ajaxUrl,
+          data: {
+            action: 'get_permalink',
+            productID: lineitem.product.id
+          },
+          success: (response) => {
+            permalink = response;
+            let lineItemHTML = `
+            <div data-line-item-id="${lineitem.id}" class="dr-product">
+              <div class="dr-product-content">
+                  <div class="dr-product__img" style="background-image: url(${lineitem.product.thumbnailImage})"></div>
+                  <div class="dr-product__info">
+                      <a class="product-name" href="${permalink}">${lineitem.product.displayName}</a>
+                      <div class="product-sku">
+                          <span>Product </span>
+                          <span>#${lineitem.product.id}</span>
+                      </div>
+                      <div class="product-qty">
+                          <span class="qty-text">Qty ${lineitem.quantity}</span>
+                          <span class="dr-pd-cart-qty-minus value-button-decrease"></span>
+                          <input type="number" class="product-qty-number" step="1" min="1" max="999" value="${lineitem.quantity}" maxlength="5" size="2" pattern="[0-9]*" inputmode="numeric" readonly="true">
+                          <span class="dr-pd-cart-qty-plus value-button-increase"></span>
+                      </div>
+                  </div>
+              </div>
+              <div class="dr-product__price">
+                  <button class="dr-prd-del remove-icon"></button>
+                  <span class="sale-price">${lineitem.pricing.formattedSalePriceWithQuantity}</span>
+                  <span class="regular-price">${lineitem.pricing.formattedListPriceWithQuantity}</span>
+              </div>
+            </div>
+            `;
+            $('.dr-cart__products').append(lineItemHTML);
+          }
+        });
+      });
+      let { formattedShippingAndHandling, formattedSubtotal } = data.cart.pricing;
+      $('div.dr-summary__shipping .shipping-value').text(formattedShippingAndHandling);
+      $('div.dr-summary__subtotal .subtotal-value').text(formattedSubtotal);
+      if ($('.dr-cart__products').children().length <= 0) {
+        $('.dr-cart__products').text('Your cart is empty!');
+        $('#cart-estimate').hide();
+      }
+
     }
 
     $('.dr-currency-select').on('change', function(e) {
@@ -233,4 +279,6 @@ jQuery(document).ready(($) => {
             $display.append($body, $footer);
         }
     }
+    //init cart via JS
+    fetchFreshCart();
 });

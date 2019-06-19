@@ -18,7 +18,7 @@
         <section class="dr-cart__content">
 
             <div class="dr-cart__products">
-                
+
                 <?php if ( 1 < count($cart['cart']['lineItems'] )) : ?>
                     <?php foreach ($cart['cart']['lineItems']['lineItem'] as $line_item): ?>
                         <?php include PLUGIN_DIR . 'public/templates/cart/cart-product.php'; ?>
@@ -28,15 +28,15 @@
                 <?php endif; ?>
 
             </div>
-
+            <?php if ( 1 < count($cart['cart']['lineItems'] )) : ?>
             <div class="dr-cart__estimate" id="cart-estimate">
-                
+
                 <?php dr_express_currency_toggler(); ?>
 
                 <?php include_once PLUGIN_DIR . 'public/templates/cart/cart-summary.php'; ?>
 
             </div>
-
+            <?php endif; ?>
         </section>
 
         <section class="dr-cart__actions-bottom">
@@ -44,7 +44,7 @@
             <a href="<?php echo get_post_type_archive_link( 'dr_product' ); ?>" class="continue-shopping"><?php echo __( 'Continue Shopping', 'dr-express' ); ?></a>
 
         </section>
-        
+
     </form>
 
 </div>
