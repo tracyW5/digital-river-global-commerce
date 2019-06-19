@@ -495,7 +495,10 @@ jQuery(document).ready(function ($) {
       $footer.append(miniCartViewCartBtn, miniCartCheckoutBtn);
       $display.append($body, $footer);
     }
-  }
+  } //init cart via JS
+
+
+  fetchFreshCart();
 });
 "use strict";
 

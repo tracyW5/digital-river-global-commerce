@@ -279,4 +279,6 @@ jQuery(document).ready(($) => {
             $display.append($body, $footer);
         }
     }
+    //init cart via JS
+    fetchFreshCart();
 });
