@@ -201,6 +201,13 @@ class DR_Express_Admin {
 			array( 'label_for' => $this->option_name . '_cron_handler' )
 		);
 
+		add_settings_section(
+			$this->option_name . '_extra',
+			'',
+			array( $this, $this->option_name . '_extra_cb' ),
+			$this->plugin_name
+		);
+
 		register_setting( $this->plugin_name, $this->option_name . '_site_id', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ) );
 		register_setting( $this->plugin_name, $this->option_name . '_api_key', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ) );
 		register_setting( $this->plugin_name, $this->option_name . '_domain', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ) );
@@ -218,6 +225,15 @@ class DR_Express_Admin {
 	}
 
 	/**
+	 * Render the text for the extra section.
+	 *
+	 * @since  1.0.0
+	 */
+	public function dr_express_extra_cb() {
+		echo '<p class="description">' . __( 'Please contact your account representative for assistance with these settings.', 'dr-express' ) . '</p>';
+	}
+
+	/**
 	 * Render input text field for Site ID.
 	 *
 	 * @since    1.0.0
@@ -225,7 +241,6 @@ class DR_Express_Admin {
 	public function dr_express_site_id_cb() {
 		$site_id = get_option( $this->option_name . '_site_id' );
 		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_site_id' . '" id="' . $this->option_name . '_site_id' . '" value="' . $site_id . '"> ';
-		echo '<span class="description" id="site-id-description">' . __( 'For example:', 'dr-express' ) . ' drdod15</span>';
 	}
 
 	/**
@@ -236,7 +251,6 @@ class DR_Express_Admin {
 	public function dr_express_api_key_cb() {
 		$api_key = get_option( $this->option_name . '_api_key' );
 		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_api_key' . '" id="' . $this->option_name . '_api_key' . '" value="' . $api_key . '"> ';
-		echo '<span class="description" id="api-key-description">' . __( 'For example:', 'dr-express' ) . ' 66243b2c142e41de9cc0373d5fe0b33c</span>';
 	}
 
 	/**
@@ -247,7 +261,6 @@ class DR_Express_Admin {
 	public function dr_express_domain_cb() {
 		$domain = get_option( $this->option_name . '_domain' );
 		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_domain' . '" id="' . $this->option_name . '_domain' . '" value="' . $domain . '"> ';
-		echo '<span class="description" id="api-key-description">' . __( 'For example:', 'dr-express' ) . ' api.digitalriver.com</span>';
 	}
 
 	/**
@@ -258,7 +271,6 @@ class DR_Express_Admin {
 	public function dr_express_digitalRiver_key_cb() {
 		$digitalRiver_key = get_option( $this->option_name . '_digitalRiver_key' );
 		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_digitalRiver_key' . '" id="' . $this->option_name . '_digitalRiver_key' . '" value="' . $digitalRiver_key . '"> ';
-		echo '<span class="description" id="digitalRiver-key-description">' . __( 'For example:', 'dr-express' ) . ' pk__2e4f1bb6767d45eb87fe0e05c4553eb3</span>';
 	}
 
 	/**
