@@ -2,7 +2,7 @@
 /* eslint-disable no-alert, no-console */
 
 jQuery(document).ready(($) => {
-    const apiBaseUrl = 'https://api.digitalriver.com/v1/shoppers';
+    const apiBaseUrl = 'https://' + drExpressOptions.domain + '/v1/shoppers';
 
     // Very basic throttle function,
     // does not store calls white in limit period
