@@ -104,12 +104,12 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 			$gc_id               = isset( $product_data['id'] ) ? absint( $product_data['id'] ) : 0;
 			$existing_product_id = dr_get_product_by_gcid( $gc_id );
 			$currencies          = get_option( 'dr_store_locales' );
-      if($existing_product_id == 0){
-        $parent_product_new = new DR_Express_Product( $existing_product_id );
-        $parent_product_new->set_data( $product_data );
-        $parent_product_new->save();
-        $existing_product_id = dr_get_product_by_gcid( $gc_id );
-      }
+                        if($existing_product_id == 0){
+                          $parent_product_new = new DR_Express_Product( $existing_product_id );
+                          $parent_product_new->set_data( $product_data );
+                          $parent_product_new->save();
+                          $existing_product_id = dr_get_product_by_gcid( $gc_id );
+                        }
 
 			$parent_product = new DR_Express_Product( $existing_product_id );
 			$parent_product->set_data( $product_data );
