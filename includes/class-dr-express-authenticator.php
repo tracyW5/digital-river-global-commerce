@@ -52,6 +52,7 @@ class DR_Express_Authenticator extends AbstractHttpService {
 		parent::__construct($handler);
 
 		$this->dr_express_api_key = get_option( 'dr_express_api_key' );
+		$this->site_id = get_option( 'dr_express_site_id' );
 	}
 
 	/**
@@ -97,7 +98,7 @@ class DR_Express_Authenticator extends AbstractHttpService {
 			$this->refresh_token = $session_data['refresh_token'];
 		} else {
 			$this->generate_dr_session_token();
-			$this->generate_access_token();
+			$this->generate_access_token( $this->dr_express_api_key );
 		}
 		
 		$this->set_schedule_refresher();
@@ -121,46 +122,61 @@ class DR_Express_Authenticator extends AbstractHttpService {
 	 * @return mixed
 	 */
 	public function generate_dr_session_token() {
-		$site_id = get_option( 'dr_express_site_id' ) ?: 'drdod15';
-		$url = "https://store.digitalriver.com/store/" . $site_id . "/SessionToken";
-		return $this->dr_session_token = $this->get( $url )['session_token'];
+		$url = $this->authUrl();
+
+		return $this->dr_session_token = $this->getNoAuth( $url )['session_token'];
 	}
 
 	/**
 	 * Generate anonymous and full access tokens
 	 *
+	 * @param string $key
 	 * @param array $data
+	 * 
 	 * @return array $res
 	 */
-	public function generate_access_token( $data = array() ) {
-		// Generate anonymous by default
-		if ( ! $data ) {
-			$data = array(
-				"dr_session_token" => $this->dr_session_token,
-				"grant_type" => "password"
-			);
+	public function generate_access_token( $key = '', $data = array() ) {
+		try {
+			if ( empty( $key ) ) {
+				// Generate anonymous by default
+				if ( ! $data ) {
+					$data = array(
+						"dr_session_token" => $this->dr_session_token,
+						"grant_type" => "password"
+					);
+				}
+	
+				$this->setFormContentType();
+				$res = $this->post( "/oauth20/token",  $this->prepareParams( $data ) );
+			} else {
+				$params = array(
+					'apiKey' => $key
+				);
+		
+				$url = $this->authUrl() . '?' . http_build_query( $params );
+				$res = $this->getNoAuth( $url );
+			}
+			 
+			$this->token         = $res['access_token'] ?? null;
+			$this->tokenType     = $res['token_type'] ?? null;
+			$this->expires_in    = $res['expires_in'] ?? null;
+			$this->refresh_token = $res['refresh_token'] ?? null;
+	
+			if ( ! is_null( $this->session ) ) {
+				$this->session->generate_session_cookie_data( array(
+					'session_token' => $this->dr_session_token,
+					'refresh_token' => $this->refresh_token ?: null,
+					'access_token'  => $this->token,
+				));
+			}
+	
+			return $res;
+		} catch (\Exception $e) {
+			return "Error: # {$e->getMessage()}";
 		}
-
-		$this->setFormContentType();
-		$res = $this->post( "/oauth20/token",  $this->prepareParams( $data ) );
-		 
-		$this->token         = $res['access_token'] ?? null;
-		$this->tokenType     = $res['token_type'] ?? null;
-		$this->expires_in    = $res['expires_in'] ?? null;
-		$this->refresh_token = $res['refresh_token'] ?? null;
-
-		if ( ! is_null( $this->session )) {
-			$this->session->generate_session_cookie_data( array(
-				'session_token' => $this->dr_session_token,
-				'refresh_token' => $this->refresh_token ?: null,
-				'access_token'  => $this->token,
-			));
-		}
-
-		return $res;
 	}
 
-		/**
+	/**
 	 * Generate full access token
 	 *
 	 * @param string $username
@@ -171,10 +187,10 @@ class DR_Express_Authenticator extends AbstractHttpService {
 	public function generate_access_token_by_ref_id( $external_reference_id ) {
 		$data = array (
 			'dr_external_reference_id' => $external_reference_id,
-			'grant_type'     		   => 'client_credentials'
+			'grant_type'               => 'client_credentials'
 		);
 
-        $this->setFormContentType();
+    $this->setFormContentType();
 
 		try {
 			$res = $this->post( "/oauth20/token", $this->prepareParams( $data ) );
@@ -208,7 +224,7 @@ class DR_Express_Authenticator extends AbstractHttpService {
 	public function do_refresh_access_token() {
 		$data = array(
 			"refresh_token" => $this->refresh_token,
-			"grant_type" 	=> "refresh_token"
+			"grant_type" 	  => "refresh_token"
 		);
 
 		$this->setFormContentType();

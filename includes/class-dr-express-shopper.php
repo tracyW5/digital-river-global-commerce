@@ -122,7 +122,7 @@ class DR_Express_Shopper extends AbstractHttpService {
 			"grant_type"               => "client_credentials"
 		);
 
-		$data =  $this->authenticator->generate_access_token( $params );
+		$data =  $this->authenticator->generate_access_token( '', $params );
 
 		$this->refresh_token        = null;
 		$this->token                = isset( $data['access_token'] ) ? $data['access_token'] : null;
@@ -143,7 +143,7 @@ class DR_Express_Shopper extends AbstractHttpService {
 			'grant_type'       => 'password'
 		);
 
-		$data = $this->authenticator->generate_access_token( $params );
+		$data = $this->authenticator->generate_access_token( '', $params );
 
 		$this->token          = isset( $data['access_token'] ) ? $data['access_token'] : null;
 		$this->tokenType      = isset( $data['token_type'] ) ? $data['token_type'] : null;
