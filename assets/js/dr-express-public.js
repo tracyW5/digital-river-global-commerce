@@ -384,6 +384,12 @@ jQuery(document).ready(function ($) {
         url += "&token=".concat(drExpressOptions.accessToken);
         return url;
       }(),
+      beforeSend: function beforeSend() {
+        $('body').css({
+          'pointer-events': 'none',
+          'opacity': 0.5
+        });
+      },
       success: function success(data) {
         renderCartProduct(data);
         displayMiniCart(data.cart);
@@ -399,6 +405,10 @@ jQuery(document).ready(function ($) {
     $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
       candyRackCheckAndRender(lineitem.product.id);
       tightBundleRemoveElements(lineitem.product.id);
+    });
+    $('body').css({
+      'pointer-events': 'auto',
+      'opacity': 1
     });
   }
 
@@ -581,7 +591,9 @@ jQuery(document).ready(function ($) {
   /*init cart via JS*/
 
 
-  fetchFreshCart();
+  if ($("#dr-cart-page-wrapper").length > 0) {
+    fetchFreshCart();
+  }
 });
 "use strict";
 
