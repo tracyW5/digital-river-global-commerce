@@ -128,9 +128,13 @@ jQuery(document).ready(($) => {
                 url += `&token=${drExpressOptions.accessToken}`
                 return url;
             })(),
+            beforeSend: function() {
+              $('body').css({ 'pointer-events': 'none', 'opacity': 0.5 });
+            },
             success: (data) => {
                 renderCartProduct(data);
                 displayMiniCart(data.cart);
+                merchandisingInit(data);
             },
             error: (jqXHR) => {
                 console.log(jqXHR);
@@ -138,9 +142,117 @@ jQuery(document).ready(($) => {
         });
     }
 
+    function merchandisingInit(data){
+      $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
+        candyRackCheckAndRender(lineitem.product.id);
+        tightBundleRemoveElements(lineitem.product.id);
+      });
+      $('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
+    }
+
+
+    function tightBundleRemoveElements(productID){
+      $.ajax({
+        type: 'GET',
+        url: (() => {
+            let url = `${apiBaseUrl}/me/products/${productID}/offers?`;
+            url += `format=json`
+            url += `&expand=all`
+            url += `&token=${drExpressOptions.accessToken}`
+            return url;
+        })(),
+        success: (tightData, textStatus, xhr) => {
+          $.each(tightData.offers.offer, function( index, offer ) {
+            if(offer.type =="Bundling" && offer.policyName == "Tight Bundle Policy"){
+             $.each(offer.productOffers.productOffer, function( index, productOffer ) {
+               /*if product have  tight policy and it is not tight itself, remove the action button*/
+               if(productOffer.product.id != productID)$('div.dr-product[data-product-id="'+productOffer.product.id+'"]').find('.remove-icon,.value-button-increase,.value-button-decrease').remove();
+             });
+            }
+          });
+
+        },
+        error: (jqXHR) => {
+            reject(jqXHR);
+        }
+      });
+    }
+
+
+    function candyRackCheckAndRender(productID){
+      $.ajax({
+        type: 'GET',
+        url: (() => {
+            let url = `${apiBaseUrl}/me/products/${productID}/point-of-promotions/CandyRack_ShoppingCart/offers?`;
+            url += `format=json`
+            url += `&expand=all`
+            url += `&token=${drExpressOptions.accessToken}`
+            return url;
+        })(),
+        success: (candyRackData, textStatus, xhr) => {
+          $.each(candyRackData.offers.offer, function( index, offer ) {
+            let promoText = offer.salesPitch[0].length > 0 ? offer.salesPitch[0]   : "";
+            let buyButtonText = (offer.type == "Up-sell") ? "Upgrade" : "Add";
+            $.each(offer.productOffers.productOffer, function( index, productOffer ) {
+              let candyRackProductHTML = `
+              <div  class="dr-product dr-candyRackProduct" data-product-id="${productOffer.product.id}">
+                <div class="dr-product-content">
+                    <img src="${productOffer.product.thumbnailImage}" height="40px"/>
+                    <!-- <div class="dr-product__img" style="background-image: url(${productOffer.product.thumbnailImage});background-size:50%;background-repeat: no-repeat;background-position: right; height:40px;"></div> -->
+                    <div class="dr-product__info">
+                      <div class="product-color">
+                        <span style="background-color: yellow;">${promoText}</span>
+                      </div>
+                      ${productOffer.product.displayName}
+                      <div class="product-sku">
+                        <span>Product </span>
+                        <span>#${productOffer.product.id}</span>
+                      </div>
+                    </div>
+                </div>
+                <div class="dr-product__price">
+                    <button type="button" class="dr-btn dr-buy-candyRack" data-buy-uri="${productOffer.addProductToCart.uri}">${buyButtonText}</button>
+                    <span class="sale-price">${productOffer.pricing.formattedSalePriceWithQuantity}</span>
+                    <span class="regular-price dr-strike-price">${productOffer.pricing.formattedListPriceWithQuantity}</span>
+                </div>
+              </div>
+              `;
+              if($('div.dr-product[data-product-id="'+productOffer.product.id+'"]:not(.dr-candyRackProduct)').length == 0)$('div[data-product-id="'+productID+'"]').after(candyRackProductHTML);
+            });
+          });
+        },
+        error: (jqXHR) => {
+            reject(jqXHR);
+        }
+      });
+    }
+
+    $('body').on('click', '.dr-buy-candyRack', (e) => {
+      e.preventDefault();
+      const $this = $(e.target);
+      const buyUri = $this.attr('data-buy-uri');
+      $.ajax({
+          type: 'POST',
+          headers: {
+              "Accept": "application/json"
+          },
+          url: (() => {
+              let url = buyUri;
+              url += `&token=${drExpressOptions.accessToken}`
+              return url;
+          })(),
+          success: (data, textStatus, xhr) => {
+            fetchFreshCart();
+          },
+          error: (jqXHR) => {
+            console.log(jqXHR);
+               // On Error give feedback
+          }
+      });
+    });
+
     function renderCartProduct(data){
       $('.dr-cart__products').html("");
-      console.log(data.cart);
       $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
         let permalink = '';
         $.ajax({
@@ -154,7 +266,7 @@ jQuery(document).ready(($) => {
           success: (response) => {
             permalink = response;
             let lineItemHTML = `
-            <div data-line-item-id="${lineitem.id}" class="dr-product">
+            <div data-line-item-id="${lineitem.id}" class="dr-product" data-product-id="${lineitem.product.id}">
               <div class="dr-product-content">
                   <div class="dr-product__img" style="background-image: url(${lineitem.product.thumbnailImage})"></div>
                   <div class="dr-product__info">
@@ -189,7 +301,6 @@ jQuery(document).ready(($) => {
         $('.dr-cart__products').text('Your cart is empty!');
         $('#cart-estimate').hide();
       }
-
     }
 
     $('.dr-currency-select').on('change', function(e) {
@@ -279,6 +390,8 @@ jQuery(document).ready(($) => {
             $display.append($body, $footer);
         }
     }
-    //init cart via JS
-    fetchFreshCart();
+    /*init cart via JS*/
+    if($("#dr-cart-page-wrapper").length >0){
+      fetchFreshCart();
+    }
 });

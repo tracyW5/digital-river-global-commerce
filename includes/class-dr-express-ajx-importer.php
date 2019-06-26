@@ -47,7 +47,7 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 		$this->api_key          = get_option( 'dr_express_api_key' );
 
 		$this->dr_products = wp_cache_get( 'dr_products' );
-		
+
 		$token_response = $this->get_access_token();
 		$this->token = $token_response['access_token'];
 
@@ -104,6 +104,12 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 			$gc_id               = isset( $product_data['id'] ) ? absint( $product_data['id'] ) : 0;
 			$existing_product_id = dr_get_product_by_gcid( $gc_id );
 			$currencies          = get_option( 'dr_store_locales' );
+                        if($existing_product_id == 0){
+                          $parent_product_new = new DR_Express_Product( $existing_product_id );
+                          $parent_product_new->set_data( $product_data );
+                          $parent_product_new->save();
+                          $existing_product_id = dr_get_product_by_gcid( $gc_id );
+                        }
 
 			$parent_product = new DR_Express_Product( $existing_product_id );
 			$parent_product->set_data( $product_data );
@@ -354,7 +360,7 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 		);
 
 		$url = '/v1/shoppers/me/products?' . http_build_query( $params );
-		
+
 		try {
 			$res = $this->get( $url );
 
@@ -366,9 +372,9 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 					for ( $i = 0; $i < $count; $i++ ) {
 						$pages[$i] = 'pageNumber=' . ($i + 1);
 					}
-	
+
 					$results = $this->getAsync( $url, $pages );
-	
+
 					return $results['products'];
 				} else {
 					return $res['products'];
@@ -427,5 +433,5 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 			return false;
 		}
 	}
-	
+
 }

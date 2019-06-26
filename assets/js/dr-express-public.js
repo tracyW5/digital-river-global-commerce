@@ -384,9 +384,16 @@ jQuery(document).ready(function ($) {
         url += "&token=".concat(drExpressOptions.accessToken);
         return url;
       }(),
+      beforeSend: function beforeSend() {
+        $('body').css({
+          'pointer-events': 'none',
+          'opacity': 0.5
+        });
+      },
       success: function success(data) {
         renderCartProduct(data);
         displayMiniCart(data.cart);
+        merchandisingInit(data);
       },
       error: function error(jqXHR) {
         console.log(jqXHR);
@@ -394,9 +401,94 @@ jQuery(document).ready(function ($) {
     });
   }
 
+  function merchandisingInit(data) {
+    $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
+      candyRackCheckAndRender(lineitem.product.id);
+      tightBundleRemoveElements(lineitem.product.id);
+    });
+    $('body').css({
+      'pointer-events': 'auto',
+      'opacity': 1
+    });
+  }
+
+  function tightBundleRemoveElements(productID) {
+    $.ajax({
+      type: 'GET',
+      url: function () {
+        var url = "".concat(apiBaseUrl, "/me/products/").concat(productID, "/offers?");
+        url += "format=json";
+        url += "&expand=all";
+        url += "&token=".concat(drExpressOptions.accessToken);
+        return url;
+      }(),
+      success: function success(tightData, textStatus, xhr) {
+        $.each(tightData.offers.offer, function (index, offer) {
+          if (offer.type == "Bundling" && offer.policyName == "Tight Bundle Policy") {
+            $.each(offer.productOffers.productOffer, function (index, productOffer) {
+              /*if product have  tight policy and it is not tight itself, remove the action button*/
+              if (productOffer.product.id != productID) $('div.dr-product[data-product-id="' + productOffer.product.id + '"]').find('.remove-icon,.value-button-increase,.value-button-decrease').remove();
+            });
+          }
+        });
+      },
+      error: function error(jqXHR) {
+        reject(jqXHR);
+      }
+    });
+  }
+
+  function candyRackCheckAndRender(productID) {
+    $.ajax({
+      type: 'GET',
+      url: function () {
+        var url = "".concat(apiBaseUrl, "/me/products/").concat(productID, "/point-of-promotions/CandyRack_ShoppingCart/offers?");
+        url += "format=json";
+        url += "&expand=all";
+        url += "&token=".concat(drExpressOptions.accessToken);
+        return url;
+      }(),
+      success: function success(candyRackData, textStatus, xhr) {
+        $.each(candyRackData.offers.offer, function (index, offer) {
+          var promoText = offer.salesPitch[0].length > 0 ? offer.salesPitch[0] : "";
+          var buyButtonText = offer.type == "Up-sell" ? "Upgrade" : "Add";
+          $.each(offer.productOffers.productOffer, function (index, productOffer) {
+            var candyRackProductHTML = "\n              <div  class=\"dr-product dr-candyRackProduct\" data-product-id=\"".concat(productOffer.product.id, "\">\n                <div class=\"dr-product-content\">\n                    <img src=\"").concat(productOffer.product.thumbnailImage, "\" height=\"40px\"/>\n                    <!-- <div class=\"dr-product__img\" style=\"background-image: url(").concat(productOffer.product.thumbnailImage, ");background-size:50%;background-repeat: no-repeat;background-position: right; height:40px;\"></div> -->\n                    <div class=\"dr-product__info\">\n                      <div class=\"product-color\">\n                        <span style=\"background-color: yellow;\">").concat(promoText, "</span>\n                      </div>\n                      ").concat(productOffer.product.displayName, "\n                      <div class=\"product-sku\">\n                        <span>Product </span>\n                        <span>#").concat(productOffer.product.id, "</span>\n                      </div>\n                    </div>\n                </div>\n                <div class=\"dr-product__price\">\n                    <button type=\"button\" class=\"dr-btn dr-buy-candyRack\" data-buy-uri=\"").concat(productOffer.addProductToCart.uri, "\">").concat(buyButtonText, "</button>\n                    <span class=\"sale-price\">").concat(productOffer.pricing.formattedSalePriceWithQuantity, "</span>\n                    <span class=\"regular-price dr-strike-price\">").concat(productOffer.pricing.formattedListPriceWithQuantity, "</span>\n                </div>\n              </div>\n              ");
+            if ($('div.dr-product[data-product-id="' + productOffer.product.id + '"]:not(.dr-candyRackProduct)').length == 0) $('div[data-product-id="' + productID + '"]').after(candyRackProductHTML);
+          });
+        });
+      },
+      error: function error(jqXHR) {
+        reject(jqXHR);
+      }
+    });
+  }
+
+  $('body').on('click', '.dr-buy-candyRack', function (e) {
+    e.preventDefault();
+    var $this = $(e.target);
+    var buyUri = $this.attr('data-buy-uri');
+    $.ajax({
+      type: 'POST',
+      headers: {
+        "Accept": "application/json"
+      },
+      url: function () {
+        var url = buyUri;
+        url += "&token=".concat(drExpressOptions.accessToken);
+        return url;
+      }(),
+      success: function success(data, textStatus, xhr) {
+        fetchFreshCart();
+      },
+      error: function error(jqXHR) {
+        console.log(jqXHR); // On Error give feedback
+      }
+    });
+  });
+
   function renderCartProduct(data) {
     $('.dr-cart__products').html("");
-    console.log(data.cart);
     $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
       var permalink = '';
       $.ajax({
@@ -409,7 +501,7 @@ jQuery(document).ready(function ($) {
         },
         success: function success(response) {
           permalink = response;
-          var lineItemHTML = "\n            <div data-line-item-id=\"".concat(lineitem.id, "\" class=\"dr-product\">\n              <div class=\"dr-product-content\">\n                  <div class=\"dr-product__img\" style=\"background-image: url(").concat(lineitem.product.thumbnailImage, ")\"></div>\n                  <div class=\"dr-product__info\">\n                      <a class=\"product-name\" href=\"").concat(permalink, "\">").concat(lineitem.product.displayName, "</a>\n                      <div class=\"product-sku\">\n                          <span>Product </span>\n                          <span>#").concat(lineitem.product.id, "</span>\n                      </div>\n                      <div class=\"product-qty\">\n                          <span class=\"qty-text\">Qty ").concat(lineitem.quantity, "</span>\n                          <span class=\"dr-pd-cart-qty-minus value-button-decrease\"></span>\n                          <input type=\"number\" class=\"product-qty-number\" step=\"1\" min=\"1\" max=\"999\" value=\"").concat(lineitem.quantity, "\" maxlength=\"5\" size=\"2\" pattern=\"[0-9]*\" inputmode=\"numeric\" readonly=\"true\">\n                          <span class=\"dr-pd-cart-qty-plus value-button-increase\"></span>\n                      </div>\n                  </div>\n              </div>\n              <div class=\"dr-product__price\">\n                  <button class=\"dr-prd-del remove-icon\"></button>\n                  <span class=\"sale-price\">").concat(lineitem.pricing.formattedSalePriceWithQuantity, "</span>\n                  <span class=\"regular-price\">").concat(lineitem.pricing.formattedListPriceWithQuantity, "</span>\n              </div>\n            </div>\n            ");
+          var lineItemHTML = "\n            <div data-line-item-id=\"".concat(lineitem.id, "\" class=\"dr-product\" data-product-id=\"").concat(lineitem.product.id, "\">\n              <div class=\"dr-product-content\">\n                  <div class=\"dr-product__img\" style=\"background-image: url(").concat(lineitem.product.thumbnailImage, ")\"></div>\n                  <div class=\"dr-product__info\">\n                      <a class=\"product-name\" href=\"").concat(permalink, "\">").concat(lineitem.product.displayName, "</a>\n                      <div class=\"product-sku\">\n                          <span>Product </span>\n                          <span>#").concat(lineitem.product.id, "</span>\n                      </div>\n                      <div class=\"product-qty\">\n                          <span class=\"qty-text\">Qty ").concat(lineitem.quantity, "</span>\n                          <span class=\"dr-pd-cart-qty-minus value-button-decrease\"></span>\n                          <input type=\"number\" class=\"product-qty-number\" step=\"1\" min=\"1\" max=\"999\" value=\"").concat(lineitem.quantity, "\" maxlength=\"5\" size=\"2\" pattern=\"[0-9]*\" inputmode=\"numeric\" readonly=\"true\">\n                          <span class=\"dr-pd-cart-qty-plus value-button-increase\"></span>\n                      </div>\n                  </div>\n              </div>\n              <div class=\"dr-product__price\">\n                  <button class=\"dr-prd-del remove-icon\"></button>\n                  <span class=\"sale-price\">").concat(lineitem.pricing.formattedSalePriceWithQuantity, "</span>\n                  <span class=\"regular-price\">").concat(lineitem.pricing.formattedListPriceWithQuantity, "</span>\n              </div>\n            </div>\n            ");
           $('.dr-cart__products').append(lineItemHTML);
         }
       });
@@ -495,10 +587,13 @@ jQuery(document).ready(function ($) {
       $footer.append(miniCartViewCartBtn, miniCartCheckoutBtn);
       $display.append($body, $footer);
     }
-  } //init cart via JS
+  }
+  /*init cart via JS*/
 
 
-  fetchFreshCart();
+  if ($("#dr-cart-page-wrapper").length > 0) {
+    fetchFreshCart();
+  }
 });
 "use strict";
 
