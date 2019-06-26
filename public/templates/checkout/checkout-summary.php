@@ -18,10 +18,9 @@ $subtotal_items_text = $cart['cart']['totalItemsInCart'] > 1 ? __('items') : __(
 $subtotal_value = $cart['cart']['pricing']['formattedSubtotal'];
 $estimated_tax_value = $cart['cart']['pricing']['formattedTax'];
 $shipping_price_value = $cart['cart']['pricing']['formattedShippingAndHandling'] === '$0.00' ? 'FREE' : $cart['cart']['pricing']['formattedShippingAndHandling'];
-$discount_value = $cart['cart']['pricing']['formattedDiscount'];
+$discount = $cart['cart']['pricing']['discount']['value'];
+$formatted_discount = $cart['cart']['pricing']['formattedDiscount'];
 $total_value = $cart['cart']['pricing']['formattedOrderTotal'];
-$total_savings_value = $cart['cart']['pricing']['formattedDiscount'];
-
 $delivery_info = 'Delivery in 2-5 working days and extended 30 days return period';
 ?>
 
@@ -48,15 +47,13 @@ $delivery_info = 'Delivery in 2-5 working days and extended 30 days return perio
 
 </div>
 
-<?php /*
-<div class="dr-summary__discount">
+<div class="dr-summary__discount" <?php if ( $discount === 0 ) echo 'style="display: none;"' ?>>
 
-    <p class="item-label"><?php echo __('Promo Discount') ?></p>
+    <p class="discount-label"><?php echo __('Discount') ?></p>
 
-    <p class="item-value"><?php echo $discount_value; ?></p>
+    <p class="discount-value"><?php echo '-' . $formatted_discount; ?></p>
 
 </div>
-*/ ?>
 
 <div class="dr-summary__total">
 
@@ -65,13 +62,3 @@ $delivery_info = 'Delivery in 2-5 working days and extended 30 days return perio
     <p class="total-value"><?php echo $total_value; ?></p>
 
 </div>
-
-<?php /*
-<div class="dr-summary__savings">
-
-    <p class="savings-label"><?php echo __('Total Savings') ?></p>
-
-    <p class="savings-value"><?php echo $total_savings_value; ?></p>
-
-</div>
-*/ ?>

@@ -27,11 +27,12 @@ $subtotal_items_text = $subtotal_items > 1 ? __('items') : __('item');
 $subtotal_value = $order['order']['pricing']['formattedSubtotal'] ?? '';
 $estimated_tax_value = $order['order']['pricing']['formattedTax'] ?? '';
 $shipping_price_value = ($order['order']['pricing']['formattedShipping'] ?? '') === '$0.00' ? 'FREE' : ($order['order']['pricing']['formattedShipping'] ?? '');
-// $discount_value = $order['order']['pricing']['formattedDiscount'];
+$discount = $order['order']['pricing']['incentive']['value'];
+$formatted_discount = $order['order']['pricing']['formattedIncentive'];
 $total_value = $order['order']['pricing']['formattedTotal'] ?? '';
-// $total_savings_value = $order['order']['pricing']['formattedDiscount'];
 // $delivery_info = 'Delivery in 2-5 working days and extended 30 days return period';
 ?>
+
 
 <div class="dr-summary__subtotal">
     <input id="dr-total-float" type="hidden" value="<?php echo $cart['cart']['pricing']['orderTotal']['value'] ?>">
@@ -56,12 +57,13 @@ $total_value = $order['order']['pricing']['formattedTotal'] ?? '';
 
 </div>
 
-<?php /*
-<div class="dr-summary__discount">
-    <p class="item-label"><?php echo __('Promo Discount') ?></p>
-    <p class="item-value"><?php echo $discount_value; ?></p>
+<div class="dr-summary__discount" <?php if ( $discount === 0 ) echo 'style="display: none;"' ?>>
+
+    <p class="discount-label"><?php echo __('Discount') ?></p>
+
+    <p class="discount-value"><?php echo '-' . $formatted_discount; ?></p>
+
 </div>
-*/ ?>
 
 <div class="dr-summary__total">
 
@@ -70,10 +72,3 @@ $total_value = $order['order']['pricing']['formattedTotal'] ?? '';
     <p class="total-value"><?php echo $total_value; ?></p>
 
 </div>
-
-<?php /*
-<div class="dr-summary__savings">
-    <p class="savings-label"><?php echo __('Total Savings') ?></p>
-    <p class="savings-value"><?php echo $total_savings_value; ?></p>
-</div>
-*/ ?>

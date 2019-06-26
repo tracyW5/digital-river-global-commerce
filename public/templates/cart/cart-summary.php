@@ -13,21 +13,18 @@
 ?>
 
 <?php
-$subtotal_value = $cart['cart']['pricing']['formattedSubtotal'];
 $shipping_price = $cart['cart']['pricing']['formattedShippingAndHandling'];
-$total_savings = $cart['cart']['pricing']['formattedDiscount'];
+$discount       = $cart['cart']['pricing']['discount']['value'];
+$formatted_discount = $cart['cart']['pricing']['formattedDiscount'];
 $subtotal_items = $cart['cart']['totalItemsInCart'];
+$subtotal_with_discount_value = $cart['cart']['pricing']['formattedSubtotalWithDiscount'];
 
 $delivery_info = 'Delivery in 2-5 working days and extended 30 days return period';
 ?>
 
+
+
 <div class="dr-summary">
-
-    <!-- <div class="dr-summary__promo-code">
-
-        <a href=""><?php echo _('Add Promo Code +') ?></a>
-
-    </div> -->
 
      <div class="dr-summary__shipping">
 
@@ -37,22 +34,31 @@ $delivery_info = 'Delivery in 2-5 working days and extended 30 days return perio
 
     </div>
 
-    <div class="dr-summary__subtotal">
 
-        <p class="subtotal-label"><?php echo __('Subtotal') ?></p>
+    <div class="dr-summary__discount" <?php if ( $discount === 0 ) echo 'style="display: none;"' ?>>
 
-        <p class="subtotal-value"><?php echo $subtotal_value; ?></p>
+        <p class="discount-label"><?php echo __('Discount') ?></p>
+
+        <p class="discount-value"><?php echo '-' . $formatted_discount; ?></p>
+
+    </div>
+
+    <div class="dr-summary__discounted-subtotal">
+
+        <p class="discounted-subtotal-label"><?php echo __('Subtotal') ?></p>
+
+        <p class="discounted-subtotal-value"><?php echo $subtotal_with_discount_value; ?></p>
 
     </div>
 
-    <?php /*
-    <div class="dr-summary__savings">
-        <p class="savings-label"><?php echo __('Total Savings') ?></p>
-
-        <p class="savings-value"><?php echo $total_savings; ?></p>
-
+    <div class="dr-summary__promo-code">
+        <a class="promo-code-toggle" href="javascript:void(0);"><?php echo __('Add Promo Code +') ?></a>
+        <div class="promo-code-wrapper" style="display: none;">
+            <input type="text" id="promo-code" name="promo_code" placeholder="<?php echo __('Promo Code') ?>">
+            <button type="button" class="dr-btn" id="apply-promo-code-btn"><?php echo __('Apply') ?></button>
+            <div class="invalid-feedback" id="dr-promo-code-err-field"></div>
+        </div>
     </div>
-    */ ?>
 
 	<?php if ( 1 < count($cart['cart']['lineItems'] )) : ?>
 
