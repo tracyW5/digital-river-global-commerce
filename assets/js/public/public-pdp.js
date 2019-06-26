@@ -9,7 +9,7 @@ jQuery(document).ready(($) => {
             this.apiKey = drExpressOptions.apiKey;
             this.domain = drExpressOptions.domain;
             this.sessionToken = null;
-            this.apiBaseUrl = 'https://api.digitalriver.com/v1/shoppers';
+            this.apiBaseUrl = 'https://' + this.domain + '/v1/shoppers';
             this.drLocale = drExpressOptions.drLocale || 'en_US';
         }
 
