@@ -685,7 +685,7 @@ jQuery(document).ready(($) => {
                     payPalItems.push({
                         "name": item.product.name,
                         "quantity": item.quantity,
-                        "unitAmount": item.product.inventoryStatus.availableQuantity
+                        "unitAmount": item.pricing.listPrice.value
                     })
                 });
     
