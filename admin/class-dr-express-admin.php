@@ -280,13 +280,19 @@ class DR_Express_Admin {
 	 */
 	public function dr_express_cron_handler_cb() {
 		$option = get_option( $this->option_name . '_cron_handler' );
-		echo '<input type="checkbox" class="regular-text" name="' . $this->option_name . '_cron_handler " id="' . $this->option_name . '_cron_handler" value="yes" ' .  ( '1' == $option ? 'checked' : '' ) . ' />';
-        echo '<span class="description" id="cron-description">' . __( 'Twice daily product synchronization with GC.', 'dr-express' ) . '</span>';
+		$checked = '';
+		
+		if ( is_array( $option ) && $option['checkbox'] === '1' ) {
+			$checked = 'checked="checked"';
+		}
+
+		echo '<input type="checkbox" class="regular-text" name="' . $this->option_name . '_cron_handler[checkbox]" id="' . $this->option_name . '_cron_handler" value="1" ' . $checked . ' />';
+		echo '<span class="description" id="cron-description">' . __( 'Twice daily product synchronization with GC.', 'dr-express' ) . '</span>';
 	}
 
-	function dr_sanitize_checkbox( $input ){
-		//returns true if checkbox is checked
-		return ( isset( $input ) ? true : false );
+	public function dr_sanitize_checkbox( $input ) {
+		$new_input['checkbox'] = trim( $input['checkbox'] );
+		return $new_input;
 	}
 
 	/**
