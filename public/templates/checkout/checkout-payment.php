@@ -133,6 +133,8 @@
         
     </button>
 
+    <div id="dr-paypal-button" class="dr-panel-edit__btn"></div>
+
 </form>
 
 <div class="dr-panel-result">

@@ -69,13 +69,35 @@
         margin-bottom: 24px;
         border-bottom: 1px solid $gray-lighter;
 
-        a {
+        .promo-code-toggle {
+            display: inline-block;
             font-size: 16px;
             color: $gray;
             text-decoration: none;
             line-height: 16px;
+            margin-bottom: 10px;
         }
 
+        .promo-code-wrapper {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        #promo-code {
+            flex: 1;
+        }
+
+        #apply-promo-code-btn {
+            width: 160px;
+            line-height: 48px;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .invalid-feedback {
+            flex: 0 1 100%;
+        }
     }
 
     &__proceed-checkout {
@@ -85,6 +107,7 @@
 
     &__shipping,
     &__subtotal,
+    &__discounted-subtotal,
     &__savings,
     &__delivery,
     &__tax,
@@ -137,6 +160,30 @@
         & .subtotal-value {
             text-align: right;
 
+        }
+    }
+
+    &__discounted-subtotal {
+        & .discounted-subtotal-label,
+        & .discounted-subtotal-value {
+            font-size: 18px;
+            color: $color-text-base;
+            font-weight: 600;
+            line-height: 16px;
+            margin-bottom: 0;
+        }
+
+        & .discounted-subtotal-value {
+            text-align: right;
+
+        }
+    }
+
+    &__discount {
+        .discount-label,
+        .discount-value {
+            color: $red;
+            margin-bottom: 0;
         }
     }
 

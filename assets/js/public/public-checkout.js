@@ -2,7 +2,7 @@ jQuery(document).ready(($) => {
     const siteID = drExpressOptions.siteID;
     const apiKey = drExpressOptions.apiKey;
     const domain = drExpressOptions.domain;
-    const apiBaseUrl = 'https://api.digitalriver.com/v1/shoppers';
+    const apiBaseUrl = 'https://' + domain + '/v1/shoppers';
     const drLocale = drExpressOptions.drLocale || 'en_US';
 
     //floating labels
@@ -385,6 +385,7 @@ jQuery(document).ready(($) => {
                     "cancelUrl": window.location.href + '?ppcancel=true',
                     "items": payPalItems,
                     "taxAmount": cart.pricing.tax.value,
+                    "requestShipping": requestShipping,
                     "shipping": {
                         "recipient":  `${cart.shippingAddress.firstName} ${cart.shippingAddress.lastName} `,
                         "phoneNumber":  cart.shippingAddress.phoneNumber,
@@ -472,6 +473,7 @@ jQuery(document).ready(($) => {
             error: (jqXHR) => {
                 $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
                 $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
+                $('body').css({'pointer-events': 'auto', 'opacity': 1});
             }
         });
     }
@@ -528,8 +530,8 @@ jQuery(document).ready(($) => {
             },
             error: (jqXHR) => {
                 $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
-
                 $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
+                $('body').css({'pointer-events': 'auto', 'opacity': 1});
             }
         });
     }
@@ -619,14 +621,21 @@ jQuery(document).ready(($) => {
         $('.credit-card-info').show();
     }
 
-    $("#radio-credit-card, #radio-paypal").on("click", function(){
-        if ($('#radio-credit-card').is(':checked')) {
-            $('.credit-card-info').show();
+    $('input:radio[name="selector"]').on('change', function() {
+        switch ($(this).val()) {
+            case 'credit-card':
+                $('#dr-paypal-button').hide();
+                $('.credit-card-info').show();
+                $('#dr-submit-payment').text('pay with card'.toUpperCase()).show();
+                
+                break;
+            case 'paypal':
+                $('#dr-submit-payment').hide();
+                $('.credit-card-info').hide();
+                $('#dr-paypal-button').show();
+                $('#dr-submit-payment').text('pay with paypal'.toUpperCase());
 
-            $('#dr-submit-payment').text('pay with card'.toUpperCase());
-        } else {
-            $('.credit-card-info').hide();
-            $('#dr-submit-payment').text('pay with paypal'.toUpperCase());
+                break;
         }
     });
 
@@ -645,4 +654,85 @@ jQuery(document).ready(($) => {
             $('#billing-field-state').addClass('d-none');
         }
     });
+
+    if ($('#dr-paypal-button').length) {
+        // need to get the actual height of the wrapper for rendering the PayPal button
+        $('#checkout-payment-form').removeClass('dr-panel-edit').css('visibility', 'hidden');
+
+        paypal.Button.render({
+            env: (domain.indexOf('test') === -1) ? 'production' : 'sandbox',
+            locale: drLocale,
+            style: {
+                label: 'checkout',
+                size: 'responsive',
+                height: 40,
+                color: 'gold',
+                shape: 'rect',
+                layout: 'horizontal',
+                fundingicons: 'false',
+                tagline: 'false'
+            },
+            onEnter: function() {
+                $('#checkout-payment-form').addClass('dr-panel-edit').css('visibility', 'visible');
+                $('#dr-paypal-button').hide();
+            },
+            payment: function() {
+                const cart = drExpressOptions.cart.cart;
+                const requestShipping = ($('#checkout-delivery-form-msg').text().trim() === '');
+                let payPalItems = [];
+    
+                $.each(cart.lineItems.lineItem, function( index, item ) {
+                    payPalItems.push({
+                        "name": item.product.name,
+                        "quantity": item.quantity,
+                        "unitAmount": item.product.inventoryStatus.availableQuantity
+                    })
+                });
+    
+                let payPalPayload = {
+                    "type": "payPal",
+                    "amount": cart.pricing.orderTotal.value,
+                    "currency": "USD",
+                    "payPal": {
+                        "returnUrl": window.location.href + '?ppsuccess=true',
+                        "cancelUrl": window.location.href + '?ppcancel=true',
+                        "items": payPalItems,
+                        "taxAmount": cart.pricing.tax.value,
+                        "requestShipping": requestShipping
+                    }
+                };
+    
+                if (requestShipping) {
+                    payPalPayload['shipping'] = {
+                        "recipient":  `${cart.shippingAddress.firstName} ${cart.shippingAddress.lastName} `,
+                        "phoneNumber":  cart.shippingAddress.phoneNumber,
+                        "address": {
+                            "line1": cart.shippingAddress.line1,
+                            "line2": cart.shippingAddress.line2,
+                            "city": cart.shippingAddress.city,
+                            "state": cart.shippingAddress.state,
+                            "country":  cart.shippingAddress.country,
+                            "postalCode": cart.shippingAddress.postalCode
+                        }
+                    }
+                }
+    
+                return digitalriverjs.createSource(payPalPayload).then(function(result) {
+                    if (result.error) {
+                        $('#dr-payment-failed-msg').text(result.error.errors[0].message).show();
+                    } else {
+                        sessionStorage.setItem('paymentSourceId', result.source.id);
+    
+                        return result.source.payPal.token;
+                    }
+                });
+            },
+            onAuthorize: function() {
+                const sourceId = sessionStorage.getItem('paymentSourceId');
+    
+                $('body').css({'pointer-events': 'none', 'opacity': 0.5});
+                applyPaymentToCart(sourceId);
+            }
+        }, '#dr-paypal-button');
+    }
 });
