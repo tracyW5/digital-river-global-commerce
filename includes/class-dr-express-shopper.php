@@ -117,7 +117,7 @@ class DR_Express_Shopper extends AbstractHttpService {
 
 		$params = array(
 			'username'                 => $username,
-			'password'                 => $password,
+			'password'                 => base64_encode($password),
 			"dr_external_reference_id" => $username,
 			"grant_type"               => "client_credentials"
 		);
@@ -272,7 +272,7 @@ class DR_Express_Shopper extends AbstractHttpService {
 		$data = array (
 			'shopper' => array (
 				'username'     			  => $username,
-				'password'     			  => $password,
+				'password'     			  => base64_encode($password),
 				'firstName'    			  => $first_name,
 				'lastName'     			  => $last_name,
 				'emailAddress' 			  => $email_address,

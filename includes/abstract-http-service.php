@@ -149,13 +149,13 @@ abstract class AbstractHttpService {
             switch ( $this->env ) {
                 case 'test':
                     if ( array_key_exists( $this->site_id, $this->test_basic_auth ) ) {
-                        $auth = $test_basic_auth[$this->site_id];
+                        $auth = $this->test_basic_auth[$this->site_id];
                     }
 
                     break;
                 case 'production':
                     if ( array_key_exists( $this->site_id, $this->production_basic_auth ) ) {
-                        $auth = $production_basic_auth[$this->site_id];
+                        $auth = $this->production_basic_auth[$this->site_id];
                     }
 
                     break;
