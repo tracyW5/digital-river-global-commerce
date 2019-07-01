@@ -230,6 +230,12 @@ iframe {
         }
     }
 }
+
+body.page-cart #dr-minicart,
+body.page-checkout #dr-minicart,
+body.page-thank-you #dr-minicart {
+    display: none;
+}
 /* PD Items
 ------------------------------------------------------------------------*/
 .dr-pd-price {
