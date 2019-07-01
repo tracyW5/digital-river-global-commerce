@@ -199,7 +199,7 @@ jQuery(document).ready(($) => {
             let miniCartLineItems = '<ul class="dr-minicart-list">';
             const miniCartSubtotal = `<p class="dr-minicart-subtotal"><label>Sub-Total</label><span>${cart.pricing.formattedSubtotal}</span></p>`;
             const miniCartViewCartBtn = `<a class="dr-btn" id="dr-minicart-view-cart-btn" href="${drExpressOptions.cartUrl}">View Cart</a>`;
-            const miniCartCheckoutBtn = `<a class="dr-btn" id="dr-minicart-checkout-btn" href="${drExpressOptions.cartUrl}">Checkout</a>`;
+            const miniCartCheckoutBtn = `<a class="dr-btn" id="dr-minicart-checkout-btn" href="${drExpressOptions.checkoutUrl}">Checkout</a>`;
 
             lineItems.forEach((li) => {
                 const productId = li.product.uri.replace(`${drService.apiBaseUrl}/me/products/`, '');
