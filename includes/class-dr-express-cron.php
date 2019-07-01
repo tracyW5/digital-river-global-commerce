@@ -26,7 +26,8 @@ class DR_Express_Cron extends AbstractHttpService {
 	 * DR_Express_Cron constructor.
 	 */
 	public function __construct() {
-		$this->enabled          = '1' == get_option( 'dr_express_cron_handler' ) ? true : false;
+		$option 								= get_option( 'dr_express_cron_handler' );
+		$this->enabled          = ( is_array( $option ) && '1' == $option['checkbox'] )  ? true : false;
 		$this->api_key          = get_option( 'dr_express_api_key' );
 		$this->init();
 	}
