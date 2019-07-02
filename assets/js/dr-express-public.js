@@ -600,7 +600,7 @@ jQuery(document).ready(function ($) {
       var miniCartLineItems = '<ul class="dr-minicart-list">';
       var miniCartSubtotal = "<p class=\"dr-minicart-subtotal\"><label>Sub-Total</label><span>".concat(cart.pricing.formattedSubtotal, "</span></p>");
       var miniCartViewCartBtn = "<a class=\"dr-btn\" id=\"dr-minicart-view-cart-btn\" href=\"".concat(drExpressOptions.cartUrl, "\">View Cart</a>");
-      var miniCartCheckoutBtn = "<a class=\"dr-btn\" id=\"dr-minicart-checkout-btn\" href=\"".concat(drExpressOptions.cartUrl, "\">Checkout</a>");
+      var miniCartCheckoutBtn = "<a class=\"dr-btn\" id=\"dr-minicart-checkout-btn\" href=\"".concat(drExpressOptions.checkoutUrl, "\">Checkout</a>");
       lineItems.forEach(function (li) {
         var productId = li.product.uri.replace("".concat(apiBaseUrl, "/me/products/"), '');
         var listPrice = Number(li.pricing.listPriceWithQuantity.value);
@@ -1268,7 +1268,7 @@ jQuery(document).ready(function ($) {
           payPalItems.push({
             "name": item.product.name,
             "quantity": item.quantity,
-            "unitAmount": item.product.inventoryStatus.availableQuantity
+            "unitAmount": item.pricing.listPrice.value
           });
         });
         var payPalPayload = {
@@ -1776,7 +1776,7 @@ jQuery(document).ready(function ($) {
       var miniCartLineItems = '<ul class="dr-minicart-list">';
       var miniCartSubtotal = "<p class=\"dr-minicart-subtotal\"><label>Sub-Total</label><span>".concat(cart.pricing.formattedSubtotal, "</span></p>");
       var miniCartViewCartBtn = "<a class=\"dr-btn\" id=\"dr-minicart-view-cart-btn\" href=\"".concat(drExpressOptions.cartUrl, "\">View Cart</a>");
-      var miniCartCheckoutBtn = "<a class=\"dr-btn\" id=\"dr-minicart-checkout-btn\" href=\"".concat(drExpressOptions.cartUrl, "\">Checkout</a>");
+      var miniCartCheckoutBtn = "<a class=\"dr-btn\" id=\"dr-minicart-checkout-btn\" href=\"".concat(drExpressOptions.checkoutUrl, "\">Checkout</a>");
       lineItems.forEach(function (li) {
         var productId = li.product.uri.replace("".concat(drService.apiBaseUrl, "/me/products/"), '');
         var listPrice = Number(li.pricing.listPriceWithQuantity.value);

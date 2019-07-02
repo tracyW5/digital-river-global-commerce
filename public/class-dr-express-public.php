@@ -96,6 +96,7 @@ class DR_Express_Public {
 			'drLocale'          =>  get_dr_locale( get_locale() ),
 			'ajaxUrl'           =>  admin_url( 'admin-ajax.php' ),
 			'cartUrl'           =>  dr_get_page_link( 'cart' ),
+			'checkoutUrl'	      =>  dr_get_page_link( 'checkout' ),
 			'siteID'            =>  get_option( 'dr_express_site_id' ),
 			'apiKey'            =>  get_option( 'dr_express_api_key' ),
 			'domain'            =>  get_option( 'dr_express_domain' ),
