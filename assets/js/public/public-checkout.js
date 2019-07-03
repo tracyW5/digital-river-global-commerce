@@ -326,6 +326,7 @@ jQuery(document).ready(($) => {
         })(),
         success: (data) => {
           let { formattedShippingAndHandling, formattedOrderTotal } = data.cart.pricing;
+          if(formattedShippingAndHandling == "$0.00")formattedShippingAndHandling = "FREE";
           $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
           $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
         },
@@ -627,7 +628,7 @@ jQuery(document).ready(($) => {
                 $('#dr-paypal-button').hide();
                 $('.credit-card-info').show();
                 $('#dr-submit-payment').text('pay with card'.toUpperCase()).show();
-                
+
                 break;
             case 'paypal':
                 $('#dr-submit-payment').hide();
@@ -680,7 +681,7 @@ jQuery(document).ready(($) => {
                 const cart = drExpressOptions.cart.cart;
                 const requestShipping = ($('#checkout-delivery-form-msg').text().trim() === '');
                 let payPalItems = [];
-    
+
                 $.each(cart.lineItems.lineItem, function( index, item ) {
                     payPalItems.push({
                         "name": item.product.name,
@@ -688,7 +689,7 @@ jQuery(document).ready(($) => {
                         "unitAmount": item.pricing.listPrice.value
                     })
                 });
-    
+
                 let payPalPayload = {
                     "type": "payPal",
                     "amount": cart.pricing.orderTotal.value,
@@ -701,7 +702,7 @@ jQuery(document).ready(($) => {
                         "requestShipping": requestShipping
                     }
                 };
-    
+
                 if (requestShipping) {
                     payPalPayload['shipping'] = {
                         "recipient":  `${cart.shippingAddress.firstName} ${cart.shippingAddress.lastName} `,
@@ -716,20 +717,20 @@ jQuery(document).ready(($) => {
                         }
                     }
                 }
-    
+
                 return digitalriverjs.createSource(payPalPayload).then(function(result) {
                     if (result.error) {
                         $('#dr-payment-failed-msg').text(result.error.errors[0].message).show();
                     } else {
                         sessionStorage.setItem('paymentSourceId', result.source.id);
-    
+
                         return result.source.payPal.token;
                     }
                 });
             },
             onAuthorize: function() {
                 const sourceId = sessionStorage.getItem('paymentSourceId');
-    
+
                 $('body').css({'pointer-events': 'none', 'opacity': 0.5});
                 applyPaymentToCart(sourceId);
             }

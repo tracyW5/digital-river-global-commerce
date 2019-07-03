@@ -537,7 +537,9 @@ jQuery(document).ready(function ($) {
       });
     });
     var pricing = data.cart.pricing;
-    $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling);
+    $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling); //overwrite $0.00 to FREE
+
+    if (pricing.formattedShippingAndHandling == "$0.00") $('div.dr-summary__shipping .shipping-value').text("FREE");
     $('div.dr-summary__discount .discount-value').text("-".concat(pricing.formattedDiscount));
     $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
 
@@ -917,6 +919,7 @@ jQuery(document).ready(function ($) {
         var _data$cart$pricing = data.cart.pricing,
             formattedShippingAndHandling = _data$cart$pricing.formattedShippingAndHandling,
             formattedOrderTotal = _data$cart$pricing.formattedOrderTotal;
+        if (formattedShippingAndHandling == "$0.00") formattedShippingAndHandling = "FREE";
         $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
         $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
       },
