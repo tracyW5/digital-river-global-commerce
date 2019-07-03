@@ -325,6 +325,8 @@ jQuery(document).ready(($) => {
 
       const pricing = data.cart.pricing;
       $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling);
+      //overwrite $0.00 to FREE
+      if(pricing.formattedShippingAndHandling == "$0.00")$('div.dr-summary__shipping .shipping-value').text("FREE");
       $('div.dr-summary__discount .discount-value').text(`-${pricing.formattedDiscount}`);
       $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
 
