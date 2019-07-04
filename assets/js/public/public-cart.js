@@ -147,7 +147,32 @@ jQuery(document).ready(($) => {
         candyRackCheckAndRender(lineitem.product.id);
         tightBundleRemoveElements(lineitem.product.id);
       });
+      shoppingCartBanner();
       $('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
+    }
+
+    function shoppingCartBanner(){
+      $.ajax({
+        type: 'GET',
+        url: (() => {
+            let url = `${apiBaseUrl}/me/point-of-promotions/Banner_ShoppingCartLocal/offers?`;
+            url += `format=json`
+            url += `&expand=all`
+            url += `&token=${drExpressOptions.accessToken}`
+            return url;
+        })(),
+        success: (shoppingCartOfferData, textStatus, xhr) => {
+          $.each(shoppingCartOfferData.offers.offer, function( index, offer ) {
+            let shoppingCartHTML = `
+            <div class="dr-product"><div class="dr-product-content">${offer.salesPitch[0]}</div><img src="${offer.image}"></div>
+            `;
+            $(".dr-cart__products").append(shoppingCartHTML);
+          });
+        },
+        error: (jqXHR) => {
+            reject(jqXHR);
+        }
+      });
     }
 
 
