@@ -173,7 +173,7 @@
                         <?php 
                             $option = "<option ";
                             $option .= $cart['cart']['shippingAddress']['countrySubdivision'] === $state ? 'selected ' : '';
-                            $option .= "value=\"{$state}\">{$state}</option>";
+                            $option .= "value=\"{$key}\">{$state}</option>";
                             echo $option;
                         ?>
                 <?php endforeach; ?>
