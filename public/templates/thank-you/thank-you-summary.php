@@ -25,7 +25,7 @@ if ( isset( $order['order'] ) ) {
 
 $subtotal_items_text = $subtotal_items > 1 ? __('items') : __('item');
 $subtotal_value = $order['order']['pricing']['formattedSubtotal'] ?? '';
-$estimated_tax_value = $order['order']['pricing']['formattedTax'] ?? '';
+$tax_value = $order['order']['pricing']['formattedTax'] ?? '';
 $shipping_price_value = ($order['order']['pricing']['formattedShipping'] ?? '') === '$0.00' ? 'FREE' : ($order['order']['pricing']['formattedShipping'] ?? '');
 $discount = $order['order']['pricing']['incentive']['value'];
 $formatted_discount = $order['order']['pricing']['formattedIncentive'];
@@ -43,9 +43,9 @@ $total_value = $order['order']['pricing']['formattedTotal'] ?? '';
 
 <div class="dr-summary__tax">
 
-    <p class="item-label"><?php echo __('Estimated Tax') ?></p>
+    <p class="item-label"><?php echo __('Tax') ?></p>
 
-    <p class="item-value"><?php echo $estimated_tax_value; ?></p>
+    <p class="item-value"><?php echo $tax_value; ?></p>
 
 </div>
 
