@@ -395,8 +395,7 @@ class DR_Express_Public {
 	 * @since  1.0.0
 	 */
 	public function minicart_in_header( $content ) {
-		$cartPage = dr_get_page_link( 'cart' );
-		if ( !is_page( $cartPage ) ) {
+		if ( !is_page( 'cart' ) && !is_page( 'checkout' ) && !is_page( 'thank-you' ) ) {
 			ob_start();
 			include_once 'partials/minicart.php';
 			$append = ob_get_clean();
@@ -411,16 +410,14 @@ class DR_Express_Public {
 	 * @since  1.0.0
 	 */
 	public function overwrite_template( $template ) {
-        $theme = wp_get_theme();
-        if ( 'Digital River' != $theme->name ) {
-            if ( is_singular( 'dr_product' ) ) {
-                $template = PLUGIN_DIR . 'public/templates/single.php';
-            } else if ( is_post_type_archive( 'dr_product' ) || is_tax( 'dr_product_category' ) ) {
-                $template = PLUGIN_DIR . 'public/templates/archive.php';
-            }
-        }
-
-
+		$theme = wp_get_theme();
+		if ( 'Digital River' != $theme->name ) {
+			if ( is_singular( 'dr_product' ) ) {
+				$template = PLUGIN_DIR . 'public/templates/single.php';
+			} else if ( is_post_type_archive( 'dr_product' ) || is_tax( 'dr_product_category' ) ) {
+				$template = PLUGIN_DIR . 'public/templates/archive.php';
+			}
+		}
 		return $template;
 	}
 
