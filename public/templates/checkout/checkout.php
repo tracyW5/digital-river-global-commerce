@@ -10,10 +10,16 @@
  * @package    DR_Express
  * @subpackage DR_Express/public/templates/parts
  */
-?>
-<div class="dr-checkout-wrapper" id="dr-checkout-page-wrapper">
 
-    <div class="dr-checkout-wrapper__actions">
+    $display = '';
+    if ($cart['cart']['totalItemsInCart'] == 0 ) {
+        echo __( 'Your cart is empty!', 'dr-express' );
+        $display = 'style="display:none;"';
+    }
+?>
+
+<div class="dr-checkout-wrapper" id="dr-checkout-page-wrapper">
+    <div class="dr-checkout-wrapper__actions" <?php echo $display; ?>>
 
         <div class="dr-check-account">
 
@@ -35,7 +41,7 @@
 
     </div>
 
-    <div class="dr-checkout-wrapper__content">
+    <div class="dr-checkout-wrapper__content" <?php echo $display; ?>>
 
         <div class="dr-checkout">
 
@@ -74,6 +80,12 @@
             <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-summary.php'; ?>
 
         </div>
+
+    </div>
+
+    <div class="dr-checkout__actions-bottom">
+
+        <a href="<?php echo get_post_type_archive_link( 'dr_product' ); ?>" class="continue-shopping"><?php echo __( 'Continue Shopping', 'dr-express' ); ?></a>
 
     </div>
 
