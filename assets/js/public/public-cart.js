@@ -147,32 +147,7 @@ jQuery(document).ready(($) => {
         candyRackCheckAndRender(lineitem.product.id);
         tightBundleRemoveElements(lineitem.product.id);
       });
-      shoppingCartBanner();
       $('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
-    }
-
-    function shoppingCartBanner(){
-      $.ajax({
-        type: 'GET',
-        url: (() => {
-            let url = `${apiBaseUrl}/me/point-of-promotions/Banner_ShoppingCartLocal/offers?`;
-            url += `format=json`
-            url += `&expand=all`
-            url += `&token=${drExpressOptions.accessToken}`
-            return url;
-        })(),
-        success: (shoppingCartOfferData, textStatus, xhr) => {
-          $.each(shoppingCartOfferData.offers.offer, function( index, offer ) {
-            let shoppingCartHTML = `
-            <div class="dr-product"><div class="dr-product-content">${offer.salesPitch[0]}</div><img src="${offer.image}"></div>
-            `;
-            $(".dr-cart__products").append(shoppingCartHTML);
-          });
-        },
-        error: (jqXHR) => {
-            reject(jqXHR);
-        }
-      });
     }
 
 
@@ -351,7 +326,7 @@ jQuery(document).ready(($) => {
       const pricing = data.cart.pricing;
       $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling);
       //overwrite $0.00 to FREE
-      if(pricing.formattedShippingAndHandling == "$0.00")$('div.dr-summary__shipping .shipping-value').text("FREE");
+      if(pricing.shippingAndHandling.value === 0 )$('div.dr-summary__shipping .shipping-value').text("FREE");
       $('div.dr-summary__discount .discount-value').text(`-${pricing.formattedDiscount}`);
       $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
 

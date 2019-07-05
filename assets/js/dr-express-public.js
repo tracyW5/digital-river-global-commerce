@@ -406,32 +406,9 @@ jQuery(document).ready(function ($) {
       candyRackCheckAndRender(lineitem.product.id);
       tightBundleRemoveElements(lineitem.product.id);
     });
-    shoppingCartBanner();
     $('body').css({
       'pointer-events': 'auto',
       'opacity': 1
-    });
-  }
-
-  function shoppingCartBanner() {
-    $.ajax({
-      type: 'GET',
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/point-of-promotions/Banner_ShoppingCartLocal/offers?");
-        url += "format=json";
-        url += "&expand=all";
-        url += "&token=".concat(drExpressOptions.accessToken);
-        return url;
-      }(),
-      success: function success(shoppingCartOfferData, textStatus, xhr) {
-        $.each(shoppingCartOfferData.offers.offer, function (index, offer) {
-          var shoppingCartHTML = "\n            <div class=\"dr-product\"><div class=\"dr-product-content\">".concat(offer.salesPitch[0], "</div><img src=\"").concat(offer.image, "\"></div>\n            ");
-          $(".dr-cart__products").append(shoppingCartHTML);
-        });
-      },
-      error: function error(jqXHR) {
-        reject(jqXHR);
-      }
     });
   }
 
@@ -562,7 +539,7 @@ jQuery(document).ready(function ($) {
     var pricing = data.cart.pricing;
     $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling); //overwrite $0.00 to FREE
 
-    if (pricing.formattedShippingAndHandling == "$0.00") $('div.dr-summary__shipping .shipping-value').text("FREE");
+    if (pricing.shippingAndHandling.value === 0) $('div.dr-summary__shipping .shipping-value').text("FREE");
     $('div.dr-summary__discount .discount-value').text("-".concat(pricing.formattedDiscount));
     $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
 
@@ -942,7 +919,7 @@ jQuery(document).ready(function ($) {
         var _data$cart$pricing = data.cart.pricing,
             formattedShippingAndHandling = _data$cart$pricing.formattedShippingAndHandling,
             formattedOrderTotal = _data$cart$pricing.formattedOrderTotal;
-        if (formattedShippingAndHandling == "$0.00") formattedShippingAndHandling = "FREE";
+        if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = "FREE";
         $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
         $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
       },
