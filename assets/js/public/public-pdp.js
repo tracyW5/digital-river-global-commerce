@@ -190,6 +190,10 @@ jQuery(document).ready(($) => {
 
         $('.dr-minicart-count').text(cart.totalItemsInCart);
         $('.dr-minicart-header').siblings().remove();
+        if ($('.logged-in').length && cart.totalItemsInCart == 0) {
+            console.log('no item');
+            $('.logged-in > div').hide();
+        }
 
         if (!lineItems.length) {
             const emptyMsg = '<p class="dr-minicart-empty-msg">Your shopping cart is currently empty.</p>';
