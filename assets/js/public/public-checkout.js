@@ -57,6 +57,8 @@ jQuery(document).ready(($) => {
     }
 
     function displayAddress(address) {
+        $('#shipping-field-first-name').val(address.firstName);
+        $('#shipping-field-last-name').val(address.lastName);
         $('#shipping-field-address1').val(address.line1);
         if (address.line2) {
           $('#shipping-field-address2').val(address.line2);
