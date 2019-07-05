@@ -56,6 +56,7 @@
 
     &__icon.email-icon,
     &__icon.shipping-icon,
+    &__icon.billing-icon,
     &__icon.delivery-icon,
     &__icon.payment-icon {
         display: block;
@@ -71,7 +72,8 @@
         background: url("../images/email.svg");
     }
 
-    &__icon.shipping-icon {
+    &__icon.shipping-icon,
+    &__icon.billing-icon {
         width: 25px;
         height: 25px;
 
@@ -96,7 +98,8 @@
         background: url("../images/email-active.svg");
     }
 
-    .active &__icon.shipping-icon {
+    .active &__icon.shipping-icon,
+    .active &__icon.billing-icon {
         background: url("../images/address-active.svg");
     }
 
@@ -112,7 +115,8 @@
         background: url("../images/email-closed.svg");
     }
 
-    .closed &__icon.shipping-icon {
+    .closed &__icon.shipping-icon,
+    .closed &__icon.billing-icon {
         background: url("../images/address-closed.svg");
     }
 

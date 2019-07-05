@@ -41,9 +41,15 @@
 
             <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-email.php'; ?>
 
-            <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-shipping.php'; ?>
+            <?php if( $cart['cart']['hasPhysicalProduct'] ) :
+                include_once PLUGIN_DIR . 'public/templates/checkout/checkout-shipping.php';
+            endif; ?>
 
-            <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-delivery.php'; ?>
+            <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-billing.php'; ?>
+
+            <?php if( $cart['cart']['hasPhysicalProduct'] ) :
+                include_once PLUGIN_DIR . 'public/templates/checkout/checkout-delivery.php';
+            endif; ?>
 
             <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-payment.php'; ?>
 

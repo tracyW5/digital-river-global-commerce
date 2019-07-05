@@ -20,11 +20,13 @@
        text-transform: uppercase;
    }
 
-    &.dr-panel-edit--shipping &__el {
+    &.dr-panel-edit--shipping &__el,
+    &.dr-panel-edit--billing &__el {
             margin-bottom: 20px;
     }
 
-    &.dr-panel-edit--shipping &__check {
+    &.dr-panel-edit--shipping &__check,
+    &.dr-panel-edit--billing &__check {
         .field-text {
             font-family: Open Sans;
             font-size: 18px;

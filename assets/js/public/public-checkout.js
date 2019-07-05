@@ -15,11 +15,114 @@ jQuery(document).ready(($) => {
 
     //Sections
     var shouldShippingOpen = false,
+        shouldBillingOpen = false,
         shouldDeliveryOpen = false,
         shouldPaymentOpen  = false;
 
     // Submit first (email) form
     var emailPayload;
+
+    function prepareAddress($form) {
+        const addressType = ($form.attr('id') === 'checkout-shipping-form') ? 'shipping' : 'billing';
+
+        // Validate form
+        $form.addClass('was-validated');
+        $form.find('.dr-err-field').hide();
+        const validateItems = document.querySelectorAll(`[name^=${addressType}-]`);
+        for (let i = 0, len = validateItems.length; i < len; i++) {
+            if ($(validateItems[i]).is(':visible') && validateItems[i].checkValidity() === false) {
+                return false;
+            }
+        }
+
+        // Build payload
+        $.each($form.serializeArray(), function(index, obj) {
+            let key = obj.name.split('-')[1];
+            payload[addressType][key] = obj.value;
+        });
+        payload[addressType].emailAddress = emailPayload;
+        if (payload[addressType].country !== 'US') {
+            payload[addressType].countrySubdivision = '';
+        }
+        return true;
+    }
+
+    function updateCart(queryParams = {}, cartRequest = {}) {
+        const queryStr = $.param(queryParams);
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                type: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type':'application/json',
+                    Authorization: `Bearer ${drExpressOptions.accessToken}`,
+                },
+                url: (() => {
+                    let url = `${apiBaseUrl}/me/carts/active?`;
+                    url += `&token=${drExpressOptions.accessToken}&${queryStr}`;
+                    return url;
+                })(),
+                data: JSON.stringify({
+                    cart: cartRequest
+                }),
+                success: (data) => {
+                    resolve(data);
+                },
+                error: (jqXHR) => {
+                    reject(jqXHR);
+                }
+            });
+        });
+    }
+
+    function displaySavedAddress(addressObj, $target) {
+        const addressArr = [
+            `${addressObj.firstName} ${addressObj.lastName}`,
+            addressObj.line1,
+            addressObj.city,
+            addressObj.country
+        ];
+        $target.text(addressArr.join(', '));
+    }
+
+    function displayAddressErrMsg(jqXHR, $target) {
+        if (jqXHR.status === 409) {
+            if (jqXHR.responseJSON.errors.error[0].code === 'restricted-bill-to-country') {
+                $target.text('Address not accepted for current currency.').show();
+            }
+
+            if (jqXHR.responseJSON.errors.error[0].code === 'restricted-ship-to-country') {
+                $target.text('Address not accepted for current currency.').show();
+            }
+        } else {
+            $target.text(jqXHR.responseJSON.errors.error[0].description).show();
+        }
+    }
+
+    function moveToNextSection($section) {
+        const $prevSection = $section.prev();
+        const $nextSection = $section.next();
+
+        $section.removeClass('active').addClass('closed');
+        $nextSection.addClass('active').removeClass('closed');
+
+        if ($nextSection.hasClass('small-closed-left')) {
+            $nextSection.removeClass('small-closed-left');
+            $nextSection.next().removeClass('small-closed-right');
+        }
+
+        // Special sections
+        if ($section.hasClass('dr-checkout__billing') && $('.dr-checkout__shipping').is(':visible')) {
+            $prevSection.addClass('small-closed-left');
+            $section.addClass('small-closed-right');
+        }
+
+        if ($section.hasClass('dr-checkout__payment')) {
+            $section.addClass('small-closed-left');
+            $nextSection.removeClass('d-none').addClass('small-closed-right');
+        }
+    }
+
     $('#checkout-email-form').on('submit', function(e) {
         e.preventDefault();
 
@@ -38,128 +141,63 @@ jQuery(document).ready(($) => {
         }
 
         emailPayload = email;
-
-        let section = $('.dr-checkout__email');
-        let nextSection =  section.next();
-
-        $(section).find('.dr-panel-result__text').text(emailPayload);
         shouldShippingOpen = true;
 
-        section.removeClass('active').addClass('closed');
-        nextSection.addClass('active').removeClass('closed');
+        const $section = $('.dr-checkout__email');
+        $section.find('.dr-panel-result__text').text(emailPayload);
+        moveToNextSection($section);
     });
 
     // Submit shipping info form
     $('#checkout-shipping-form').on('submit', function(e) {
         e.preventDefault();
+        shouldBillingOpen = false;
 
-        let validateItems,
-            billingSameAsShipping = true,
-            $form = $('#checkout-shipping-form');
+        const $form = $(e.target);
+        const $button = $form.find('button[type="submit"]');
+        const isFormValid = prepareAddress($form);
 
+        if (!isFormValid) return;
+
+        $button.addClass('sending').blur();
+        updateCart({ expand: 'all' }, { shippingAddress: payload.shipping }).then((data) => {
+            shouldBillingOpen = true;
+            $button.removeClass('sending').blur();
+
+            setShippingOptions(data.cart.shippingOptions);
+
+            const $section = $('.dr-checkout__shipping');
+            displaySavedAddress(data.cart.shippingAddress, $section.find('.dr-panel-result__text'));
+            moveToNextSection($section);
+        }).catch((jqXHR) => {
+            $button.removeClass('sending').blur();
+            displayAddressErrMsg(jqXHR, $form.find('.dr-err-field'));
+        });
+    });
+
+    $('#checkout-billing-form').on('submit', function(e) {
+        e.preventDefault();
         shouldDeliveryOpen = false;
 
-        $form.addClass('was-validated');
-        $('#dr-err-field').hide();
+        const $form = $(e.target);
+        const $button = $form.find('button[type="submit"]');
+        const billingSameAsShipping = $('[name="checkbox-billing"]').is(':visible:checked');
+        const isFormValid = prepareAddress($form);
 
-        if ($('[name="checkbox-billing"]').is(':checked')) {
-            billingSameAsShipping = true;
-            validateItems = document.querySelectorAll('[name^=shipping-]');
-            for (let i=0; i<validateItems.length; i++) {
-                if (validateItems[i].checkValidity() === false) {
-                    return false;
-                }
-            }
-        } else {
-            billingSameAsShipping = false;
-            if ($form[0].checkValidity() === false) {
-                return false;
-            }
-        }
+        if (!isFormValid) return;
+        if (billingSameAsShipping) payload.billing = Object.assign({}, payload.shipping);
 
-        let button = $form.find('button[type="submit"]').toggleClass('sending').blur();
+        $button.addClass('sending').blur();
+        updateCart({ expand: 'all' }, { billingAddress: payload.billing }).then((data) => {
+            shouldDeliveryOpen = true;
+            $button.removeClass('sending').blur();
 
-        $.each($form.serializeArray(), function( index, obj ) {
-
-            if ( obj.name.startsWith('shipping') ) {
-                let key = obj.name.split('-')[1];
-                payload['shipping'][key] = obj.value;
-            }
-
-            if (obj.name.startsWith('billing')) {
-                let key = obj.name.split('-')[1];
-                payload['billing'][key] = obj.value;
-            }
-        });
-
-        payload['shipping']['emailAddress'] = emailPayload;
-        payload['billing']['emailAddress'] = emailPayload;
-
-        let data = {
-            cart: {
-                shippingAddress: payload['shipping']
-            },
-        };
-
-        if (data.cart.shippingAddress.country !== 'US') {
-            delete data.cart.shippingAddress.countrySubdivision;
-        }
-
-        if ( billingSameAsShipping ) {
-            data.cart.billingAddress = payload['shipping'];
-        } else {
-            data.cart.billingAddress = payload['billing'];
-        }
-
-        $.ajax({
-            type: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json"
-            },
-            url: (() => {
-                let url = `${apiBaseUrl}/me/carts/active?`;
-                url += `&token=${drExpressOptions.accessToken}`;
-                url += `&expand=all`;
-                return url;
-            })(),
-            data: JSON.stringify(data),
-            success: (data) => {
-                shouldDeliveryOpen = true;
-                button.removeClass('sending').blur();
-
-                setShippingOptions(data.cart.shippingOptions);
-
-                let section = $('.dr-checkout__shipping');
-                let nextSection = section.next();
-
-                $(section).find('.dr-panel-result__text').text(`
-                    ${payload.shipping.firstName},
-                    ${payload.shipping.lastName},
-                    ${payload.shipping.line1},
-                    ${payload.shipping.city},
-                    ${payload.shipping.country}
-                `);
-
-                section.removeClass('active').addClass('closed');
-                nextSection.addClass('active').removeClass('closed');
-            },
-            error: (jqXHR) => {
-                if (jqXHR.status === 409) {
-                    if (jqXHR.responseJSON.errors.error[0].code === 'restricted-bill-to-country') {
-                        $('#dr-err-field').text('Address not accepted for current currency.').show();
-                    }
-
-                    if (jqXHR.responseJSON.errors.error[0].code === 'restricted-ship-to-country') {
-                        $('#dr-err-field').text('Address not accepted for current currency.').show();
-                    }
-                } else {
-                    $('#dr-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
-                }
-
-                button.removeClass('sending').blur();
-
-            }
+            const $section = $('.dr-checkout__billing');
+            displaySavedAddress(data.cart.billingAddress, $section.find('.dr-panel-result__text'));
+            moveToNextSection($section);
+        }).catch((jqXHR) => {
+            $button.removeClass('sending').blur();
+            displayAddressErrMsg(jqXHR, $form.find('.dr-err-field'));
         });
     });
 
@@ -234,22 +272,13 @@ jQuery(document).ready(($) => {
                 return url;
             })(),
             success: (data) => {
-                let section = $('.dr-checkout__delivery');
-
-                let nextSection =  section.next();
-                let prevSection = section.prev();
-
-                let resultText = $input.length > 0 ? `${$input.data('desc')} ${$input.data('cost')}` : 'Digital Product(s) Only';
-                $(section).find('.dr-panel-result__text').text(resultText);
-
-                button.removeClass('sending').blur();
                 shouldPaymentOpen = true;
+                button.removeClass('sending').blur();
 
-                section.removeClass('active').addClass('closed');
-                nextSection.addClass('active').removeClass('closed');
-
-                prevSection.addClass('small-closed-left');
-                section.addClass('small-closed-right');
+                const $section = $('.dr-checkout__delivery');
+                const resultText = $input.length > 0 ? `${$input.data('desc')} ${$input.data('cost')}` : 'Digital Product(s) Only';
+                $section.find('.dr-panel-result__text').text(resultText);
+                moveToNextSection($section);
             },
             error: (jqXHR) => {
                 console.log(jqXHR);
@@ -280,22 +309,14 @@ jQuery(document).ready(($) => {
             paymentPayload[obj.name] = obj.value;
         });
 
-        let section = $('.dr-checkout__payment');
-        let nextSection =  section.next();
+        shouldPaymentOpen = true;
+        $('#dr-checkout-err-field').text('').hide();
 
-        $(section).find('.dr-panel-result__text').text(
+        const $section = $('.dr-checkout__payment');
+        $section.find('.dr-panel-result__text').text(
             `Credit card ending in ${paymentPayload['credit-card-number'].substr(paymentPayload['credit-card-number'].length - 4)}`
         );
-
-        shouldPaymentOpen = true;
-
-        section.removeClass('active').addClass('closed');
-        nextSection.addClass('active').removeClass('closed');
-
-        section.addClass('small-closed-left');
-        nextSection.removeClass('d-none').addClass('small-closed-right');
-
-        $('#dr-checkout-err-field').text('').hide();
+        moveToNextSection($section);
     });
 
     $('form#checkout-confirmation-form').on('submit', function(e) {
@@ -345,15 +366,15 @@ jQuery(document).ready(($) => {
             digitalRiverPayload = {
                 "type": "creditCard",
                 "owner": {
-                    "firstName": cart.shippingAddress.firstName || payload.shipping.firstName,
-                    "lastName": cart.shippingAddress.lastName || payload.shipping.lastName,
-                    "email": cart.shippingAddress.emailAddress || payload.shipping.emailAddress,
+                    "firstName": payload.billing.firstName,
+                    "lastName": payload.billing.lastName,
+                    "email": payload.billing.emailAddress,
                     "address": {
-                        "line1": cart.shippingAddress.line1 || payload.shipping.line1,
-                        "city": cart.shippingAddress.city || payload.shipping.city,
-                        "state": cart.shippingAddress.state || payload.shipping.state,
-                        "country": cart.shippingAddress.country || payload.shipping.country,
-                        "postalCode": cart.shippingAddress.postalCode || payload.shipping.postalCode
+                        "line1": payload.billing.line1,
+                        "city": payload.billing.city,
+                        "state": payload.billing.state,
+                        "country": payload.billing.country,
+                        "postalCode": payload.billing.postalCode
                     }
                 },
                 "creditCard": {
@@ -556,22 +577,31 @@ jQuery(document).ready(($) => {
         $('.dr-checkout__confirmation').addClass('d-none').removeClass('small-closed-right');
 
         let $this = $(this).parent();
-        let otherSections = $this.parent().siblings();
-        let section = $this.parent();
-        let nextSection =  $this.parent().next();
-        let prevSection = section.prev();
+        let $otherSections = $this.parent().siblings();
+        let $finishedSections = $otherSections.filter($('.closed:last')).prevAll().andSelf();
+        let $activeSection = $otherSections.filter($('.active'));
+        let $section = $this.parent();
+        let $nextSection =  $section.next();
+        let $prevSection = $section.prev();
 
-        if( /_email/.test(section.attr('class'))) {
+        if( /_email/.test($section.attr('class'))) {
             shouldShippingOpen = false;
             shouldDeliveryOpen = false;
             shouldPaymentOpen = false;
-
-            otherSections.removeClass('small-closed-left');
-            otherSections.removeClass('small-closed-right');
         }
 
-        if( /_shipping/.test(section.attr('class'))) {
+        if( /_shipping/.test($section.attr('class'))) {
             if(!shouldShippingOpen){
+                return;
+            } else {
+                shouldBillingOpen = false;
+                shouldDeliveryOpen = false;
+                shouldPaymentOpen = false;
+            }
+        }
+
+        if( /_billing/.test($section.attr('class'))) {
+            if(!shouldBillingOpen){
                 return;
             } else {
                 shouldDeliveryOpen = false;
@@ -579,7 +609,7 @@ jQuery(document).ready(($) => {
             }
         }
 
-        if( /_delivery/.test(section.attr('class'))) {
+        if( /_delivery/.test($section.attr('class'))) {
             if(!shouldDeliveryOpen) {
                 return;
             } else {
@@ -587,24 +617,22 @@ jQuery(document).ready(($) => {
             }
         }
 
-        if( /_payment/.test(section.attr('class')) && ! shouldPaymentOpen ) {
+        if( /_payment/.test($section.attr('class')) && ! shouldPaymentOpen ) {
             return;
         }
 
-        otherSections.addClass('closed').removeClass('active');
-        section.removeClass('closed').addClass('active');
+        $finishedSections.addClass('closed');
+        $activeSection.removeClass('active');
+        $section.removeClass('closed').addClass('active');
 
-        if (section.hasClass('dr-checkout__delivery')) {
-            if (section.hasClass('closed') && prevSection.hasClass('closed')) {
-                prevSection.addClass('small-closed-left');
-                section.addClass('small-closed-right');
-            }  else {
-                prevSection.removeClass('small-closed-left');
-                section.removeClass('small-closed-right');
-            }
-        } else {
-            section.removeClass('small-closed-left');
-            nextSection.removeClass('small-closed-right');
+        if ($section.hasClass('small-closed-left')) {
+            $section.removeClass('small-closed-left');
+            $nextSection.removeClass('small-closed-right');
+        }
+
+        if ($section.hasClass('small-closed-right')) {
+            $section.removeClass('small-closed-right');
+            $prevSection.removeClass('small-closed-left');
         }
     });
 
