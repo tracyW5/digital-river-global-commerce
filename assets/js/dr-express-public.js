@@ -406,9 +406,32 @@ jQuery(document).ready(function ($) {
       candyRackCheckAndRender(lineitem.product.id);
       tightBundleRemoveElements(lineitem.product.id);
     });
+    shoppingCartBanner();
     $('body').css({
       'pointer-events': 'auto',
       'opacity': 1
+    });
+  }
+
+  function shoppingCartBanner() {
+    $.ajax({
+      type: 'GET',
+      url: function () {
+        var url = "".concat(apiBaseUrl, "/me/point-of-promotions/Banner_ShoppingCartLocal/offers?");
+        url += "format=json";
+        url += "&expand=all";
+        url += "&token=".concat(drExpressOptions.accessToken);
+        return url;
+      }(),
+      success: function success(shoppingCartOfferData, textStatus, xhr) {
+        $.each(shoppingCartOfferData.offers.offer, function (index, offer) {
+          var shoppingCartHTML = "\n            <div class=\"dr-product\"><div class=\"dr-product-content\">".concat(offer.salesPitch[0], "</div><img src=\"").concat(offer.image, "\"></div>\n            ");
+          $(".dr-cart__products").append(shoppingCartHTML);
+        });
+      },
+      error: function error(jqXHR) {
+        reject(jqXHR);
+      }
     });
   }
 
