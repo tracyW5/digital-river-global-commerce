@@ -8,11 +8,9 @@ jQuery(document).ready(($) => {
     // Get login address info
     if (drExpressOptions.accessToken.length > 0) {
         getShopper();
-        getShopperAddress();
     }
 
     function getShopper() {
-        let $form = $('#checkout-email-form');
         $.ajax({
             type: 'GET',
             headers: {
@@ -23,13 +21,26 @@ jQuery(document).ready(($) => {
                 return url;
             })(),
             success: (data) => {
-            console.log('shopper:', data);
-            if (typeof data.shopper.emailAddress !== 'undefined' && data.shopper.emailAddress.length > 0) {
-                displayShopperInfo(data.shopper);
-                $form.submit();
-            } else {
-                console.log('no shopper data');
-            }
+                console.log('shopper:', data);
+                if (data.shopper.id == 'Anonymous') {
+                    console.log('no shopper data');
+                } else {
+                    if (data.shopper.emailAddress.length > 0) {
+                        if ($('#checkout-email-form').length) {
+                            displayShopperInfo(data.shopper);
+                            $('#checkout-email-form').submit();
+                            if (data.shopper.addresses.address){
+                                displayAddress(data.shopper.addresses.address[0]);
+                            }
+                        }
+        
+                        $('#checkout-shipping-form input[type=text]').each(function(){
+                            if ($(this).val().length > 0) {
+                                $(this).parent('.float-container').addClass('active');
+                            }
+                        })
+                    }
+                }
             },
             error: (jqXHR) => {
                 console.log(jqXHR);
@@ -45,29 +56,6 @@ jQuery(document).ready(($) => {
         $('#shipping-field-last-name').val(shopper.lastName);
     }
 
-    function getShopperAddress() {
-        $.ajax({
-            type: 'GET',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            url: (() => {
-                let url = `${apiBaseUrl}/me/addresses?token=${drExpressOptions.accessToken}&expand=all&client_id=${apiKey}&format=json`;
-                return url;
-            })(),
-            success: (data) => {
-                if (typeof data.addresses.address !== 'undefined' && data.addresses.address.length > 0) {
-                displayAddress(data.addresses.address[0]);
-                } else {
-                console.log('no user address');
-                }
-            },
-            error: (jqXHR) => {
-                console.log(jqXHR);
-            }
-        });
-    }
-
     function displayAddress(address) {
         $('#shipping-field-address1').val(address.line1);
         if (address.line2) {
@@ -81,17 +69,12 @@ jQuery(document).ready(($) => {
         $('#shipping-field-zip').val(address.postalCode);
         $("#shipping-field-country option[value='"+address.countryName+"']").prop('selected', true);
         $('#shipping-field-phone').val(address.phoneNumber);
-        
-        $('#checkout-shipping-form input[type=text]').each(function(){
-            if ($(this).val().length > 0) {
-                $(this).parent('.float-container').addClass('active');
-            }
-        })
     }
 
     function getAddress(addressType) {
         const address = {
           address: {
+            nickName: $('#'+ addressType +'-field-address1').val(),
             firstName: $('#'+ addressType +'-field-first-name').val(),
             lastName: $('#'+ addressType +'-field-last-name').val(),
             line1: $('#'+ addressType +'-field-address1').val(),
@@ -110,14 +93,14 @@ jQuery(document).ready(($) => {
     function saveShippingAddress() {
         var address = getAddress('shipping');
         address.address.isDefault = true;
-        console.log('shipping: ', address);
+        console.log('save shipping: ', address);
         saveShopperAddress(JSON.stringify(address))
     }
 
     function saveBillingAddress() {
         var address = getAddress('billing');
         address.address.isDefault = false;
-        console.log('billing: ', address);
+        console.log('save billing: ', address);
         saveShopperAddress(JSON.stringify(address))
     }
 
@@ -133,7 +116,7 @@ jQuery(document).ready(($) => {
                 return url;
             })(),
             success: (data) => {
-                console.log('address list result:　', data);
+                console.log('address update success:',data);
             },
             error: (jqXHR) => {
                 console.log(jqXHR);

@@ -184,6 +184,50 @@ class DR_Express_Authenticator extends AbstractHttpService {
 	 *
 	 * @return mixed $data
 	 */
+	public function generate_access_token_by_login_id( $username, $password ) {
+		$data = array (
+			'username' => $username,
+			'password' => base64_encode($password),
+			'client_id' => $this->dr_express_api_key,
+			'grant_type' => 'password'
+		);
+
+		$this->setFormContentType();
+
+		try {
+			$res = $this->post( "/oauth20/token", $this->prepareParams( $data ) );
+
+			if ( isset( $res['error'] ) ) {
+				return $res;
+			}
+
+			$this->refresh_token        = null;
+			$this->token                = $res['access_token'] ?? $res['access_token'];
+			$this->tokenType            = $res['token_type'] ?? $res['token_type'];
+			$this->expires_in           = $res['expires_in'] ?? $res['expires_in'];
+
+			if ( ! is_null( $this->session ) ) {
+				$this->session->generate_session_cookie_data( array(
+					'session_token' => $this->dr_session_token,
+					'refresh_token' => $this->refresh_token,
+					'access_token'  => $this->token,
+				) );
+			}
+
+			return $res;
+		} catch (\Exception $e) {
+			return "Error: # {$e->getMessage()}";
+		}
+	}
+
+	/**
+	 * Generate full access token
+	 *
+	 * @param string $username
+	 * @param string $password
+	 *
+	 * @return mixed $data
+	 */
 	public function generate_access_token_by_ref_id( $external_reference_id ) {
 		$data = array (
 			'dr_external_reference_id' => $external_reference_id,

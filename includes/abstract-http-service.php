@@ -73,7 +73,6 @@ abstract class AbstractHttpService {
      * @var array
      */
     protected $production_basic_auth = array(
-        'drdod15' => 'OTk0Nzc5NTM5NzBlNDMyZGE0ZDg5Yjk4MmY2YmNjNDk6YTRkY2NjMzU1OGVjNGUwOWFlMjg3OTg2NGY5MDBmMjQ=',
         'sotw2'   => 'NmEwYmIwNDkxMDljNGEwZjhkOGRmZjdkYjg5NjI1NGI6NDdkOGVhMjBmZmVmNDU5MGI1YjU5ZjA2YWM4MzM0NTk='
     );
 
