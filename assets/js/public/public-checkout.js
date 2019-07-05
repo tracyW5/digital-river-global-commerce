@@ -13,11 +13,8 @@ jQuery(document).ready(($) => {
     var payload  = { shipping: {}, billing: {} };
     var paymentPayload = {};
 
-    //Sections
-    var shouldShippingOpen = false,
-        shouldBillingOpen = false,
-        shouldDeliveryOpen = false,
-        shouldPaymentOpen  = false;
+    // Section progress
+    let finishedSectionIdx = -1;
 
     // Submit first (email) form
     var emailPayload;
@@ -103,6 +100,10 @@ jQuery(document).ready(($) => {
         const $prevSection = $section.prev();
         const $nextSection = $section.next();
 
+        if ($('.dr-checkout__el').index($section) > finishedSectionIdx) {
+            finishedSectionIdx = $('.dr-checkout__el').index($section);
+        }
+
         $section.removeClass('active').addClass('closed');
         $nextSection.addClass('active').removeClass('closed');
 
@@ -111,15 +112,29 @@ jQuery(document).ready(($) => {
             $nextSection.next().removeClass('small-closed-right');
         }
 
-        // Special sections
-        if ($section.hasClass('dr-checkout__billing') && $('.dr-checkout__shipping').is(':visible')) {
-            $prevSection.addClass('small-closed-left');
-            $section.addClass('small-closed-right');
+        adjustColumns($section);
+    }
+
+    function adjustColumns($section) {
+        const $shippingSection = $('.dr-checkout__shipping');
+        const $billingSection = $('.dr-checkout__billing');
+        const $paymentSection = $('.dr-checkout__payment');
+        const $confirmSection = $('.dr-checkout__confirmation');
+
+        if ($shippingSection.is(':visible') && $shippingSection.hasClass('closed') && $billingSection.hasClass('closed')) {
+            $shippingSection.addClass('small-closed-left');
+            $billingSection.addClass('small-closed-right');
+        } else {
+            $shippingSection.removeClass('small-closed-left');
+            $billingSection.removeClass('small-closed-right');
         }
 
-        if ($section.hasClass('dr-checkout__payment')) {
-            $section.addClass('small-closed-left');
-            $nextSection.removeClass('d-none').addClass('small-closed-right');
+        if ($section && $section.hasClass('dr-checkout__payment')) {
+            $paymentSection.addClass('small-closed-left');
+            $confirmSection.addClass('small-closed-right').removeClass('d-none');
+        } else {
+            $paymentSection.removeClass('small-closed-left');
+            $confirmSection.removeClass('small-closed-right').addClass('d-none');
         }
     }
 
@@ -132,8 +147,6 @@ jQuery(document).ready(($) => {
         let $form = $('#checkout-email-form');
         let email = $form.find('input[name=email]').val().trim();
 
-        shouldShippingOpen = false;
-
         $form.addClass('was-validated');
 
         if ($form[0].checkValidity() === false) {
@@ -141,7 +154,6 @@ jQuery(document).ready(($) => {
         }
 
         emailPayload = email;
-        shouldShippingOpen = true;
 
         const $section = $('.dr-checkout__email');
         $section.find('.dr-panel-result__text').text(emailPayload);
@@ -151,7 +163,6 @@ jQuery(document).ready(($) => {
     // Submit shipping info form
     $('#checkout-shipping-form').on('submit', function(e) {
         e.preventDefault();
-        shouldBillingOpen = false;
 
         const $form = $(e.target);
         const $button = $form.find('button[type="submit"]');
@@ -161,7 +172,6 @@ jQuery(document).ready(($) => {
 
         $button.addClass('sending').blur();
         updateCart({ expand: 'all' }, { shippingAddress: payload.shipping }).then((data) => {
-            shouldBillingOpen = true;
             $button.removeClass('sending').blur();
 
             setShippingOptions(data.cart.shippingOptions);
@@ -177,7 +187,6 @@ jQuery(document).ready(($) => {
 
     $('#checkout-billing-form').on('submit', function(e) {
         e.preventDefault();
-        shouldDeliveryOpen = false;
 
         const $form = $(e.target);
         const $button = $form.find('button[type="submit"]');
@@ -189,7 +198,6 @@ jQuery(document).ready(($) => {
 
         $button.addClass('sending').blur();
         updateCart({ expand: 'all' }, { billingAddress: payload.billing }).then((data) => {
-            shouldDeliveryOpen = true;
             $button.removeClass('sending').blur();
 
             const $section = $('.dr-checkout__billing');
@@ -250,8 +258,6 @@ jQuery(document).ready(($) => {
     $('form#checkout-delivery-form').on('submit', function(e) {
         e.preventDefault();
 
-        shouldPaymentOpen = false;
-
         let $input = $(this).children().find('input:radio:checked').first();
         let button = $(this).find('button[type="submit"]').toggleClass('sending').blur();
         // Validate shipping option
@@ -272,7 +278,6 @@ jQuery(document).ready(($) => {
                 return url;
             })(),
             success: (data) => {
-                shouldPaymentOpen = true;
                 button.removeClass('sending').blur();
 
                 const $section = $('.dr-checkout__delivery');
@@ -309,7 +314,6 @@ jQuery(document).ready(($) => {
             paymentPayload[obj.name] = obj.value;
         });
 
-        shouldPaymentOpen = true;
         $('#dr-checkout-err-field').text('').hide();
 
         const $section = $('.dr-checkout__payment');
@@ -573,67 +577,19 @@ jQuery(document).ready(($) => {
     $('.dr-accordion__edit').on('click', function(e) {
         e.preventDefault();
 
-        $('.dr-checkout__payment').removeClass('small-closed-left');
-        $('.dr-checkout__confirmation').addClass('d-none').removeClass('small-closed-right');
-
         let $this = $(this).parent();
-        let $otherSections = $this.parent().siblings();
-        let $finishedSections = $otherSections.filter($('.closed:last')).prevAll().andSelf();
-        let $activeSection = $otherSections.filter($('.active'));
+        let $allSections = $this.parent().siblings().andSelf();
+        let $finishedSections = $allSections.eq(finishedSectionIdx).prevAll().andSelf();
+        let $activeSection = $allSections.filter($('.active'));
         let $section = $this.parent();
         let $nextSection =  $section.next();
         let $prevSection = $section.prev();
-
-        if( /_email/.test($section.attr('class'))) {
-            shouldShippingOpen = false;
-            shouldDeliveryOpen = false;
-            shouldPaymentOpen = false;
-        }
-
-        if( /_shipping/.test($section.attr('class'))) {
-            if(!shouldShippingOpen){
-                return;
-            } else {
-                shouldBillingOpen = false;
-                shouldDeliveryOpen = false;
-                shouldPaymentOpen = false;
-            }
-        }
-
-        if( /_billing/.test($section.attr('class'))) {
-            if(!shouldBillingOpen){
-                return;
-            } else {
-                shouldDeliveryOpen = false;
-                shouldPaymentOpen = false;
-            }
-        }
-
-        if( /_delivery/.test($section.attr('class'))) {
-            if(!shouldDeliveryOpen) {
-                return;
-            } else {
-                shouldPaymentOpen = false;
-            }
-        }
-
-        if( /_payment/.test($section.attr('class')) && ! shouldPaymentOpen ) {
-            return;
-        }
 
         $finishedSections.addClass('closed');
         $activeSection.removeClass('active');
         $section.removeClass('closed').addClass('active');
 
-        if ($section.hasClass('small-closed-left')) {
-            $section.removeClass('small-closed-left');
-            $nextSection.removeClass('small-closed-right');
-        }
-
-        if ($section.hasClass('small-closed-right')) {
-            $section.removeClass('small-closed-right');
-            $prevSection.removeClass('small-closed-left');
-        }
+        adjustColumns();
     });
 
     // print thank you page
@@ -670,17 +626,17 @@ jQuery(document).ready(($) => {
 
     $('#shipping-field-country').on('change', function() {
         if ( this.value === 'US' ) {
-            $('#shipping-field-state').removeClass('d-none');
+            $('#shipping-field-state').parent('.form-group').removeClass('d-none');
         } else {
-            $('#shipping-field-state').addClass('d-none');
+            $('#shipping-field-state').parent('.form-group').addClass('d-none');
         }
     });
 
     $('#billing-field-country').on('change', function() {
         if ( this.value === 'US' ) {
-            $('#billing-field-state').removeClass('d-none');
+            $('#billing-field-state').parent('.form-group').removeClass('d-none');
         } else {
-            $('#billing-field-state').addClass('d-none');
+            $('#billing-field-state').parent('.form-group').addClass('d-none');
         }
     });
 

@@ -677,12 +677,9 @@ jQuery(document).ready(function ($) {
     shipping: {},
     billing: {}
   };
-  var paymentPayload = {}; //Sections
+  var paymentPayload = {}; // Section progress
 
-  var shouldShippingOpen = false,
-      shouldBillingOpen = false,
-      shouldDeliveryOpen = false,
-      shouldPaymentOpen = false; // Submit first (email) form
+  var finishedSectionIdx = -1; // Submit first (email) form
 
   var emailPayload;
 
@@ -765,23 +762,42 @@ jQuery(document).ready(function ($) {
   function moveToNextSection($section) {
     var $prevSection = $section.prev();
     var $nextSection = $section.next();
+
+    if ($('.dr-checkout__el').index($section) > finishedSectionIdx) {
+      finishedSectionIdx = $('.dr-checkout__el').index($section);
+    }
+
     $section.removeClass('active').addClass('closed');
     $nextSection.addClass('active').removeClass('closed');
 
     if ($nextSection.hasClass('small-closed-left')) {
       $nextSection.removeClass('small-closed-left');
       $nextSection.next().removeClass('small-closed-right');
-    } // Special sections
-
-
-    if ($section.hasClass('dr-checkout__billing') && $('.dr-checkout__shipping').is(':visible')) {
-      $prevSection.addClass('small-closed-left');
-      $section.addClass('small-closed-right');
     }
 
-    if ($section.hasClass('dr-checkout__payment')) {
-      $section.addClass('small-closed-left');
-      $nextSection.removeClass('d-none').addClass('small-closed-right');
+    adjustColumns($section);
+  }
+
+  function adjustColumns($section) {
+    var $shippingSection = $('.dr-checkout__shipping');
+    var $billingSection = $('.dr-checkout__billing');
+    var $paymentSection = $('.dr-checkout__payment');
+    var $confirmSection = $('.dr-checkout__confirmation');
+
+    if ($shippingSection.is(':visible') && $shippingSection.hasClass('closed') && $billingSection.hasClass('closed')) {
+      $shippingSection.addClass('small-closed-left');
+      $billingSection.addClass('small-closed-right');
+    } else {
+      $shippingSection.removeClass('small-closed-left');
+      $billingSection.removeClass('small-closed-right');
+    }
+
+    if ($section && $section.hasClass('dr-checkout__payment')) {
+      $paymentSection.addClass('small-closed-left');
+      $confirmSection.addClass('small-closed-right').removeClass('d-none');
+    } else {
+      $paymentSection.removeClass('small-closed-left');
+      $confirmSection.removeClass('small-closed-right').addClass('d-none');
     }
   }
 
@@ -791,7 +807,6 @@ jQuery(document).ready(function ($) {
     if (!drExpressOptions.cart.cart.lineItems.hasOwnProperty('lineItem')) return;
     var $form = $('#checkout-email-form');
     var email = $form.find('input[name=email]').val().trim();
-    shouldShippingOpen = false;
     $form.addClass('was-validated');
 
     if ($form[0].checkValidity() === false) {
@@ -799,7 +814,6 @@ jQuery(document).ready(function ($) {
     }
 
     emailPayload = email;
-    shouldShippingOpen = true;
     var $section = $('.dr-checkout__email');
     $section.find('.dr-panel-result__text').text(emailPayload);
     moveToNextSection($section);
@@ -807,7 +821,6 @@ jQuery(document).ready(function ($) {
 
   $('#checkout-shipping-form').on('submit', function (e) {
     e.preventDefault();
-    shouldBillingOpen = false;
     var $form = $(e.target);
     var $button = $form.find('button[type="submit"]');
     var isFormValid = prepareAddress($form);
@@ -818,7 +831,6 @@ jQuery(document).ready(function ($) {
     }, {
       shippingAddress: payload.shipping
     }).then(function (data) {
-      shouldBillingOpen = true;
       $button.removeClass('sending').blur();
       setShippingOptions(data.cart.shippingOptions);
       var $section = $('.dr-checkout__shipping');
@@ -831,7 +843,6 @@ jQuery(document).ready(function ($) {
   });
   $('#checkout-billing-form').on('submit', function (e) {
     e.preventDefault();
-    shouldDeliveryOpen = false;
     var $form = $(e.target);
     var $button = $form.find('button[type="submit"]');
     var billingSameAsShipping = $('[name="checkbox-billing"]').is(':visible:checked');
@@ -844,7 +855,6 @@ jQuery(document).ready(function ($) {
     }, {
       billingAddress: payload.billing
     }).then(function (data) {
-      shouldDeliveryOpen = true;
       $button.removeClass('sending').blur();
       var $section = $('.dr-checkout__billing');
       displaySavedAddress(data.cart.billingAddress, $section.find('.dr-panel-result__text'));
@@ -877,7 +887,6 @@ jQuery(document).ready(function ($) {
 
   $('form#checkout-delivery-form').on('submit', function (e) {
     e.preventDefault();
-    shouldPaymentOpen = false;
     var $input = $(this).children().find('input:radio:checked').first();
     var button = $(this).find('button[type="submit"]').toggleClass('sending').blur(); // Validate shipping option
 
@@ -897,7 +906,6 @@ jQuery(document).ready(function ($) {
         return url;
       }(),
       success: function success(data) {
-        shouldPaymentOpen = true;
         button.removeClass('sending').blur();
         var $section = $('.dr-checkout__delivery');
         var resultText = $input.length > 0 ? "".concat($input.data('desc'), " ").concat($input.data('cost')) : 'Digital Product(s) Only';
@@ -928,7 +936,6 @@ jQuery(document).ready(function ($) {
     $(formdata).each(function (index, obj) {
       paymentPayload[obj.name] = obj.value;
     });
-    shouldPaymentOpen = true;
     $('#dr-checkout-err-field').text('').hide();
     var $section = $('.dr-checkout__payment');
     $section.find('.dr-panel-result__text').text("Credit card ending in ".concat(paymentPayload['credit-card-number'].substr(paymentPayload['credit-card-number'].length - 4)));
@@ -1189,66 +1196,17 @@ jQuery(document).ready(function ($) {
 
   $('.dr-accordion__edit').on('click', function (e) {
     e.preventDefault();
-    $('.dr-checkout__payment').removeClass('small-closed-left');
-    $('.dr-checkout__confirmation').addClass('d-none').removeClass('small-closed-right');
     var $this = $(this).parent();
-    var $otherSections = $this.parent().siblings();
-    var $finishedSections = $otherSections.filter($('.closed:last')).prevAll().andSelf();
-    var $activeSection = $otherSections.filter($('.active'));
+    var $allSections = $this.parent().siblings().andSelf();
+    var $finishedSections = $allSections.eq(finishedSectionIdx).prevAll().andSelf();
+    var $activeSection = $allSections.filter($('.active'));
     var $section = $this.parent();
     var $nextSection = $section.next();
     var $prevSection = $section.prev();
-
-    if (/_email/.test($section.attr('class'))) {
-      shouldShippingOpen = false;
-      shouldDeliveryOpen = false;
-      shouldPaymentOpen = false;
-    }
-
-    if (/_shipping/.test($section.attr('class'))) {
-      if (!shouldShippingOpen) {
-        return;
-      } else {
-        shouldBillingOpen = false;
-        shouldDeliveryOpen = false;
-        shouldPaymentOpen = false;
-      }
-    }
-
-    if (/_billing/.test($section.attr('class'))) {
-      if (!shouldBillingOpen) {
-        return;
-      } else {
-        shouldDeliveryOpen = false;
-        shouldPaymentOpen = false;
-      }
-    }
-
-    if (/_delivery/.test($section.attr('class'))) {
-      if (!shouldDeliveryOpen) {
-        return;
-      } else {
-        shouldPaymentOpen = false;
-      }
-    }
-
-    if (/_payment/.test($section.attr('class')) && !shouldPaymentOpen) {
-      return;
-    }
-
     $finishedSections.addClass('closed');
     $activeSection.removeClass('active');
     $section.removeClass('closed').addClass('active');
-
-    if ($section.hasClass('small-closed-left')) {
-      $section.removeClass('small-closed-left');
-      $nextSection.removeClass('small-closed-right');
-    }
-
-    if ($section.hasClass('small-closed-right')) {
-      $section.removeClass('small-closed-right');
-      $prevSection.removeClass('small-closed-left');
-    }
+    adjustColumns();
   }); // print thank you page
 
   $('#print-button').on('click', function (ev) {
@@ -1281,16 +1239,16 @@ jQuery(document).ready(function ($) {
   });
   $('#shipping-field-country').on('change', function () {
     if (this.value === 'US') {
-      $('#shipping-field-state').removeClass('d-none');
+      $('#shipping-field-state').parent('.form-group').removeClass('d-none');
     } else {
-      $('#shipping-field-state').addClass('d-none');
+      $('#shipping-field-state').parent('.form-group').addClass('d-none');
     }
   });
   $('#billing-field-country').on('change', function () {
     if (this.value === 'US') {
-      $('#billing-field-state').removeClass('d-none');
+      $('#billing-field-state').parent('.form-group').removeClass('d-none');
     } else {
-      $('#billing-field-state').addClass('d-none');
+      $('#billing-field-state').parent('.form-group').addClass('d-none');
     }
   });
 

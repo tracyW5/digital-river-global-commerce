@@ -225,7 +225,7 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .offset-10{margin-left:83.3333333333%}
 .offset-11{margin-left:91.6666666667%}
 .dr-express-wrapper button,.dr-express-wrapper input,.dr-express-wrapper select,.dr-express-wrapper textarea{font-family:"Open Sans",sans-serif;font-size:16px;line-height:16px;color:#000;border-radius:0;-webkit-print-color-adjust:exact !important}
-.dr-express-wrapper select.custom-select{background-color:white;height:48px;border-radius:0;color:#000}
+.dr-express-wrapper select.custom-select{font-size:inherit;background-color:white;height:48px;border-radius:0;color:#000}
 .dr-express-wrapper select.custom-select:focus{border:1px solid #d1d1d1;outline:0;-webkit-box-shadow:none;box-shadow:none}
 .dr-express-wrapper p:empty{display:none}
 .dr-express-wrapper form{margin:0 0 1.5em}

@@ -134,7 +134,7 @@
 
         <div class="form-group dr-panel-edit__el">
 
-            <select class="custom-select" name="shipping-country" id="shipping-field-country" required>
+            <select class="form-control custom-select" name="shipping-country" id="shipping-field-country" required>
                 <option value="">
                     <?php echo __( 'Select Country *' ); ?>
                 </option>
@@ -160,10 +160,10 @@
 
         </div>
 
-            
-        <div class="form-group dr-panel-edit__el">
 
-            <select class="custom-select <?php echo $cart['cart']['shippingAddress']['country'] !== 'US' ? 'd-none' : '' ?>" name="shipping-countrySubdivision" id="shipping-field-state">
+        <div class="form-group dr-panel-edit__el <?php echo $cart['cart']['shippingAddress']['country'] !== 'US' ? 'd-none' : '' ?>">
+
+            <select class="form-control custom-select" name="shipping-countrySubdivision" id="shipping-field-state" required>
 
                 <option value="">
                     <?php echo __( 'Select State *' ); ?>

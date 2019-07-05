@@ -49,12 +49,6 @@
 
         <div class="billing-section" <?php echo !$cart['cart']['hasPhysicalProduct'] ? 'style="display: block;"' : '' ?>>
 
-            <div class="billing-section__name">
-
-            <?php echo __( 'Billing information' ); ?>
-
-            </div>
-
             <div class="form-group dr-panel-edit__el">
 
                 <div class="float-container float-container--first-name">
@@ -161,7 +155,7 @@
 
             <div class="form-group dr-panel-edit__el">
 
-                <select class="custom-select" name="billing-country" id="billing-field-country" required>
+                <select class="form-control custom-select" name="billing-country" id="billing-field-country" required>
                     
                     <option value="">
                         <?php echo __( 'Select Country *' ); ?>
@@ -189,9 +183,9 @@
 
             </div>
 
-            <div class="dr-panel-edit__el">
+            <div class="form-group dr-panel-edit__el <?php echo $cart['cart']['billingAddress']['country'] !== 'US' ? 'd-none' : '' ?>">
 
-                <select class="custom-select <?php echo $cart['cart']['billingAddress']['country'] !== 'US' ? 'd-none' : '' ?>" name="billing-countrySubdivision" id="billing-field-state" required>
+                <select class="form-control custom-select" name="billing-countrySubdivision" id="billing-field-state" required>
 
                     <option value="">
                         <?php echo __( 'Select State *' ); ?>
@@ -200,7 +194,7 @@
                     <?php foreach ($usa_states as $key => $state): ?>
                         <?php 
                             $option = "<option ";
-                            $option .= $cart['cart']['shippingAddress']['countrySubdivision'] === $state ? 'selected ' : '';
+                            $option .= $cart['cart']['billingAddress']['countrySubdivision'] === $state ? 'selected ' : '';
                             $option .= "value=\"{$state}\">{$state}</option>";
                             echo $option;
                         ?>
