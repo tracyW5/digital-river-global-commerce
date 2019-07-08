@@ -225,7 +225,7 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .offset-10{margin-left:83.3333333333%}
 .offset-11{margin-left:91.6666666667%}
 .dr-express-wrapper button,.dr-express-wrapper input,.dr-express-wrapper select,.dr-express-wrapper textarea{font-family:"Open Sans",sans-serif;font-size:16px;line-height:16px;color:#000;border-radius:0;-webkit-print-color-adjust:exact !important}
-.dr-express-wrapper select.custom-select{background-color:white;height:48px;border-radius:0;color:#000}
+.dr-express-wrapper select.custom-select{font-size:inherit;background-color:white;height:48px;border-radius:0;color:#000}
 .dr-express-wrapper select.custom-select:focus{border:1px solid #d1d1d1;outline:0;-webkit-box-shadow:none;box-shadow:none}
 .dr-express-wrapper p:empty{display:none}
 .dr-express-wrapper form{margin:0 0 1.5em}
@@ -352,9 +352,9 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .dr-check-account__link{font-size:14px;font-weight:600;text-decoration:underline;color:#000}
 .dr-checkout{width:50%}
 .dr-checkout .d-none{display:none !important}
-.dr-checkout__email,.dr-checkout__shipping,.dr-checkout__delivery,.dr-checkout__payment,.dr-checkout__confirmation{background:#fff;margin-bottom:20px;padding:0 10px}
-.dr-checkout__shipping .billing-section{display:none}
-.dr-checkout__shipping .billing-section__name{font-family:Open Sans;font-size:16px;font-weight:600;line-height:16px;text-transform:uppercase;color:#333;margin:16px 0}
+.dr-checkout__email,.dr-checkout__shipping,.dr-checkout__billing,.dr-checkout__delivery,.dr-checkout__payment,.dr-checkout__confirmation{background:#fff;margin-bottom:20px;padding:0 10px}
+.dr-checkout__billing .billing-section{display:none}
+.dr-checkout__billing .billing-section__name{font-family:Open Sans;font-size:16px;font-weight:600;line-height:16px;text-transform:uppercase;color:#333;margin:16px 0}
 .dr-checkout .small-closed-left{clear:both;width:48%;float:left}
 .dr-checkout .small-closed-right{width:48%;float:right}
 .dr-checkout .dr-accordion__title-long{display:block}
@@ -368,26 +368,26 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .active .dr-accordion,.closed .dr-accordion{border-bottom:1px solid #d1d1d1}
 .closed .dr-accordion__edit{display:block}
 .closed .dr-accordion__edit,.closed .dr-accordion__name{opacity:.5}
-.dr-accordion__icon.email-icon,.dr-accordion__icon.shipping-icon,.dr-accordion__icon.delivery-icon,.dr-accordion__icon.payment-icon{display:block;background-position:center;background-size:cover;margin-right:15px}
+.dr-accordion__icon.email-icon,.dr-accordion__icon.shipping-icon,.dr-accordion__icon.billing-icon,.dr-accordion__icon.delivery-icon,.dr-accordion__icon.payment-icon{display:block;background-position:center;background-size:cover;margin-right:15px}
 .dr-accordion__icon.email-icon{width:32px;height:32px;background:url("../images/email.svg")}
-.dr-accordion__icon.shipping-icon{width:25px;height:25px;background:url("../images/address.svg")}
+.dr-accordion__icon.shipping-icon,.dr-accordion__icon.billing-icon{width:25px;height:25px;background:url("../images/address.svg")}
 .dr-accordion__icon.delivery-icon{width:34px;height:34px;background:url("../images/delivery.svg")}
 .dr-accordion__icon.payment-icon{width:32px;height:32px;background:url("../images/payment.svg")}
 .active .dr-accordion__icon.email-icon{background:url("../images/email-active.svg")}
-.active .dr-accordion__icon.shipping-icon{background:url("../images/address-active.svg")}
+.active .dr-accordion__icon.shipping-icon,.active .dr-accordion__icon.billing-icon{background:url("../images/address-active.svg")}
 .active .dr-accordion__icon.delivery-icon{background:url("../images/delivery-active.svg")}
 .active .dr-accordion__icon.payment-icon{background:url("../images/payment-active.svg")}
 .closed .dr-accordion__icon.email-icon{background:url("../images/email-closed.svg")}
-.closed .dr-accordion__icon.shipping-icon{background:url("../images/address-closed.svg")}
+.closed .dr-accordion__icon.shipping-icon,.closed .dr-accordion__icon.billing-icon{background:url("../images/address-closed.svg")}
 .closed .dr-accordion__icon.delivery-icon{background:url("../images/delivery-closed.svg")}
 .closed .dr-accordion__icon.payment-icon{background:url("../images/payment-closed.svg")}
 .dr-panel-edit{display:none;width:100%;padding-top:20px;padding-bottom:20px;overflow:hidden}
 .dr-checkout__el.active .dr-panel-edit{display:block}
 .dr-checkout__el.closed .dr-panel-edit{display:none}
 .dr-panel-edit__btn{margin-top:1rem;text-transform:uppercase}
-.dr-panel-edit.dr-panel-edit--shipping .dr-panel-edit__el{margin-bottom:20px}
-.dr-panel-edit.dr-panel-edit--shipping .dr-panel-edit__check .field-text{font-family:Open Sans;font-size:18px;color:#333}
-.dr-panel-edit.dr-panel-edit--shipping .dr-panel-edit__check .field-checkbox label{font-family:Open Sans;font-size:16px;color:#333}
+.dr-panel-edit.dr-panel-edit--shipping .dr-panel-edit__el,.dr-panel-edit.dr-panel-edit--billing .dr-panel-edit__el{margin-bottom:20px}
+.dr-panel-edit.dr-panel-edit--shipping .dr-panel-edit__check .field-text,.dr-panel-edit.dr-panel-edit--billing .dr-panel-edit__check .field-text{font-family:Open Sans;font-size:18px;color:#333}
+.dr-panel-edit.dr-panel-edit--shipping .dr-panel-edit__check .field-checkbox label,.dr-panel-edit.dr-panel-edit--billing .dr-panel-edit__check .field-checkbox label{font-family:Open Sans;font-size:16px;color:#333}
 .dr-panel-edit.dr-panel-edit--delivery .dr-panel-edit__el{width:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}
 .dr-panel-edit.dr-panel-edit--delivery .dr-panel-edit__el .field-radio{position:relative;width:32%;height:100%}
 .dr-panel-edit.dr-panel-edit--delivery .dr-panel-edit__el .field-radio input[type=radio]{position:absolute;top:18px;left:12px}

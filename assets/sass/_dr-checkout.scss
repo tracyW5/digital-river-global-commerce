@@ -13,6 +13,7 @@
 
     &__email,
     &__shipping,
+    &__billing,
     &__delivery,
     &__payment,
     &__confirmation {
@@ -21,7 +22,7 @@
         padding: 0 10px;
     }
 
-    &__shipping {
+    &__billing {
         & .billing-section {
             display: none;
 

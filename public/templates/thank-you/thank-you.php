@@ -102,6 +102,7 @@ if($billing_city !== '' && $billing_code !== '') {
 
         <div class="dr-order-address">
 
+            <?php if ( $order['order']['hasPhysicalProduct'] ) : ?>
             <div class="dr-order-address__shipping">
 
                 <div class="address-title"><?php echo __('Shipping Address') ?></div>
@@ -114,6 +115,7 @@ if($billing_city !== '' && $billing_code !== '') {
                 </div>
 
             </div>
+            <?php endif; ?>
 
             <div class="dr-order-address__billing">
 
