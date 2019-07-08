@@ -326,7 +326,7 @@ jQuery(document).ready(($) => {
         })(),
         success: (data) => {
           let { formattedShippingAndHandling, formattedOrderTotal } = data.cart.pricing;
-          if(formattedShippingAndHandling == "$0.00")formattedShippingAndHandling = "FREE";
+          if(data.cart.pricing.shippingAndHandling.value === 0 )formattedShippingAndHandling = "FREE";
           $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
           $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
         },
