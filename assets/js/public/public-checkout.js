@@ -577,13 +577,16 @@ jQuery(document).ready(($) => {
     $('.dr-accordion__edit').on('click', function(e) {
         e.preventDefault();
 
-        let $this = $(this).parent();
-        let $allSections = $this.parent().siblings().andSelf();
+        let $section = $(e.target).parent().parent();
+        let $allSections = $section.siblings().andSelf();
         let $finishedSections = $allSections.eq(finishedSectionIdx).prevAll().andSelf();
         let $activeSection = $allSections.filter($('.active'));
-        let $section = $this.parent();
         let $nextSection =  $section.next();
         let $prevSection = $section.prev();
+
+        if ($allSections.index($section) > $allSections.index($activeSection)) {
+            return;
+        }
 
         $finishedSections.addClass('closed');
         $activeSection.removeClass('active');

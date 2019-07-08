@@ -1196,13 +1196,17 @@ jQuery(document).ready(function ($) {
 
   $('.dr-accordion__edit').on('click', function (e) {
     e.preventDefault();
-    var $this = $(this).parent();
-    var $allSections = $this.parent().siblings().andSelf();
+    var $section = $(e.target).parent().parent();
+    var $allSections = $section.siblings().andSelf();
     var $finishedSections = $allSections.eq(finishedSectionIdx).prevAll().andSelf();
     var $activeSection = $allSections.filter($('.active'));
-    var $section = $this.parent();
     var $nextSection = $section.next();
     var $prevSection = $section.prev();
+
+    if ($allSections.index($section) > $allSections.index($activeSection)) {
+      return;
+    }
+
     $finishedSections.addClass('closed');
     $activeSection.removeClass('active');
     $section.removeClass('closed').addClass('active');
