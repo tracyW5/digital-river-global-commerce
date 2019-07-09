@@ -5,6 +5,127 @@ jQuery(document).ready(($) => {
     const apiBaseUrl = 'https://' + domain + '/v1/shoppers';
     const drLocale = drExpressOptions.drLocale || 'en_US';
 
+    // Get login address info
+    if (drExpressOptions.accessToken.length > 0) {
+        getShopper();
+    }
+
+    function getShopper() {
+        $.ajax({
+            type: 'GET',
+            headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            url: (() => {
+                let url = `${apiBaseUrl}/me?token=${drExpressOptions.accessToken}&expand=all&client_id=${apiKey}&format=json`;
+                return url;
+            })(),
+            success: (data) => {
+                console.log('shopper:', data);
+                if (data.shopper.id == 'Anonymous') {
+                    console.log('no shopper data');
+                } else {
+                    if (data.shopper.emailAddress.length > 0) {
+                        if ($('#checkout-email-form').length) {
+                            displayShopperInfo(data.shopper);
+                            $('#checkout-email-form').submit();
+                            if (data.shopper.addresses.address){
+                                displayAddress(data.shopper.addresses.address[0]);
+                            }
+                        }
+        
+                        $('#checkout-shipping-form input[type=text]').each(function(){
+                            if ($(this).val().length > 0) {
+                                $(this).parent('.float-container').addClass('active');
+                            }
+                        })
+                    }
+                }
+            },
+            error: (jqXHR) => {
+                console.log(jqXHR);
+            }
+        });
+    }
+
+    function displayShopperInfo(shopper) {
+        let $form = $('#checkout-email-form');
+        $form.find('input[name=email]').val(shopper.emailAddress);
+
+        $('#shipping-field-first-name').val(shopper.firstName);
+        $('#shipping-field-last-name').val(shopper.lastName);
+    }
+
+    function displayAddress(address) {
+        $('#shipping-field-first-name').val(address.firstName);
+        $('#shipping-field-last-name').val(address.lastName);
+        $('#shipping-field-address1').val(address.line1);
+        if (address.line2) {
+          $('#shipping-field-address2').val(address.line2);
+        }
+        if (address.companyName) {
+          $('#shipping-field-address2').append('/'.address.companyName);
+        }
+        $('#shipping-field-city').val(address.city);
+        $("#shipping-field-state option[value='"+address.countrySubdivision+"']").prop('selected', true);
+        $('#shipping-field-zip').val(address.postalCode);
+        $("#shipping-field-country option[value='"+address.countryName+"']").prop('selected', true);
+        $('#shipping-field-phone').val(address.phoneNumber);
+    }
+
+    function getAddress(addressType) {
+        const address = {
+          address: {
+            nickName: $('#'+ addressType +'-field-address1').val(),
+            firstName: $('#'+ addressType +'-field-first-name').val(),
+            lastName: $('#'+ addressType +'-field-last-name').val(),
+            line1: $('#'+ addressType +'-field-address1').val(),
+            line2: $('#'+ addressType +'-field-address2').val(),
+            city: $('#'+ addressType +'-field-city').val(),
+            countrySubdivision: $('#'+ addressType +'-field-state').val(),
+            postalCode: $('#'+ addressType +'-field-zip').val(),
+            countryName: $('#'+ addressType +'-field-country :selected').text(),
+            country: $('#'+ addressType +'-field-country :selected').val(),
+            phoneNumber: $('#'+ addressType +'-field-phone').val()
+          }
+        };
+        return address;
+    }
+
+    function saveShippingAddress() {
+        var address = getAddress('shipping');
+        address.address.isDefault = true;
+        console.log('save shipping: ', address);
+        saveShopperAddress(JSON.stringify(address))
+    }
+
+    function saveBillingAddress() {
+        var address = getAddress('billing');
+        address.address.isDefault = false;
+        console.log('save billing: ', address);
+        saveShopperAddress(JSON.stringify(address))
+    }
+
+    function saveShopperAddress(address) {
+        $.ajax({
+            type: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: address,
+            url: (() => {
+                let url = `${apiBaseUrl}/me/addresses?token=${drExpressOptions.accessToken}&client_id=${apiKey}&format=json`;
+                return url;
+            })(),
+            success: (data) => {
+                console.log('address update success:',data);
+            },
+            error: (jqXHR) => {
+                console.log(jqXHR);
+            }
+        });
+    }
+
     //floating labels
     FloatLabel.init();
 
@@ -172,6 +293,7 @@ jQuery(document).ready(($) => {
 
         $button.addClass('sending').blur();
         updateCart({ expand: 'all' }, { shippingAddress: payload.shipping }).then((data) => {
+            saveShippingAddress();
             $button.removeClass('sending').blur();
 
             setShippingOptions(data.cart.shippingOptions);
@@ -198,6 +320,7 @@ jQuery(document).ready(($) => {
 
         $button.addClass('sending').blur();
         updateCart({ expand: 'all' }, { billingAddress: payload.billing }).then((data) => {
+            saveBillingAddress();
             $button.removeClass('sending').blur();
 
             const $section = $('.dr-checkout__billing');

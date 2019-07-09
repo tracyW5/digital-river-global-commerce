@@ -128,9 +128,7 @@ class DR_Express_Public {
 				wp_send_json_error( __( 'Authorization failed for specified credentials' ) );
 			}
 
-			$meta = get_user_meta($user->data->ID, '_external_reference_id', true );
-
-			$attempt = $plugin->shopper->generate_access_token_by_ref_id($meta);
+			$attempt = $plugin->shopper->generate_access_token_by_login_id($username, $password);
 
 		}
 
@@ -210,10 +208,8 @@ class DR_Express_Public {
 				if ( is_wp_error( $user ) ) {
 					wp_send_json_error( $user );
 				}
-
-				$meta = get_user_meta($user->data->ID, '_external_reference_id', true );
 	
-				$attempt = $plugin->shopper->generate_access_token_by_ref_id( $meta );
+				$attempt = $plugin->shopper->generate_access_token_by_login_id($email, $password);
 				wp_send_json_success( $attempt );
 			}
 		} else {

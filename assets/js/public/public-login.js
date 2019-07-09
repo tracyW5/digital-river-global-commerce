@@ -3,6 +3,7 @@
 
 jQuery(document).ready(($) => {
     const ajaxUrl = drExpressOptions.ajaxUrl;
+    const apiBaseUrl = 'https://' + drExpressOptions.domain + '/v1/shoppers';
 
     $('#dr_login_form').on('submit', (e) => {
         e.preventDefault();
@@ -212,6 +213,34 @@ jQuery(document).ready(($) => {
             $button.removeClass('sending').blur();
         });
     });
+    
+    if ( $('.logged-in').length) {
+        toggleCartBtns();
+    }
+
+    function toggleCartBtns() {
+        $.ajax({
+            type: 'GET',
+            headers: {
+                "Accept": "application/json"
+            },
+            url: (() => {
+                let url = `${apiBaseUrl}/me/carts/active?`;
+                url += `&expand=all`
+                url += `&token=${drExpressOptions.accessToken}`
+                return url;
+            })(),
+            success: (data) => {
+                if (data.cart.totalItemsInCart == 0) {
+                    console.log('no item');
+                    $('.logged-in > div').hide();
+                }
+            },
+            error: (jqXHR) => {
+                console.log(jqXHR);
+            }
+        });
+    }
 
 });
 

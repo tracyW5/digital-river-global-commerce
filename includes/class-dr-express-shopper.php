@@ -91,6 +91,25 @@ class DR_Express_Shopper extends AbstractHttpService {
 	 *
 	 * @return mixed $data
 	 */
+	public function generate_access_token_by_login_id( $username, $password ) {
+		$data = $this->authenticator->generate_access_token_by_login_id( $username, $password );
+
+		$this->refresh_token        = null;
+		$this->token                = isset( $data['access_token'] ) ? $data['access_token'] : null;
+		$this->tokenType            = isset( $data['token_type'] ) ? $data['token_type'] : null;
+		$this->expires_in           = isset( $data['expires_in'] ) ? $data['expires_in'] : null;
+
+		return $data;
+	}
+
+	/**
+	 * Generate full access token
+	 *
+	 * @param string $username
+	 * @param string $password
+	 *
+	 * @return mixed $data
+	 */
 	public function generate_access_token_by_ref_id( $external_reference_id ) {
 		$data = $this->authenticator->generate_access_token_by_ref_id( $external_reference_id );
 
@@ -122,7 +141,11 @@ class DR_Express_Shopper extends AbstractHttpService {
 			"grant_type"               => "client_credentials"
 		);
 
-		$data =  $this->authenticator->generate_access_token( '', $params );
+		if ( $username != ''  && $password != '') {
+			$data =  $this->authenticator->generate_access_token_by_login_id($username, base64_encode($password));
+		} else {
+			$data =  $this->authenticator->generate_access_token( '', $params );
+		}
 
 		$this->refresh_token        = null;
 		$this->token                = isset( $data['access_token'] ) ? $data['access_token'] : null;
