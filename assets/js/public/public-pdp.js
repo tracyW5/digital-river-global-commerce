@@ -190,7 +190,7 @@ jQuery(document).ready(($) => {
 
         $('.dr-minicart-count').text(cart.totalItemsInCart);
         $('.dr-minicart-header').siblings().remove();
-        if ($('.logged-in').length && cart.totalItemsInCart == 0) {
+        if ($('section.logged-in').length && cart.totalItemsInCart == 0) {
             console.log('no item');
             $('section.logged-in > div').hide();
         }

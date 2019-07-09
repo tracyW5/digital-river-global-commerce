@@ -1672,7 +1672,7 @@ jQuery(document).ready(function ($) {
     });
   });
 
-  if ($('.logged-in').length) {
+  if ($('section.logged-in').length) {
     toggleCartBtns();
   }
 
@@ -1963,7 +1963,7 @@ jQuery(document).ready(function ($) {
     $('.dr-minicart-count').text(cart.totalItemsInCart);
     $('.dr-minicart-header').siblings().remove();
 
-    if ($('.logged-in').length && cart.totalItemsInCart == 0) {
+    if ($('section.logged-in').length && cart.totalItemsInCart == 0) {
       console.log('no item');
       $('section.logged-in > div').hide();
     }

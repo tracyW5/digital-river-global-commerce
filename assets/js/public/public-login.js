@@ -214,7 +214,7 @@ jQuery(document).ready(($) => {
         });
     });
 
-    if ( $('.logged-in').length) {
+    if ( $('section.logged-in').length) {
         toggleCartBtns();
     }
 
