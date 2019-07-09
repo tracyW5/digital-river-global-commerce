@@ -424,5 +424,11 @@ class DR_Express_Public {
 		$phpmailer->Port       = 2525;
 		$phpmailer->Username   = '8c0d84a880f6b1';
 		$phpmailer->Password   = 'ab951668e78885';
+  }
+
+	public function add_legal_link() {
+		if ( is_page( 'cart' ) || is_page( 'checkout' ) || is_page( 'thank-you' ) ) {
+			include_once 'partials/dr-express-legal-footer.php';
+    }
 	}
 }

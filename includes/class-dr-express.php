@@ -305,7 +305,8 @@ class DR_Express {
 		$this->loader->add_action( 'wp_ajax_dr_express_pass_reset_request', $plugin_public, 'dr_send_email_reset_pass_ajax' );
 
 		$this->loader->add_action( 'wp_ajax_nopriv_dr_express_reset_password', $plugin_public, 'dr_reset_password_ajax' );
-		$this->loader->add_action( 'wp_ajax_dr_express_reset_password', $plugin_public, 'dr_reset_password_ajax' );
+    $this->loader->add_action( 'wp_ajax_dr_express_reset_password', $plugin_public, 'dr_reset_password_ajax' );
+    $this->loader->add_filter( 'get_footer', $plugin_public, 'add_legal_link', 99, 2 );
     }
 
 	/**

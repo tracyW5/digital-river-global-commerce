@@ -30,6 +30,10 @@ iframe { width: 1px; min-width: 100%; /* workaround for iOS */ border: none; }
 
 @media (min-width: 1200px) { .container { width: 1170px; } }
 
+.dr-legal-footer a { font-family: "Open Sans",sans-serif; font-size: 16px; color: #000; line-height: 16px; margin-right: 10px; text-decoration: underline; }
+
+.dr-legal-footer .dr-aboutDigitalRiver { margin-right: 0px; }
+
 /* Minicart
 ------------------------------------------------------------------------*/
 #dr-minicart .dr-minicart-display { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; position: absolute; text-align: left; top: 61px; right: 0; width: 19.5rem; min-height: 300px; max-height: 400px; background-color: #fff; border: 1px solid #ddd; -webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); z-index: 99; font-size: 18px; }
@@ -140,6 +144,8 @@ input[type=radio] { position: relative; opacity: 1; width: -webkit-max-content; 
 .dr-express-wrapper .form-control:focus { color: #495057; background-color: #fff; border-color: #80bdff; outline: 0; -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
 
 .dr-express-wrapper .form-control::-webkit-input-placeholder { color: #6c757d; opacity: 1; }
+
+.dr-express-wrapper .form-control::-moz-placeholder { color: #6c757d; opacity: 1; }
 
 .dr-express-wrapper .form-control:-ms-input-placeholder { color: #6c757d; opacity: 1; }
 
@@ -708,6 +714,8 @@ input[type=radio] { position: relative; opacity: 1; width: -webkit-max-content; 
 
 .dr-express-wrapper ::-webkit-input-placeholder { opacity: 0.5; white-space: nowrap; }
 
+.dr-express-wrapper ::-moz-placeholder { opacity: 0.5; white-space: nowrap; }
+
 .dr-express-wrapper :-ms-input-placeholder { opacity: 0.5; white-space: nowrap; }
 
 .dr-express-wrapper ::-ms-input-placeholder { opacity: 0.5; white-space: nowrap; }
@@ -940,6 +948,8 @@ input[type=radio] { position: relative; opacity: 1; width: -webkit-max-content; 
 .dr-login .dr-login-sections__section.section-returning .dr-login-form input { height: 51px; padding: 0 10px; }
 
 .dr-login .dr-login-sections__section.section-returning .dr-login-form input::-webkit-input-placeholder { font-family: "Open Sans", sans-serif; }
+
+.dr-login .dr-login-sections__section.section-returning .dr-login-form input::-moz-placeholder { font-family: "Open Sans", sans-serif; }
 
 .dr-login .dr-login-sections__section.section-returning .dr-login-form input:-ms-input-placeholder { font-family: "Open Sans", sans-serif; }
 
