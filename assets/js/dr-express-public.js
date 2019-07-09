@@ -1619,7 +1619,7 @@ jQuery(document).ready(function ($) {
       if (!response.success) {
         $errMsg.text(response.data[0].message).show();
       } else {
-        $('#drResetPasswordModalBody').html('').html("\n                    <h3>Password reset email sent</h3>\n                    <p>You will be receiving an email \n                    soon with instructions on resetting your\n                    login password</p>\n                ");
+        $('#drResetPasswordModalBody').html('').html("\n                    <h3>Password reset email sent</h3>\n                    <p>You will be receiving an email\n                    soon with instructions on resetting your\n                    login password</p>\n                ");
         $('#dr-pass-reset-submit').hide();
       }
 
@@ -1691,7 +1691,7 @@ jQuery(document).ready(function ($) {
       success: function success(data) {
         if (data.cart.totalItemsInCart == 0) {
           console.log('no item');
-          $('.logged-in > div').hide();
+          $('section.logged-in > div').hide();
         }
       },
       error: function error(jqXHR) {
@@ -1965,7 +1965,7 @@ jQuery(document).ready(function ($) {
 
     if ($('.logged-in').length && cart.totalItemsInCart == 0) {
       console.log('no item');
-      $('.logged-in > div').hide();
+      $('section.logged-in > div').hide();
     }
 
     if (!lineItems.length) {

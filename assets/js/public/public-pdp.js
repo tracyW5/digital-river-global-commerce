@@ -80,7 +80,7 @@ jQuery(document).ready(($) => {
                 });
             });
         }
-        
+
 
         removeLineItem(lineItemID) {
             return new Promise((resolve, reject) => {
@@ -192,7 +192,7 @@ jQuery(document).ready(($) => {
         $('.dr-minicart-header').siblings().remove();
         if ($('.logged-in').length && cart.totalItemsInCart == 0) {
             console.log('no item');
-            $('.logged-in > div').hide();
+            $('section.logged-in > div').hide();
         }
 
         if (!lineItems.length) {
