@@ -17,7 +17,7 @@ $subtotal_items = $cart['cart']['totalItemsInCart'];
 $subtotal_items_text = $cart['cart']['totalItemsInCart'] > 1 ? __('items') : __('item');
 $subtotal_value = $cart['cart']['pricing']['formattedSubtotal'];
 $estimated_tax_value = $cart['cart']['pricing']['formattedTax'];
-$shipping_price_value = $cart['cart']['pricing']['formattedShippingAndHandling'] === '$0.00' ? 'FREE' : $cart['cart']['pricing']['formattedShippingAndHandling'];
+$shipping_price_value = $cart['cart']['pricing']['shippingAndHandling']['value'] === 0 ? 'FREE' : $cart['cart']['pricing']['formattedShippingAndHandling'];
 $discount = $cart['cart']['pricing']['discount']['value'];
 $formatted_discount = $cart['cart']['pricing']['formattedDiscount'];
 $total_value = $cart['cart']['pricing']['formattedOrderTotal'];
