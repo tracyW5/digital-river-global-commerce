@@ -654,6 +654,12 @@ jQuery(document).ready(function ($) {
   });
   $('#apply-promo-code-btn').click(function (e) {
     var promoCode = $('#promo-code').val();
+
+    if (!promoCode) {
+      $('#dr-promo-code-err-field').text('Please enter a valid promo code.').show();
+      return;
+    }
+
     $(e.target).addClass('sending').blur();
     updateCart({
       promoCode: promoCode

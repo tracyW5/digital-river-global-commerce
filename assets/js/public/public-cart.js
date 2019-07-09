@@ -459,8 +459,13 @@ jQuery(document).ready(($) => {
 
     $('#apply-promo-code-btn').click((e) => {
         const promoCode = $('#promo-code').val();
-        $(e.target).addClass('sending').blur();
 
+        if (!promoCode) {
+          $('#dr-promo-code-err-field').text('Please enter a valid promo code.').show();
+          return;
+        }
+
+        $(e.target).addClass('sending').blur();
         updateCart({ promoCode }).then(() => {
             $(e.target).removeClass('sending');
             $('#dr-promo-code-err-field').text('').hide();
