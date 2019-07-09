@@ -114,7 +114,7 @@ jQuery(document).ready(($) => {
                 } else {
                     $('.dr-signin-form-error').text( 'Something went wrong.' );
                 }
-                
+
                 $('.dr-signin-form-error').css('color', 'red');
             }
         });
@@ -152,7 +152,7 @@ jQuery(document).ready(($) => {
             } else {
                 $('#drResetPasswordModalBody').html('').html(`
                     <h3>Password reset email sent</h3>
-                    <p>You will be receiving an email 
+                    <p>You will be receiving an email
                     soon with instructions on resetting your
                     login password</p>
                 `);
@@ -206,15 +206,15 @@ jQuery(document).ready(($) => {
                     <h3>Password saved</h3>
                     <p>You can now log in with your new password</p>
                 `).css('color', 'green');
-                
+
                 setTimeout(() => location.replace(`${location.origin}${location.pathname}`), 2000);
             }
 
             $button.removeClass('sending').blur();
         });
     });
-    
-    if ( $('.logged-in').length) {
+
+    if ( $('section.logged-in').length) {
         toggleCartBtns();
     }
 
@@ -233,7 +233,7 @@ jQuery(document).ready(($) => {
             success: (data) => {
                 if (data.cart.totalItemsInCart == 0) {
                     console.log('no item');
-                    $('.logged-in > div').hide();
+                    $('section.logged-in > div').hide();
                 }
             },
             error: (jqXHR) => {
