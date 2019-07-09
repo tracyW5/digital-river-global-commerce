@@ -26,7 +26,7 @@ if ( isset( $order['order'] ) ) {
 $subtotal_items_text = $subtotal_items > 1 ? __('items') : __('item');
 $subtotal_value = $order['order']['pricing']['formattedSubtotal'] ?? '';
 $tax_value = $order['order']['pricing']['formattedTax'] ?? '';
-$shipping_price_value = ($order['order']['pricing']['formattedShipping'] ?? '') === '$0.00' ? 'FREE' : ($order['order']['pricing']['formattedShipping'] ?? '');
+$shipping_price_value = ($order['order']['pricing']['shipping']['value'] ?? '') === 0 ? 'FREE' : ($order['order']['pricing']['formattedShipping'] ?? '');
 $discount = $order['order']['pricing']['incentive']['value'];
 $formatted_discount = $order['order']['pricing']['formattedIncentive'];
 $total_value = $order['order']['pricing']['formattedTotal'] ?? '';
