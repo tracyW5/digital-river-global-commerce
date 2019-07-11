@@ -295,8 +295,8 @@ class DR_Express_Shopper extends AbstractHttpService {
 		try {
 			$res = $this->get($url);
 
-			if ( array_key_exists('addresses', $res['shopper']) && !empty($res['shopper']['addresses'][0]) ) {
-				return $res['shopper']['addresses'];
+			if ( array_key_exists('address', $res['shopper']['addresses']) && !empty($res['shopper']['addresses']['address']) ) {
+				return $res['shopper']['addresses']['address'];
 			} else {
 				return false;
 			}
