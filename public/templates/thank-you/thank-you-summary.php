@@ -48,7 +48,7 @@ $total_value = $order['order']['pricing']['formattedTotal'] ?? '';
     <p class="item-value"><?php echo $tax_value; ?></p>
 
 </div>
-
+<?php if ( $order['order']['hasPhysicalProduct'] ) : ?>
 <div class="dr-summary__shipping">
 
     <p class="item-label"><?php echo __('Shipping') ?></p>
@@ -56,7 +56,7 @@ $total_value = $order['order']['pricing']['formattedTotal'] ?? '';
     <p class="item-value"><?php echo $shipping_price_value; ?></p>
 
 </div>
-
+<?php endif; ?>
 <div class="dr-summary__discount" <?php if ( $discount === 0 ) echo 'style="display: none;"' ?>>
 
     <p class="discount-label"><?php echo __('Discount') ?></p>

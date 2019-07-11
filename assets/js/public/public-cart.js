@@ -312,8 +312,10 @@ jQuery(document).ready(($) => {
 
     function renderCartProduct(data){
       $('.dr-cart__products').html("");
+      let hasPhysicalProduct = false;
       $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
         let permalink = '';
+        if(lineitem.product.productType == "PHYSICAL")hasPhysicalProduct = true;
         $.ajax({
           type: 'POST',
           async: false,
@@ -354,6 +356,11 @@ jQuery(document).ready(($) => {
         });
       });
       const pricing = data.cart.pricing;
+      if(hasPhysicalProduct){
+        $('.dr-summary__shipping').show();
+      }else{
+        $('.dr-summary__shipping').hide();
+      }
       $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling);
       //overwrite $0.00 to FREE
       if(pricing.shippingAndHandling.value === 0 )$('div.dr-summary__shipping .shipping-value').text("FREE");

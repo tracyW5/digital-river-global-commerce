@@ -38,7 +38,7 @@ $delivery_info = 'Delivery in 2-5 working days and extended 30 days return perio
     <p class="item-value"><?php echo $estimated_tax_value; ?></p>
 
 </div>
-
+<?php if( $cart['cart']['hasPhysicalProduct'] ) : ?>
 <div class="dr-summary__shipping">
 
     <p class="item-label"><?php echo __('Shipping') ?></p>
@@ -46,6 +46,7 @@ $delivery_info = 'Delivery in 2-5 working days and extended 30 days return perio
     <p class="item-value"><?php echo $shipping_price_value; ?></p>
 
 </div>
+<?php endif; ?>
 
 <div class="dr-summary__discount" <?php if ( $discount === 0 ) echo 'style="display: none;"' ?>>
 
