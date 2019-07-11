@@ -155,7 +155,7 @@ jQuery(document).ready(($) => {
         tightBundleRemoveElements(lineitem.product.id);
       });
       shoppingCartBanner();
-      if($('.dr-cart__products').length > 0)$('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
+      $('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
     }
 
     function shoppingCartBanner(){

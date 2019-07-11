@@ -412,7 +412,7 @@ jQuery(document).ready(function ($) {
       tightBundleRemoveElements(lineitem.product.id);
     });
     shoppingCartBanner();
-    if ($('.dr-cart__products').length > 0) $('body').css({
+    $('body').css({
       'pointer-events': 'auto',
       'opacity': 1
     });
@@ -950,7 +950,7 @@ jQuery(document).ready(function ($) {
   function freshSummary($section) {
     if ($section.hasClass('dr-checkout__shipping') || $section.hasClass('dr-checkout__billing')) {
       $.ajax({
-        type: 'POST',
+        type: 'GET',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
@@ -970,9 +970,6 @@ jQuery(document).ready(function ($) {
           $('div.dr-summary__tax > .item-value').text(formattedTax);
           $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
           $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
-        },
-        error: function error(jqXHR) {
-          reject(jqXHR);
         }
       });
     }

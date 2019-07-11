@@ -240,7 +240,7 @@ jQuery(document).ready(($) => {
     function freshSummary($section) {
       if($section.hasClass('dr-checkout__shipping') || $section.hasClass('dr-checkout__billing')){
         $.ajax({
-          type: 'POST',
+          type: 'GET',
           headers: {
               Accept: 'application/json',
               'Content-Type':'application/json',
@@ -257,9 +257,6 @@ jQuery(document).ready(($) => {
             $('div.dr-summary__tax > .item-value').text(formattedTax);
             $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
             $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
-          },
-          error: (jqXHR) => {
-              reject(jqXHR);
           }
         });
       }

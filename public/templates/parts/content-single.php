@@ -59,7 +59,6 @@ $price = isset( $pricing['price'] ) ? $pricing['price'] : '';
 					    $var_type = 'duration';
 				    }
 				    ?>
-            <?php $current_theme = wp_get_theme(); ?>
                     <h6><?php echo __( 'Select ', 'digital-river' ) . ucfirst( $var_type ) . ':'; ?></h6>
 
                     <div class="dr_prod-variations">
