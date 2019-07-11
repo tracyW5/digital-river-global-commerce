@@ -17,7 +17,7 @@
 
         <div class="form-group">
 
-            <input type="email" name="email" value="<?php echo @$cart['cart']['shippingAddress']['emailAddress'] ?>" class="form-control dr-panel-edit__el" placeholder="<?php echo __( 'Please enter your email address' ); ?>" required>
+            <input type="email" name="email" value="<?php echo $customerEmail ?>" class="form-control dr-panel-edit__el" placeholder="<?php echo __( 'Please enter your email address' ); ?>" required>
 
             <div class="invalid-feedback">
 

@@ -16,23 +16,15 @@
         echo __( 'Your cart is empty!', 'dr-express' );
         $display = 'style="display:none;"';
     }
+    
+    $customerEmail = '';
+    if ( $customer && $customer['id'] != 'Anonymous' ) {
+        $customerEmail = $customer['emailAddress'];
+    }
 ?>
 
 <div class="dr-checkout-wrapper" id="dr-checkout-page-wrapper">
     <div class="dr-checkout-wrapper__actions" <?php echo $display; ?>>
-
-        <div class="dr-check-account">
-
-            <?php if ( $customer && 'Anonymous' === $customer['id'] ) : ?>
-
-                <span class="dr-check-account__text"><?php echo __( 'Have an account?', 'dr-express' ); ?></span>
-
-                <a href="<?php echo esc_url( dr_get_page_link( 'login' ) ); ?>" class="dr-check-account__link"><?php echo __( 'Sign in', 'dr-express' ); ?></a>
-
-            <?php endif; ?>
-
-        </div>
-
         <div class="back-link">
 
             <a href="" onclick="history.back(); return false;">&#60; Back</a>

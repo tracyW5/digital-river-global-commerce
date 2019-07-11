@@ -1,3 +1,12 @@
+<?php
+$shippingAddress = $cart['cart']['shippingAddress'];
+if ($customer_address) {
+    $shippingAddress = $customer_address[0];
+}
+if ( $cart['cart']['shippingAddress']['line1'] != '') {
+    $shippingAddress = $cart['cart']['shippingAddress'];
+}
+?>
 <div class="dr-checkout__shipping dr-checkout__el">
     <button class="dr-accordion">
 
@@ -38,7 +47,7 @@
 
                 </label>
 
-                <input id="shipping-field-first-name" type="text" value="<?php echo $cart['cart']['shippingAddress']['firstName'] ?>" name="shipping-firstName" class="form-control float-field float-field--first-name" required>
+                <input id="shipping-field-first-name" type="text" value="<?php echo $shippingAddress['firstName'] ?>" name="shipping-firstName" class="form-control float-field float-field--first-name" required>
 
                 <div class="invalid-feedback">
 
@@ -60,7 +69,7 @@
 
                 </label>
 
-                <input id="shipping-field-last-name" type="text" value="<?php echo $cart['cart']['shippingAddress']['lastName'] ?>" name="shipping-lastName" class="form-control float-field float-field--last-name" required>
+                <input id="shipping-field-last-name" type="text" value="<?php echo $shippingAddress['lastName'] ?>" name="shipping-lastName" class="form-control float-field float-field--last-name" required>
 
                 <div class="invalid-feedback">
 
@@ -82,7 +91,7 @@
 
                 </label>
 
-                <input id="shipping-field-address1" type="text" value="<?php echo $cart['cart']['shippingAddress']['line1'] ?>" name="shipping-line1" class="form-control float-field float-field--address1" required>
+                <input id="shipping-field-address1" type="text" value="<?php echo $shippingAddress['line1'] ?>" name="shipping-line1" class="form-control float-field float-field--address1" required>
 
                 <div class="invalid-feedback">
 
@@ -104,7 +113,7 @@
 
                 </label>
 
-                <input id="shipping-field-address2" type="text" name="shipping-line2" value="<?php echo $cart['cart']['shippingAddress']['line2'] ?>" class="form-control float-field float-field--address2">
+                <input id="shipping-field-address2" type="text" name="shipping-line2" value="<?php echo $shippingAddress['line2'] ?>" class="form-control float-field float-field--address2">
             
             </div>
 
@@ -120,7 +129,7 @@
                     
                 </label>
 
-                <input id="shipping-field-city" type="text" name="shipping-city" value="<?php echo $cart['cart']['shippingAddress']['city'] ?>" class="form-control float-field float-field--city" required>
+                <input id="shipping-field-city" type="text" name="shipping-city" value="<?php echo $shippingAddress['city'] ?>" class="form-control float-field float-field--city" required>
 
                 <div class="invalid-feedback">
 
@@ -145,7 +154,7 @@
                         $abrvCountyName = code_to_counry($locale, true);
 
                         $output = "<option ";
-                        $output .= ($cart['cart']['shippingAddress']['country'] === $abrvCountyName ? 'selected ' : '');
+                        $output .= ($shippingAddress['country'] === $abrvCountyName ? 'selected ' : '');
                         $output .= "value=\"{$abrvCountyName}\">{$country}</option>";
                         echo $output;
                     ?>
@@ -161,7 +170,7 @@
         </div>
 
 
-        <div class="form-group dr-panel-edit__el <?php echo $cart['cart']['shippingAddress']['country'] !== 'US' ? 'd-none' : '' ?>">
+        <div class="form-group dr-panel-edit__el <?php echo $shippingAddress['country'] !== 'US' ? 'd-none' : '' ?>">
 
             <select class="form-control custom-select" name="shipping-countrySubdivision" id="shipping-field-state" required>
 
@@ -172,7 +181,7 @@
                 <?php foreach ($usa_states as $key => $state): ?>
                         <?php 
                             $option = "<option ";
-                            $option .= $cart['cart']['shippingAddress']['countrySubdivision'] === $state ? 'selected ' : '';
+                            $option .= $shippingAddress['countrySubdivision'] === $key ? 'selected ' : '';
                             $option .= "value=\"{$key}\">{$state}</option>";
                             echo $option;
                         ?>
@@ -198,7 +207,7 @@
 
                 </label>
 
-                <input id="shipping-field-zip" type="text" name="shipping-postalCode" value="<?php echo $cart['cart']['shippingAddress']['postalCode'] ?>" class="form-control float-field float-field--zip" required>
+                <input id="shipping-field-zip" type="text" name="shipping-postalCode" value="<?php echo $shippingAddress['postalCode'] ?>" class="form-control float-field float-field--zip" required>
 
                 <div class="invalid-feedback">
 
@@ -220,7 +229,7 @@
 
                 </label>
                 
-                <input id="shipping-field-phone" type="text" name="shipping-phoneNumber" value="<?php echo $cart['cart']['shippingAddress']['phoneNumber'] ?>" class="form-control float-field float-field--phone">
+                <input id="shipping-field-phone" type="text" name="shipping-phoneNumber" value="<?php echo $shippingAddress['phoneNumber'] ?>" class="form-control float-field float-field--phone">
             
             </div>
 
