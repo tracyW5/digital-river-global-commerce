@@ -116,6 +116,22 @@ jQuery(document).ready(($) => {
         });
     }
 
+    function beforeAjax() {
+      if($('.dr-cart__products').length > 0)$('body').css({ 'pointer-events': 'none', 'opacity': 0.5 });
+    }
+
+    function afterAjax() {
+      if($('.dr-cart__products').length > 0)$('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
+    }
+
+    $(document).ajaxSend(function() {
+      beforeAjax();
+    });
+
+    $(document).ajaxStop(function() {
+      afterAjax();
+    });
+
     function fetchFreshCart() {
         $.ajax({
             type: 'GET',
@@ -128,9 +144,6 @@ jQuery(document).ready(($) => {
                 url += `&token=${drExpressOptions.accessToken}`
                 return url;
             })(),
-            beforeSend: function() {
-              $('body').css({ 'pointer-events': 'none', 'opacity': 0.5 });
-            },
             success: (data) => {
                 renderCartProduct(data);
                 displayMiniCart(data.cart);
@@ -148,7 +161,6 @@ jQuery(document).ready(($) => {
         tightBundleRemoveElements(lineitem.product.id);
       });
       shoppingCartBanner();
-      $('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
     }
 
     function shoppingCartBanner(){
@@ -393,6 +405,8 @@ jQuery(document).ready(($) => {
             }
         });
     });
+
+
 
     function displayMiniCart(cart) {
 
