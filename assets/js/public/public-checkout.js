@@ -5,6 +5,7 @@ jQuery(document).ready(($) => {
     const apiBaseUrl = 'https://' + domain + '/v1/shoppers';
     const drLocale = drExpressOptions.drLocale || 'en_US';
 
+
     // Get login address info
     if (drExpressOptions.accessToken.length > 0) {
         getShopper();
@@ -306,6 +307,10 @@ jQuery(document).ready(($) => {
         $section.find('.dr-panel-result__text').text(emailPayload);
         moveToNextSection($section);
     });
+
+    if ( $('input[name=email]').val() && $('#checkout-email-form').length ){
+        $('#checkout-email-form').submit();
+    }
 
     // Submit shipping info form
     $('#checkout-shipping-form').on('submit', function(e) {

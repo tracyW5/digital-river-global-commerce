@@ -1,4 +1,14 @@
+<?php
+$billingAddress = $cart['cart']['billingAddress'];
+if ($customer_address) {
+    $billingAddress = $customer_address[0];
+}
+if ( $cart['cart']['billingAddress']['line1'] != '') {
+    $billingAddress = $cart['cart']['billingAddress'];
+}
+?>
 <div class="dr-checkout__billing dr-checkout__el">
+
     <button class="dr-accordion">
 
         <span class="dr-accordion__name">
@@ -59,7 +69,7 @@
 
                     </label>
 
-                    <input id="billing-field-first-name" type="text" name="billing-firstName" value="<?php echo $cart['cart']['billingAddress']['firstName'] ?>" class="form-control float-field float-field--first-name" required>
+                    <input id="billing-field-first-name" type="text" name="billing-firstName" value="<?php echo $billingAddress['firstName'] ?>" class="form-control float-field float-field--first-name" required>
 
                     <div class="invalid-feedback">
 
@@ -81,7 +91,7 @@
 
                     </label>
 
-                    <input id="billing-field-last-name" type="text" name="billing-lastName" value="<?php echo $cart['cart']['billingAddress']['lastName'] ?>" class="form-control float-field float-field--last-name" required>
+                    <input id="billing-field-last-name" type="text" name="billing-lastName" value="<?php echo $billingAddress['lastName'] ?>" class="form-control float-field float-field--last-name" required>
 
                     <div class="invalid-feedback">
 
@@ -103,7 +113,7 @@
 
                     </label>
 
-                    <input id="billing-field-address1" type="text" name="billing-line1" value="<?php echo $cart['cart']['billingAddress']['line1'] ?>" class="form-control float-field float-field--address1" required>
+                    <input id="billing-field-address1" type="text" name="billing-line1" value="<?php echo $billingAddress['line1'] ?>" class="form-control float-field float-field--address1" required>
 
                     <div class="invalid-feedback">
 
@@ -125,7 +135,7 @@
 
                     </label>
 
-                    <input id="billing-field-address2" type="text" name="billing-line2" value="<?php echo $cart['cart']['billingAddress']['line2'] ?>" class="form-control float-field float-field--address2" >
+                    <input id="billing-field-address2" type="text" name="billing-line2" value="<?php echo $billingAddress['line2'] ?>" class="form-control float-field float-field--address2" >
 
                 </div>
 
@@ -141,7 +151,7 @@
                         
                     </label>
 
-                    <input id="billing-field-city" type="text" name="billing-city" value="<?php echo $cart['cart']['billingAddress']['city'] ?>" class="form-control float-field float-field--city" required>
+                    <input id="billing-field-city" type="text" name="billing-city" value="<?php echo $billingAddress['city'] ?>" class="form-control float-field float-field--city" required>
 
                     <div class="invalid-feedback">
 
@@ -167,7 +177,7 @@
                             $abrvCountyName = code_to_counry($locale, true);
 
                             $output = "<option ";
-                            $output .= ($cart['cart']['billingAddress']['country'] === $abrvCountyName ? 'selected ' : '');
+                            $output .= ($billingAddress['country'] === $abrvCountyName ? 'selected ' : '');
                             $output .= "value=\"{$abrvCountyName}\">{$country}</option>";
                             echo $output;
                         ?>
@@ -183,7 +193,7 @@
 
             </div>
 
-            <div class="form-group dr-panel-edit__el <?php echo $cart['cart']['billingAddress']['country'] !== 'US' ? 'd-none' : '' ?>">
+            <div class="form-group dr-panel-edit__el <?php echo $billingAddress['country'] !== 'US' ? 'd-none' : '' ?>">
 
                 <select class="form-control custom-select" name="billing-countrySubdivision" id="billing-field-state" required>
 
@@ -194,7 +204,7 @@
                     <?php foreach ($usa_states as $key => $state): ?>
                         <?php 
                             $option = "<option ";
-                            $option .= $cart['cart']['billingAddress']['countrySubdivision'] === $state ? 'selected ' : '';
+                            $option .= $billingAddress['countrySubdivision'] === $key ? 'selected ' : '';
                             $option .= "value=\"{$key}\">{$state}</option>";
                             echo $option;
                         ?>
@@ -220,7 +230,7 @@
 
                     </label>
 
-                    <input id="billing-field-zip" type="text" name="billing-postalCode" value="<?php echo $cart['cart']['billingAddress']['postalCode'] ?>" class="form-control float-field float-field--zip" required>
+                    <input id="billing-field-zip" type="text" name="billing-postalCode" value="<?php echo $billingAddress['postalCode'] ?>" class="form-control float-field float-field--zip" required>
 
                     <div class="invalid-feedback">
 
@@ -242,7 +252,7 @@
                     
                     </label>
                     
-                    <input id="billing-field-phone" type="text" name="billing-phoneNumber" value="<?php echo $cart['cart']['billingAddress']['phoneNumber'] ?>" class="form-control float-field float-field--phone" >
+                    <input id="billing-field-phone" type="text" name="billing-phoneNumber" value="<?php echo $billingAddress['phoneNumber'] ?>" class="form-control float-field float-field--phone" >
 
                 </div>
 

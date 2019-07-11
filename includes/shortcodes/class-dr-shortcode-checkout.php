@@ -29,11 +29,12 @@ class DR_Shortcode_Checkout {
 		$locales = get_option( 'dr_store_locales' );
 		$cart = DR_Express()->cart->retrieve_cart();
 		$customer = DR_Express()->shopper->retrieve_shopper();
+		$customer_address = DR_Express()->shopper->retrieve_shopper_address();
 		$usa_states = retrieve_usa_states();
 		
 		dr_get_template(
 			'checkout/checkout.php',
-			compact('cart', 'customer', 'usa_states', 'locales')
+			compact('cart', 'customer', 'customer_address', 'usa_states', 'locales')
 		);
 	}
 }
