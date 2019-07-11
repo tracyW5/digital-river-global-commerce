@@ -48,7 +48,8 @@ $price = isset( $pricing['price'] ) ? $pricing['price'] : '';
 			    <?php } ?>
 			    <?php the_content(); ?>
 
-			    <?php if ( $variations ) :
+          <?php
+          if ( $variations ) :
 				    $var_type = '';
 				    if ( ! empty( get_post_meta( get_the_ID(), 'color', true ) ) ) {
 					    $var_type = 'color';
@@ -58,13 +59,14 @@ $price = isset( $pricing['price'] ) ? $pricing['price'] : '';
 					    $var_type = 'duration';
 				    }
 				    ?>
-				    <?php if ( ! empty( $var_type ) ) : ?>
+            <?php $current_theme = wp_get_theme(); ?>
+				    <?php if ( $current_theme->get('Name') != 'Digital River' ) : ?>
                     <h6><?php echo __( 'Select ', 'digital-river' ) . ucfirst( $var_type ) . ':'; ?></h6>
 
                     <div class="dr_prod-variations">
 
                         <select name="dr-variation" >
-						    <?php foreach ( $variations as $variation ) :
+                <?php foreach ( $variations as $variation ) :
 							    $var_gc_id = get_post_meta( $variation->ID, 'gc_product_id', true );
 							    $variation_type = get_post_meta( $variation->ID, $var_type, true );
 							    $var_pricing = dr_get_product_pricing( $variation->ID );
@@ -72,7 +74,7 @@ $price = isset( $pricing['price'] ) ? $pricing['price'] : '';
                                 <option value="<?php echo $var_gc_id; ?>"
                                         data-price="<?php echo isset( $var_pricing['price'] ) ? $var_pricing['price'] : ''; ?>"
                                 >
-								    <?php echo ucwords( $variation_type ); ?>
+								    <?php echo $variation->post_name; ?>
                                 </option>
 						    <?php endforeach; ?>
                         </select>

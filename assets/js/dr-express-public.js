@@ -379,18 +379,8 @@ jQuery(document).ready(function ($) {
     });
   }
 
-  function afterAjax() {
-    if ($('.dr-cart__products').length > 0) $('body').css({
-      'pointer-events': 'auto',
-      'opacity': 1
-    });
-  }
-
   $(document).ajaxSend(function () {
     beforeAjax();
-  });
-  $(document).ajaxStop(function () {
-    afterAjax();
   });
 
   function fetchFreshCart() {
@@ -422,6 +412,10 @@ jQuery(document).ready(function ($) {
       tightBundleRemoveElements(lineitem.product.id);
     });
     shoppingCartBanner();
+    if ($('.dr-cart__products').length > 0) $('body').css({
+      'pointer-events': 'auto',
+      'opacity': 1
+    });
   }
 
   function shoppingCartBanner() {
