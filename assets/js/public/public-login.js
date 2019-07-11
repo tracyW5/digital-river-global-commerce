@@ -231,9 +231,8 @@ jQuery(document).ready(($) => {
                 return url;
             })(),
             success: (data) => {
-                if (data.cart.totalItemsInCart == 0) {
-                    console.log('no item');
-                    $('section.logged-in > div').hide();
+                if ($('section.dr-login-sections__section.logged-in').length && data.cart.totalItemsInCart == 0) {
+                    $('section.dr-login-sections__section.logged-in > div').hide();
                 }
             },
             error: (jqXHR) => {

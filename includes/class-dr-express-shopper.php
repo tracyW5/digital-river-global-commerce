@@ -59,6 +59,11 @@ class DR_Express_Shopper extends AbstractHttpService {
 	 */
 	protected $shopper_data;
 
+    /**
+     * Undocumented variable
+     */
+    protected $dr_express_api_key;
+
 	/**
 	 * DR_Express_Shopper constructor.
 	 *
@@ -67,6 +72,7 @@ class DR_Express_Shopper extends AbstractHttpService {
 	public function __construct( $authenticator, $handler = false ) {
 		parent::__construct($handler);
 		$this->authenticator = $authenticator;
+        $this->dr_express_api_key = get_option( 'dr_express_api_key' );
 
 		$this->init();
 	}
@@ -268,6 +274,32 @@ class DR_Express_Shopper extends AbstractHttpService {
 			$this->user_id = $res['shopper']['id'];
 
 			return $res['shopper'];
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
+	public function retrieve_shopper_address( $params = array() ) {
+		$default = array(
+			'token'             => $this->token,
+			'client_id'         => $this->dr_express_api_key,
+			'expand'            => 'all'
+		);
+
+		$params = array_merge(
+			$default,
+			array_intersect_key( $params, $default )
+		);
+
+		$url = "/v1/shoppers/me?".http_build_query( $params );
+		try {
+			$res = $this->get($url);
+
+			if ( array_key_exists('addresses', $res['shopper']) && !empty($res['shopper']['addresses'][0]) ) {
+				return $res['shopper']['addresses'];
+			} else {
+				return false;
+			}
 		} catch (\Exception $e) {
 			return false;
 		}

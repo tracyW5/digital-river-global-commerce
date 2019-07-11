@@ -190,9 +190,8 @@ jQuery(document).ready(($) => {
 
         $('.dr-minicart-count').text(cart.totalItemsInCart);
         $('.dr-minicart-header').siblings().remove();
-        if ($('section.logged-in').length && cart.totalItemsInCart == 0) {
-            console.log('no item');
-            $('section.logged-in > div').hide();
+        if ($('section.dr-login-sections__section.logged-in').length && cart.totalItemsInCart == 0) {
+            $('section.dr-login-sections__section.logged-in > div').hide();
         }
 
         if (!lineItems.length) {
