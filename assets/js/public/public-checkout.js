@@ -33,7 +33,7 @@ jQuery(document).ready(($) => {
                                 displayAddress(data.shopper.addresses.address[0]);
                             }
                         }
-        
+
                         $('#checkout-shipping-form input[type=text]').each(function(){
                             if ($(this).val().length > 0) {
                                 $(this).parent('.float-container').addClass('active');
@@ -234,6 +234,35 @@ jQuery(document).ready(($) => {
         }
 
         adjustColumns($section);
+        freshSummary($section);
+    }
+
+    function freshSummary($section) {
+      if($section.hasClass('dr-checkout__shipping') || $section.hasClass('dr-checkout__billing')){
+        $.ajax({
+          type: 'POST',
+          headers: {
+              Accept: 'application/json',
+              'Content-Type':'application/json',
+              Authorization: `Bearer ${drExpressOptions.accessToken}`,
+          },
+          url: (() => {
+              let url = `${apiBaseUrl}/me/carts/active?`;
+              url += `&token=${drExpressOptions.accessToken}`;
+              return url;
+          })(),
+          success: (data) => {
+            let { formattedShippingAndHandling, formattedOrderTotal,formattedTax } = data.cart.pricing;
+            if(data.cart.pricing.shippingAndHandling.value === 0 )formattedShippingAndHandling = "FREE";
+            $('div.dr-summary__tax > .item-value').text(formattedTax);
+            $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
+            $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
+          },
+          error: (jqXHR) => {
+              reject(jqXHR);
+          }
+        });
+      }
     }
 
     function adjustColumns($section) {
@@ -473,8 +502,9 @@ jQuery(document).ready(($) => {
             return url;
         })(),
         success: (data) => {
-          let { formattedShippingAndHandling, formattedOrderTotal } = data.cart.pricing;
+          let { formattedShippingAndHandling, formattedOrderTotal,formattedTax } = data.cart.pricing;
           if(data.cart.pricing.shippingAndHandling.value === 0 )formattedShippingAndHandling = "FREE";
+          $('div.dr-summary__tax > .item-value').text(formattedTax);
           $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
           $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
         },

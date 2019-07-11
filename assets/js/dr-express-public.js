@@ -937,6 +937,37 @@ jQuery(document).ready(function ($) {
     adjustColumns($section);
   }
 
+  function freshSummary($section) {
+    if ($section.hasClass('dr-checkout__shipping') || $section.hasClass('dr-checkout__billing')) {
+      $.ajax({
+        type: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+        },
+        url: function () {
+          var url = "".concat(apiBaseUrl, "/me/carts/active?");
+          url += "&token=".concat(drExpressOptions.accessToken);
+          return url;
+        }(),
+        success: function success(data) {
+          var _data$cart$pricing = data.cart.pricing,
+              formattedShippingAndHandling = _data$cart$pricing.formattedShippingAndHandling,
+              formattedOrderTotal = _data$cart$pricing.formattedOrderTotal,
+              formattedTax = _data$cart$pricing.formattedTax;
+          if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = "FREE";
+          $('div.dr-summary__tax > .item-value').text(formattedTax);
+          $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
+          $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
+        },
+        error: function error(jqXHR) {
+          reject(jqXHR);
+        }
+      });
+    }
+  }
+
   function adjustColumns($section) {
     var $shippingSection = $('.dr-checkout__shipping');
     var $billingSection = $('.dr-checkout__billing');
@@ -1127,10 +1158,12 @@ jQuery(document).ready(function ($) {
         return url;
       }(),
       success: function success(data) {
-        var _data$cart$pricing = data.cart.pricing,
-            formattedShippingAndHandling = _data$cart$pricing.formattedShippingAndHandling,
-            formattedOrderTotal = _data$cart$pricing.formattedOrderTotal;
+        var _data$cart$pricing2 = data.cart.pricing,
+            formattedShippingAndHandling = _data$cart$pricing2.formattedShippingAndHandling,
+            formattedOrderTotal = _data$cart$pricing2.formattedOrderTotal,
+            formattedTax = _data$cart$pricing2.formattedTax;
         if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = "FREE";
+        $('div.dr-summary__tax > .item-value').text(formattedTax);
         $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
         $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
       },

@@ -60,7 +60,6 @@ $price = isset( $pricing['price'] ) ? $pricing['price'] : '';
 				    }
 				    ?>
             <?php $current_theme = wp_get_theme(); ?>
-				    <?php if ( $current_theme->get('Name') != 'Digital River' ) : ?>
                     <h6><?php echo __( 'Select ', 'digital-river' ) . ucfirst( $var_type ) . ':'; ?></h6>
 
                     <div class="dr_prod-variations">
@@ -74,14 +73,18 @@ $price = isset( $pricing['price'] ) ? $pricing['price'] : '';
                                 <option value="<?php echo $var_gc_id; ?>"
                                         data-price="<?php echo isset( $var_pricing['price'] ) ? $var_pricing['price'] : ''; ?>"
                                 >
-								    <?php echo $variation->post_name; ?>
+                    <?php
+                      if(ucwords( $variation_type) != ""){
+                        echo ucwords( $variation_type);
+                      }else{
+                        echo $variation->post_name;
+                      }
+                    ?>
                                 </option>
 						    <?php endforeach; ?>
                         </select>
 
                     </div>
-			    <?php endif; ?>
-
 			    <?php endif; ?>
 
                 <form id="dr-pd-form">
