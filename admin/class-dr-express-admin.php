@@ -199,6 +199,15 @@ class DR_Express_Admin {
 			$this->plugin_name,
 			$this->option_name . '_general',
 			array( 'label_for' => $this->option_name . '_cron_handler' )
+    );
+
+		add_settings_field(
+			$this->option_name . '_testOrder_handler',
+			__( 'Test Order', 'dr-express' ),
+			array( $this, $this->option_name . '_testOrder_handler_cb' ),
+			$this->plugin_name,
+			$this->option_name . '_general',
+			array( 'label_for' => $this->option_name . '_testOrder_handler' )
 		);
 
 		add_settings_section(
@@ -212,7 +221,8 @@ class DR_Express_Admin {
 		register_setting( $this->plugin_name, $this->option_name . '_api_key', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ) );
 		register_setting( $this->plugin_name, $this->option_name . '_domain', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ) );
 		register_setting( $this->plugin_name, $this->option_name . '_digitalRiver_key', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ) );
-		register_setting( $this->plugin_name, $this->option_name . '_cron_handler', array( 'sanitize_callback' => array( $this, 'dr_sanitize_checkbox' ), 'default' => '' ) );
+    register_setting( $this->plugin_name, $this->option_name . '_cron_handler', array( 'sanitize_callback' => array( $this, 'dr_sanitize_checkbox' ), 'default' => '' ) );
+    register_setting( $this->plugin_name, $this->option_name . '_testOrder_handler', array( 'sanitize_callback' => array( $this, 'dr_sanitize_checkbox' ), 'default' => '' ) );
 	}
 
 	/**
@@ -278,10 +288,22 @@ class DR_Express_Admin {
 	 *
 	 * @since    1.0.0
 	 */
+
+	public function dr_express_testOrder_handler_cb() {
+		$option = get_option( $this->option_name . '_testOrder_handler' );
+		$checked = '';
+
+		if ( is_array( $option ) && $option['checkbox'] === '1' ) {
+			$checked = 'checked="checked"';
+		}
+
+		echo '<input type="checkbox" class="regular-text" name="' . $this->option_name . '_testOrder_handler[checkbox]" id="' . $this->option_name . '_testOrder_handler" value="1" ' . $checked . ' />';
+		echo '<span class="description" id="cron-description">' . __( 'TestOrder Enable.', 'dr-express' ) . '</span>';
+	}
 	public function dr_express_cron_handler_cb() {
 		$option = get_option( $this->option_name . '_cron_handler' );
 		$checked = '';
-		
+
 		if ( is_array( $option ) && $option['checkbox'] === '1' ) {
 			$checked = 'checked="checked"';
 		}

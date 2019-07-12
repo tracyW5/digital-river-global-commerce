@@ -269,6 +269,7 @@ jQuery(document).ready(($) => {
           },
           url: (() => {
               let url = buyUri;
+              if(drExpressOptions.testOrder == "true")url += '&testOrder=true';
               url += `&token=${drExpressOptions.accessToken}`
               return url;
           })(),

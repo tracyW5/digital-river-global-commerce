@@ -79,7 +79,7 @@ class DR_Express_Public {
 		wp_enqueue_script( 'digital-river-js', 'https://js.digitalriver.com/v1/DigitalRiver.js', array( $this->dr_express ), null, true );
 
 		wp_enqueue_script( 'paypal-checkout-js', 'https://www.paypalobjects.com/api/checkout.js', array( $this->dr_express ), null, true );
-		
+
 		$access_token = '';
 		if ( DR_Express()->authenticator ) {
 			$access_token = DR_Express()->authenticator->get_token();
@@ -89,6 +89,10 @@ class DR_Express_Public {
 		if ( DR_Express()->cart ) {
 			$cart_obj = DR_Express()->cart->retrieve_cart();
 		}
+
+    //test Order Handler
+    $testOrder_option = get_option( 'dr_express_testOrder_handler' );
+		$testOrder_enable = ( is_array( $testOrder_option ) && '1' == $testOrder_option['checkbox'] )  ? "true" : "false";
 
 		// transfer dr-express options from PHP to JS
 		$options = array(
@@ -108,7 +112,8 @@ class DR_Express_Public {
 				'sourceId' => isset( $_GET['sourceId'] ) ? $_GET['sourceId'] : false,
 				'failure' => isset( $_GET['ppcancel'] ) ? $_GET['ppcancel'] : false,
 				'success' => isset ( $_GET['ppsuccess'] ) ? $_GET['ppsuccess'] : false,
-			)
+      ),
+      'testOrder' => $testOrder_enable,
 		);
 
 		wp_localize_script( $this->dr_express, 'drExpressOptions', $options );
@@ -123,7 +128,7 @@ class DR_Express_Public {
 
 		if ( $username && $password ) {
 			$user = wp_authenticate( $username, $password );
- 
+
 			if ( is_wp_error( $user ) ) {
 				wp_send_json_error( __( 'Authorization failed for specified credentials' ) );
 			}
@@ -138,7 +143,7 @@ class DR_Express_Public {
 
 		if ( array_key_exists( 'access_token', $attempt ) ) {
 			$plugin->session->dirty_set_session( $cookie );
-			
+
 			wp_send_json_success( $attempt );
 		}
 	}
@@ -202,13 +207,13 @@ class DR_Express_Public {
 			if ( ! is_null( $attempt ) && array_key_exists( 'errors', $attempt ) ) {
 				wp_delete_user( $user_id );
 				wp_send_json_error( $attempt );
-			} else {				 
+			} else {
 				$user = wp_authenticate( $email, $password );
- 
+
 				if ( is_wp_error( $user ) ) {
 					wp_send_json_error( $user );
 				}
-	
+
 				$attempt = $plugin->shopper->generate_access_token_by_login_id($email, $password);
 				wp_send_json_success( $attempt );
 			}
@@ -313,8 +318,8 @@ class DR_Express_Public {
 		$login = urldecode( urldecode( trim($_POST['login'] ) ) );
 
 		if (
-			empty( $password ) || ! is_string( $password ) || 
-			empty( $key ) || ! is_string( $key ) || 
+			empty( $password ) || ! is_string( $password ) ||
+			empty( $key ) || ! is_string( $key ) ||
 			empty( $login ) || ! is_string( $login )
 		) {
 			wp_send_json_error( __( 'Something went wrong' ) );
