@@ -372,6 +372,17 @@ jQuery(document).ready(function ($) {
     });
   }
 
+  function beforeAjax() {
+    if ($('.dr-cart__products').length > 0) $('body').css({
+      'pointer-events': 'none',
+      'opacity': 0.5
+    });
+  }
+
+  $(document).ajaxSend(function () {
+    beforeAjax();
+  });
+
   function fetchFreshCart() {
     $.ajax({
       type: 'GET',
@@ -384,12 +395,6 @@ jQuery(document).ready(function ($) {
         url += "&token=".concat(drExpressOptions.accessToken);
         return url;
       }(),
-      beforeSend: function beforeSend() {
-        $('body').css({
-          'pointer-events': 'none',
-          'opacity': 0.5
-        });
-      },
       success: function success(data) {
         renderCartProduct(data);
         displayMiniCart(data.cart);
@@ -542,8 +547,10 @@ jQuery(document).ready(function ($) {
 
   function renderCartProduct(data) {
     $('.dr-cart__products').html("");
+    var hasPhysicalProduct = false;
     $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
       var permalink = '';
+      if (lineitem.product.productType == "PHYSICAL") hasPhysicalProduct = true;
       $.ajax({
         type: 'POST',
         async: false,
@@ -560,6 +567,13 @@ jQuery(document).ready(function ($) {
       });
     });
     var pricing = data.cart.pricing;
+
+    if (hasPhysicalProduct) {
+      $('.dr-summary__shipping').show();
+    } else {
+      $('.dr-summary__shipping').hide();
+    }
+
     $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling); //overwrite $0.00 to FREE
 
     if (pricing.shippingAndHandling.value === 0) $('div.dr-summary__shipping .shipping-value').text("FREE");
@@ -859,6 +873,35 @@ jQuery(document).ready(function ($) {
     }
 
     adjustColumns($section);
+    freshSummary($section);
+  }
+
+  function freshSummary($section) {
+    if ($section.hasClass('dr-checkout__shipping') || $section.hasClass('dr-checkout__billing')) {
+      $.ajax({
+        type: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+        },
+        url: function () {
+          var url = "".concat(apiBaseUrl, "/me/carts/active?");
+          url += "&token=".concat(drExpressOptions.accessToken);
+          return url;
+        }(),
+        success: function success(data) {
+          var _data$cart$pricing = data.cart.pricing,
+              formattedShippingAndHandling = _data$cart$pricing.formattedShippingAndHandling,
+              formattedOrderTotal = _data$cart$pricing.formattedOrderTotal,
+              formattedTax = _data$cart$pricing.formattedTax;
+          if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = "FREE";
+          $('div.dr-summary__tax > .item-value').text(formattedTax);
+          $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
+          $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
+        }
+      });
+    }
   }
 
   function adjustColumns($section) {
@@ -1056,10 +1099,12 @@ jQuery(document).ready(function ($) {
         return url;
       }(),
       success: function success(data) {
-        var _data$cart$pricing = data.cart.pricing,
-            formattedShippingAndHandling = _data$cart$pricing.formattedShippingAndHandling,
-            formattedOrderTotal = _data$cart$pricing.formattedOrderTotal;
+        var _data$cart$pricing2 = data.cart.pricing,
+            formattedShippingAndHandling = _data$cart$pricing2.formattedShippingAndHandling,
+            formattedOrderTotal = _data$cart$pricing2.formattedOrderTotal,
+            formattedTax = _data$cart$pricing2.formattedTax;
         if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = "FREE";
+        $('div.dr-summary__tax > .item-value').text(formattedTax);
         $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
         $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
       },

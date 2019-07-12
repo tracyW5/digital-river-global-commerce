@@ -5,6 +5,7 @@ jQuery(document).ready(($) => {
     const apiBaseUrl = 'https://' + domain + '/v1/shoppers';
     const drLocale = drExpressOptions.drLocale || 'en_US';
 
+
     function getAddress(addressType) {
         const address = {
           address: {
@@ -166,6 +167,32 @@ jQuery(document).ready(($) => {
         }
 
         adjustColumns($section);
+        freshSummary($section);
+    }
+
+    function freshSummary($section) {
+      if($section.hasClass('dr-checkout__shipping') || $section.hasClass('dr-checkout__billing')){
+        $.ajax({
+          type: 'GET',
+          headers: {
+              Accept: 'application/json',
+              'Content-Type':'application/json',
+              Authorization: `Bearer ${drExpressOptions.accessToken}`,
+          },
+          url: (() => {
+              let url = `${apiBaseUrl}/me/carts/active?`;
+              url += `&token=${drExpressOptions.accessToken}`;
+              return url;
+          })(),
+          success: (data) => {
+            let { formattedShippingAndHandling, formattedOrderTotal,formattedTax } = data.cart.pricing;
+            if(data.cart.pricing.shippingAndHandling.value === 0 )formattedShippingAndHandling = "FREE";
+            $('div.dr-summary__tax > .item-value').text(formattedTax);
+            $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
+            $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
+          }
+        });
+      }
     }
 
     function adjustColumns($section) {
@@ -409,8 +436,9 @@ jQuery(document).ready(($) => {
             return url;
         })(),
         success: (data) => {
-          let { formattedShippingAndHandling, formattedOrderTotal } = data.cart.pricing;
+          let { formattedShippingAndHandling, formattedOrderTotal,formattedTax } = data.cart.pricing;
           if(data.cart.pricing.shippingAndHandling.value === 0 )formattedShippingAndHandling = "FREE";
+          $('div.dr-summary__tax > .item-value').text(formattedTax);
           $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
           $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
         },
