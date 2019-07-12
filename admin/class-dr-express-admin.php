@@ -298,7 +298,7 @@ class DR_Express_Admin {
 		}
 
 		echo '<input type="checkbox" class="regular-text" name="' . $this->option_name . '_testOrder_handler[checkbox]" id="' . $this->option_name . '_testOrder_handler" value="1" ' . $checked . ' />';
-		echo '<span class="description" id="cron-description">' . __( 'TestOrder Enable.', 'dr-express' ) . '</span>';
+		echo '<span class="description" id="cron-description">' . __( 'Enable Test Order.', 'dr-express' ) . '</span>';
 	}
 	public function dr_express_cron_handler_cb() {
 		$option = get_option( $this->option_name . '_cron_handler' );
