@@ -358,7 +358,7 @@ jQuery(document).ready(($) => {
         var regularPrice = $(this).children("option:selected").data('regular-price');
         var salePriceValue = $(this).children("option:selected").data('sale-price-value');
         var listPriceValue = $(this).children("option:selected").data('list-price-value');
-        var $prodPrice = $('.single-dr_product .dr-pd-price');
+        var $prodPrice = $('.single-dr_product .dr-pd-content .dr-pd-price');
         var $buyBtn = $('.dr-buy-btn');
         var prodPriceHtml ="";
         $buyBtn.attr('data-product-id', varId);
