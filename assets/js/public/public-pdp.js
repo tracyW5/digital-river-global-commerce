@@ -130,7 +130,7 @@ jQuery(document).ready(($) => {
                 $.ajax({
                     type: 'GET',
                     headers: {
-                        Authorization: `Bearer ${drExpressOptions.accessToken}`,
+                        Authorization: `Bearer ${this.sessionToken}`,
                     },
                     url: `${this.apiBaseUrl}/me/products/${productID}/pricing?format=json&expand=all`,
                     success: (data) => {

@@ -1891,7 +1891,7 @@ jQuery(document).ready(function ($) {
           $.ajax({
             type: 'GET',
             headers: {
-              Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+              Authorization: "Bearer ".concat(_this6.sessionToken)
             },
             url: "".concat(_this6.apiBaseUrl, "/me/products/").concat(productID, "/pricing?format=json&expand=all"),
             success: function success(data) {
