@@ -3,6 +3,7 @@
 
 jQuery(document).ready(($) => {
     const ajaxUrl = drExpressOptions.ajaxUrl;
+    const apiBaseUrl = 'https://' + drExpressOptions.domain + '/v1/shoppers';
 
     $('#dr_login_form').on('submit', (e) => {
         e.preventDefault();
@@ -113,7 +114,7 @@ jQuery(document).ready(($) => {
                 } else {
                     $('.dr-signin-form-error').text( 'Something went wrong.' );
                 }
-                
+
                 $('.dr-signin-form-error').css('color', 'red');
             }
         });
@@ -151,7 +152,7 @@ jQuery(document).ready(($) => {
             } else {
                 $('#drResetPasswordModalBody').html('').html(`
                     <h3>Password reset email sent</h3>
-                    <p>You will be receiving an email 
+                    <p>You will be receiving an email
                     soon with instructions on resetting your
                     login password</p>
                 `);
@@ -205,13 +206,40 @@ jQuery(document).ready(($) => {
                     <h3>Password saved</h3>
                     <p>You can now log in with your new password</p>
                 `).css('color', 'green');
-                
+
                 setTimeout(() => location.replace(`${location.origin}${location.pathname}`), 2000);
             }
 
             $button.removeClass('sending').blur();
         });
     });
+
+    if ( $('section.logged-in').length) {
+        toggleCartBtns();
+    }
+
+    function toggleCartBtns() {
+        $.ajax({
+            type: 'GET',
+            headers: {
+                "Accept": "application/json"
+            },
+            url: (() => {
+                let url = `${apiBaseUrl}/me/carts/active?`;
+                url += `&expand=all`
+                url += `&token=${drExpressOptions.accessToken}`
+                return url;
+            })(),
+            success: (data) => {
+                if ($('section.dr-login-sections__section.logged-in').length && data.cart.totalItemsInCart == 0) {
+                    $('section.dr-login-sections__section.logged-in > div').hide();
+                }
+            },
+            error: (jqXHR) => {
+                console.log(jqXHR);
+            }
+        });
+    }
 
 });
 

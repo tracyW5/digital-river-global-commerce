@@ -116,6 +116,23 @@ jQuery(document).ready(($) => {
         });
     }
 
+    function beforeAjax() {
+      if($('.dr-cart__products').length > 0)$('body').css({ 'pointer-events': 'none', 'opacity': 0.5 });
+    }
+
+    function afterAjax() {
+      if($('.dr-cart__products').length > 0)$('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
+    }
+
+    $(document).ajaxSend(function() {
+      beforeAjax();
+    });
+
+    $(document).ajaxStop(function() {
+      afterAjax();
+    });
+
+
     function fetchFreshCart() {
         $.ajax({
             type: 'GET',
@@ -128,9 +145,6 @@ jQuery(document).ready(($) => {
                 url += `&token=${drExpressOptions.accessToken}`
                 return url;
             })(),
-            beforeSend: function() {
-              $('body').css({ 'pointer-events': 'none', 'opacity': 0.5 });
-            },
             success: (data) => {
                 renderCartProduct(data);
                 displayMiniCart(data.cart);
@@ -147,9 +161,33 @@ jQuery(document).ready(($) => {
         candyRackCheckAndRender(lineitem.product.id);
         tightBundleRemoveElements(lineitem.product.id);
       });
+      shoppingCartBanner();
       $('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
     }
 
+    function shoppingCartBanner(){
+      $.ajax({
+        type: 'GET',
+        url: (() => {
+            let url = `${apiBaseUrl}/me/point-of-promotions/Banner_ShoppingCartLocal/offers?`;
+            url += `format=json`
+            url += `&expand=all`
+            url += `&token=${drExpressOptions.accessToken}`
+            return url;
+        })(),
+        success: (shoppingCartOfferData, textStatus, xhr) => {
+          $.each(shoppingCartOfferData.offers.offer, function( index, offer ) {
+            let shoppingCartHTML = `
+            <div class="dr-product"><div class="dr-product-content">${offer.salesPitch[0]}</div><img src="${offer.image}"></div>
+            `;
+            $(".dr-cart__products").append(shoppingCartHTML);
+          });
+        },
+        error: (jqXHR) => {
+            reject(jqXHR);
+        }
+      });
+    }
 
     function tightBundleRemoveElements(productID){
       $.ajax({
@@ -238,6 +276,7 @@ jQuery(document).ready(($) => {
           },
           url: (() => {
               let url = buyUri;
+              if(drExpressOptions.testOrder == "true")url += '&testOrder=true';
               url += `&token=${drExpressOptions.accessToken}`
               return url;
           })(),
@@ -281,8 +320,10 @@ jQuery(document).ready(($) => {
 
     function renderCartProduct(data){
       $('.dr-cart__products').html("");
+      let hasPhysicalProduct = false;
       $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
         let permalink = '';
+        if(lineitem.product.productType == "PHYSICAL")hasPhysicalProduct = true;
         $.ajax({
           type: 'POST',
           async: false,
@@ -322,11 +363,15 @@ jQuery(document).ready(($) => {
           }
         });
       });
-
       const pricing = data.cart.pricing;
+      if(hasPhysicalProduct){
+        $('.dr-summary__shipping').show();
+      }else{
+        $('.dr-summary__shipping').hide();
+      }
       $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling);
       //overwrite $0.00 to FREE
-      if(pricing.formattedShippingAndHandling == "$0.00")$('div.dr-summary__shipping .shipping-value').text("FREE");
+      if(pricing.shippingAndHandling.value === 0 )$('div.dr-summary__shipping .shipping-value').text("FREE");
       $('div.dr-summary__discount .discount-value').text(`-${pricing.formattedDiscount}`);
       $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
 
@@ -369,6 +414,8 @@ jQuery(document).ready(($) => {
             }
         });
     });
+
+
 
     function displayMiniCart(cart) {
 
@@ -435,8 +482,13 @@ jQuery(document).ready(($) => {
 
     $('#apply-promo-code-btn').click((e) => {
         const promoCode = $('#promo-code').val();
-        $(e.target).addClass('sending').blur();
 
+        if (!promoCode) {
+          $('#dr-promo-code-err-field').text('Please enter a valid promo code.').show();
+          return;
+        }
+
+        $(e.target).addClass('sending').blur();
         updateCart({ promoCode }).then(() => {
             $(e.target).removeClass('sending');
             $('#dr-promo-code-err-field').text('').hide();

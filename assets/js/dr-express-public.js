@@ -372,6 +372,27 @@ jQuery(document).ready(function ($) {
     });
   }
 
+  function beforeAjax() {
+    if ($('.dr-cart__products').length > 0) $('body').css({
+      'pointer-events': 'none',
+      'opacity': 0.5
+    });
+  }
+
+  function afterAjax() {
+    if ($('.dr-cart__products').length > 0) $('body').css({
+      'pointer-events': 'auto',
+      'opacity': 1
+    });
+  }
+
+  $(document).ajaxSend(function () {
+    beforeAjax();
+  });
+  $(document).ajaxStop(function () {
+    afterAjax();
+  });
+
   function fetchFreshCart() {
     $.ajax({
       type: 'GET',
@@ -384,12 +405,6 @@ jQuery(document).ready(function ($) {
         url += "&token=".concat(drExpressOptions.accessToken);
         return url;
       }(),
-      beforeSend: function beforeSend() {
-        $('body').css({
-          'pointer-events': 'none',
-          'opacity': 0.5
-        });
-      },
       success: function success(data) {
         renderCartProduct(data);
         displayMiniCart(data.cart);
@@ -406,9 +421,32 @@ jQuery(document).ready(function ($) {
       candyRackCheckAndRender(lineitem.product.id);
       tightBundleRemoveElements(lineitem.product.id);
     });
+    shoppingCartBanner();
     $('body').css({
       'pointer-events': 'auto',
       'opacity': 1
+    });
+  }
+
+  function shoppingCartBanner() {
+    $.ajax({
+      type: 'GET',
+      url: function () {
+        var url = "".concat(apiBaseUrl, "/me/point-of-promotions/Banner_ShoppingCartLocal/offers?");
+        url += "format=json";
+        url += "&expand=all";
+        url += "&token=".concat(drExpressOptions.accessToken);
+        return url;
+      }(),
+      success: function success(shoppingCartOfferData, textStatus, xhr) {
+        $.each(shoppingCartOfferData.offers.offer, function (index, offer) {
+          var shoppingCartHTML = "\n            <div class=\"dr-product\"><div class=\"dr-product-content\">".concat(offer.salesPitch[0], "</div><img src=\"").concat(offer.image, "\"></div>\n            ");
+          $(".dr-cart__products").append(shoppingCartHTML);
+        });
+      },
+      error: function error(jqXHR) {
+        reject(jqXHR);
+      }
     });
   }
 
@@ -475,6 +513,7 @@ jQuery(document).ready(function ($) {
       },
       url: function () {
         var url = buyUri;
+        if (drExpressOptions.testOrder == "true") url += '&testOrder=true';
         url += "&token=".concat(drExpressOptions.accessToken);
         return url;
       }(),
@@ -519,8 +558,10 @@ jQuery(document).ready(function ($) {
 
   function renderCartProduct(data) {
     $('.dr-cart__products').html("");
+    var hasPhysicalProduct = false;
     $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
       var permalink = '';
+      if (lineitem.product.productType == "PHYSICAL") hasPhysicalProduct = true;
       $.ajax({
         type: 'POST',
         async: false,
@@ -537,9 +578,16 @@ jQuery(document).ready(function ($) {
       });
     });
     var pricing = data.cart.pricing;
+
+    if (hasPhysicalProduct) {
+      $('.dr-summary__shipping').show();
+    } else {
+      $('.dr-summary__shipping').hide();
+    }
+
     $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling); //overwrite $0.00 to FREE
 
-    if (pricing.formattedShippingAndHandling == "$0.00") $('div.dr-summary__shipping .shipping-value').text("FREE");
+    if (pricing.shippingAndHandling.value === 0) $('div.dr-summary__shipping .shipping-value').text("FREE");
     $('div.dr-summary__discount .discount-value').text("-".concat(pricing.formattedDiscount));
     $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
 
@@ -631,6 +679,12 @@ jQuery(document).ready(function ($) {
   });
   $('#apply-promo-code-btn').click(function (e) {
     var promoCode = $('#promo-code').val();
+
+    if (!promoCode) {
+      $('#dr-promo-code-err-field').text('Please enter a valid promo code.').show();
+      return;
+    }
+
     $(e.target).addClass('sending').blur();
     updateCart({
       promoCode: promoCode
@@ -668,7 +722,61 @@ jQuery(document).ready(function ($) {
   var apiKey = drExpressOptions.apiKey;
   var domain = drExpressOptions.domain;
   var apiBaseUrl = 'https://' + domain + '/v1/shoppers';
-  var drLocale = drExpressOptions.drLocale || 'en_US'; //floating labels
+  var drLocale = drExpressOptions.drLocale || 'en_US';
+
+  function getAddress(addressType) {
+    var address = {
+      address: {
+        nickName: $('#' + addressType + '-field-address1').val(),
+        firstName: $('#' + addressType + '-field-first-name').val(),
+        lastName: $('#' + addressType + '-field-last-name').val(),
+        line1: $('#' + addressType + '-field-address1').val(),
+        line2: $('#' + addressType + '-field-address2').val(),
+        city: $('#' + addressType + '-field-city').val(),
+        countrySubdivision: $('#' + addressType + '-field-state').val(),
+        postalCode: $('#' + addressType + '-field-zip').val(),
+        countryName: $('#' + addressType + '-field-country :selected').text(),
+        country: $('#' + addressType + '-field-country :selected').val(),
+        phoneNumber: $('#' + addressType + '-field-phone').val()
+      }
+    };
+    return address;
+  }
+
+  function saveShippingAddress() {
+    var address = getAddress('shipping');
+    address.address.isDefault = true;
+    console.log('save shipping: ', address);
+    saveShopperAddress(JSON.stringify(address));
+  }
+
+  function saveBillingAddress() {
+    var address = getAddress('billing');
+    address.address.isDefault = false;
+    console.log('save billing: ', address);
+    saveShopperAddress(JSON.stringify(address));
+  }
+
+  function saveShopperAddress(address) {
+    $.ajax({
+      type: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: address,
+      url: function () {
+        var url = "".concat(apiBaseUrl, "/me/addresses?token=").concat(drExpressOptions.accessToken, "&client_id=").concat(apiKey, "&format=json");
+        return url;
+      }(),
+      success: function success(data) {
+        console.log('address update success:', data);
+      },
+      error: function error(jqXHR) {
+        console.log(jqXHR);
+      }
+    });
+  } //floating labels
+
 
   FloatLabel.init(); // Globals
 
@@ -677,20 +785,165 @@ jQuery(document).ready(function ($) {
     shipping: {},
     billing: {}
   };
-  var paymentPayload = {}; //Sections
+  var paymentPayload = {}; // Section progress
 
-  var shouldShippingOpen = false,
-      shouldDeliveryOpen = false,
-      shouldPaymentOpen = false; // Submit first (email) form
+  var finishedSectionIdx = -1; // Submit first (email) form
 
   var emailPayload;
+
+  function prepareAddress($form) {
+    var addressType = $form.attr('id') === 'checkout-shipping-form' ? 'shipping' : 'billing'; // Validate form
+
+    $form.addClass('was-validated');
+    $form.find('.dr-err-field').hide();
+    var validateItems = document.querySelectorAll("[name^=".concat(addressType, "-]"));
+
+    for (var i = 0, len = validateItems.length; i < len; i++) {
+      if ($(validateItems[i]).is(':visible') && validateItems[i].checkValidity() === false) {
+        return false;
+      }
+    } // Build payload
+
+
+    $.each($form.serializeArray(), function (index, obj) {
+      var key = obj.name.split('-')[1];
+      payload[addressType][key] = obj.value;
+    });
+    payload[addressType].emailAddress = emailPayload;
+
+    if (payload[addressType].country !== 'US') {
+      payload[addressType].countrySubdivision = '';
+    }
+
+    return true;
+  }
+
+  function updateCart() {
+    var queryParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var cartRequest = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var queryStr = $.param(queryParams);
+    return new Promise(function (resolve, reject) {
+      $.ajax({
+        type: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+        },
+        url: function () {
+          var url = "".concat(apiBaseUrl, "/me/carts/active?");
+          url += "&token=".concat(drExpressOptions.accessToken, "&").concat(queryStr);
+          return url;
+        }(),
+        data: JSON.stringify({
+          cart: cartRequest
+        }),
+        success: function success(data) {
+          resolve(data);
+        },
+        error: function error(jqXHR) {
+          reject(jqXHR);
+        }
+      });
+    });
+  }
+
+  function displaySavedAddress(addressObj, $target) {
+    var addressArr = ["".concat(addressObj.firstName, " ").concat(addressObj.lastName), addressObj.line1, addressObj.city, addressObj.country];
+    $target.text(addressArr.join(', '));
+  }
+
+  function displayAddressErrMsg(jqXHR, $target) {
+    if (jqXHR.status === 409) {
+      if (jqXHR.responseJSON.errors.error[0].code === 'restricted-bill-to-country') {
+        $target.text('Address not accepted for current currency.').show();
+      }
+
+      if (jqXHR.responseJSON.errors.error[0].code === 'restricted-ship-to-country') {
+        $target.text('Address not accepted for current currency.').show();
+      }
+    } else {
+      $target.text(jqXHR.responseJSON.errors.error[0].description).show();
+    }
+  }
+
+  function moveToNextSection($section) {
+    var $prevSection = $section.prev();
+    var $nextSection = $section.next();
+
+    if ($('.dr-checkout__el').index($section) > finishedSectionIdx) {
+      finishedSectionIdx = $('.dr-checkout__el').index($section);
+    }
+
+    $section.removeClass('active').addClass('closed');
+    $nextSection.addClass('active').removeClass('closed');
+
+    if ($nextSection.hasClass('small-closed-left')) {
+      $nextSection.removeClass('small-closed-left');
+      $nextSection.next().removeClass('small-closed-right');
+    }
+
+    adjustColumns($section);
+    freshSummary($section);
+  }
+
+  function freshSummary($section) {
+    if ($section.hasClass('dr-checkout__shipping') || $section.hasClass('dr-checkout__billing')) {
+      $.ajax({
+        type: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+        },
+        url: function () {
+          var url = "".concat(apiBaseUrl, "/me/carts/active?");
+          url += "&token=".concat(drExpressOptions.accessToken);
+          return url;
+        }(),
+        success: function success(data) {
+          var _data$cart$pricing = data.cart.pricing,
+              formattedShippingAndHandling = _data$cart$pricing.formattedShippingAndHandling,
+              formattedOrderTotal = _data$cart$pricing.formattedOrderTotal,
+              formattedTax = _data$cart$pricing.formattedTax;
+          if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = "FREE";
+          $('div.dr-summary__tax > .item-value').text(formattedTax);
+          $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
+          $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
+        }
+      });
+    }
+  }
+
+  function adjustColumns($section) {
+    var $shippingSection = $('.dr-checkout__shipping');
+    var $billingSection = $('.dr-checkout__billing');
+    var $paymentSection = $('.dr-checkout__payment');
+    var $confirmSection = $('.dr-checkout__confirmation');
+
+    if ($shippingSection.is(':visible') && $shippingSection.hasClass('closed') && $billingSection.hasClass('closed')) {
+      $shippingSection.addClass('small-closed-left');
+      $billingSection.addClass('small-closed-right');
+    } else {
+      $shippingSection.removeClass('small-closed-left');
+      $billingSection.removeClass('small-closed-right');
+    }
+
+    if ($section && $section.hasClass('dr-checkout__payment')) {
+      $paymentSection.addClass('small-closed-left');
+      $confirmSection.addClass('small-closed-right').removeClass('d-none');
+    } else {
+      $paymentSection.removeClass('small-closed-left');
+      $confirmSection.removeClass('small-closed-right').addClass('d-none');
+    }
+  }
+
   $('#checkout-email-form').on('submit', function (e) {
     e.preventDefault(); // If no items are in cart, do not even continue, maybe give feedback
 
     if (!drExpressOptions.cart.cart.lineItems.hasOwnProperty('lineItem')) return;
     var $form = $('#checkout-email-form');
     var email = $form.find('input[name=email]').val().trim();
-    shouldShippingOpen = false;
     $form.addClass('was-validated');
 
     if ($form[0].checkValidity() === false) {
@@ -698,108 +951,61 @@ jQuery(document).ready(function ($) {
     }
 
     emailPayload = email;
-    var section = $('.dr-checkout__email');
-    var nextSection = section.next();
-    $(section).find('.dr-panel-result__text').text(emailPayload);
-    shouldShippingOpen = true;
-    section.removeClass('active').addClass('closed');
-    nextSection.addClass('active').removeClass('closed');
-  }); // Submit shipping info form
+    var $section = $('.dr-checkout__email');
+    $section.find('.dr-panel-result__text').text(emailPayload);
+    moveToNextSection($section);
+  });
+
+  if ($('input[name=email]').val() && $('#checkout-email-form').length) {
+    $('#checkout-email-form').submit();
+  } // Submit shipping info form
+
 
   $('#checkout-shipping-form').on('submit', function (e) {
     e.preventDefault();
-    var validateItems,
-        billingSameAsShipping = true,
-        $form = $('#checkout-shipping-form');
-    shouldDeliveryOpen = false;
-    $form.addClass('was-validated');
-    $('#dr-err-field').hide();
-
-    if ($('[name="checkbox-billing"]').is(':checked')) {
-      billingSameAsShipping = true;
-      validateItems = document.querySelectorAll('[name^=shipping-]');
-
-      for (var i = 0; i < validateItems.length; i++) {
-        if (validateItems[i].checkValidity() === false) {
-          return false;
-        }
-      }
-    } else {
-      billingSameAsShipping = false;
-
-      if ($form[0].checkValidity() === false) {
-        return false;
-      }
-    }
-
-    var button = $form.find('button[type="submit"]').toggleClass('sending').blur();
-    $.each($form.serializeArray(), function (index, obj) {
-      if (obj.name.startsWith('shipping')) {
-        var key = obj.name.split('-')[1];
-        payload['shipping'][key] = obj.value;
-      }
-
-      if (obj.name.startsWith('billing')) {
-        var _key = obj.name.split('-')[1];
-        payload['billing'][_key] = obj.value;
-      }
+    var $form = $(e.target);
+    var $button = $form.find('button[type="submit"]');
+    var isFormValid = prepareAddress($form);
+    if (!isFormValid) return;
+    $button.addClass('sending').blur();
+    updateCart({
+      expand: 'all'
+    }, {
+      shippingAddress: payload.shipping
+    }).then(function (data) {
+      saveShippingAddress();
+      $button.removeClass('sending').blur();
+      setShippingOptions(data.cart.shippingOptions);
+      var $section = $('.dr-checkout__shipping');
+      displaySavedAddress(data.cart.shippingAddress, $section.find('.dr-panel-result__text'));
+      moveToNextSection($section);
+    }).catch(function (jqXHR) {
+      $button.removeClass('sending').blur();
+      displayAddressErrMsg(jqXHR, $form.find('.dr-err-field'));
     });
-    payload['shipping']['emailAddress'] = emailPayload;
-    payload['billing']['emailAddress'] = emailPayload;
-    var data = {
-      cart: {
-        shippingAddress: payload['shipping']
-      }
-    };
-
-    if (data.cart.shippingAddress.country !== 'US') {
-      delete data.cart.shippingAddress.countrySubdivision;
-    }
-
-    if (billingSameAsShipping) {
-      data.cart.billingAddress = payload['shipping'];
-    } else {
-      data.cart.billingAddress = payload['billing'];
-    }
-
-    $.ajax({
-      type: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json"
-      },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active?");
-        url += "&token=".concat(drExpressOptions.accessToken);
-        url += "&expand=all";
-        return url;
-      }(),
-      data: JSON.stringify(data),
-      success: function success(data) {
-        shouldDeliveryOpen = true;
-        button.removeClass('sending').blur();
-        setShippingOptions(data.cart.shippingOptions);
-        var section = $('.dr-checkout__shipping');
-        var nextSection = section.next();
-        $(section).find('.dr-panel-result__text').text("\n                    ".concat(payload.shipping.firstName, ",\n                    ").concat(payload.shipping.lastName, ",\n                    ").concat(payload.shipping.line1, ",\n                    ").concat(payload.shipping.city, ",\n                    ").concat(payload.shipping.country, "\n                "));
-        section.removeClass('active').addClass('closed');
-        nextSection.addClass('active').removeClass('closed');
-      },
-      error: function error(jqXHR) {
-        if (jqXHR.status === 409) {
-          if (jqXHR.responseJSON.errors.error[0].code === 'restricted-bill-to-country') {
-            $('#dr-err-field').text('Address not accepted for current currency.').show();
-          }
-
-          if (jqXHR.responseJSON.errors.error[0].code === 'restricted-ship-to-country') {
-            $('#dr-err-field').text('Address not accepted for current currency.').show();
-          }
-        } else {
-          $('#dr-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
-        }
-
-        button.removeClass('sending').blur();
-      }
+  });
+  $('#checkout-billing-form').on('submit', function (e) {
+    e.preventDefault();
+    var $form = $(e.target);
+    var $button = $form.find('button[type="submit"]');
+    var billingSameAsShipping = $('[name="checkbox-billing"]').is(':visible:checked');
+    var isFormValid = prepareAddress($form);
+    if (!isFormValid) return;
+    if (billingSameAsShipping) payload.billing = Object.assign({}, payload.shipping);
+    $button.addClass('sending').blur();
+    updateCart({
+      expand: 'all'
+    }, {
+      billingAddress: payload.billing
+    }).then(function (data) {
+      saveBillingAddress();
+      $button.removeClass('sending').blur();
+      var $section = $('.dr-checkout__billing');
+      displaySavedAddress(data.cart.billingAddress, $section.find('.dr-panel-result__text'));
+      moveToNextSection($section);
+    }).catch(function (jqXHR) {
+      $button.removeClass('sending').blur();
+      displayAddressErrMsg(jqXHR, $form.find('.dr-err-field'));
     });
   });
 
@@ -825,7 +1031,6 @@ jQuery(document).ready(function ($) {
 
   $('form#checkout-delivery-form').on('submit', function (e) {
     e.preventDefault();
-    shouldPaymentOpen = false;
     var $input = $(this).children().find('input:radio:checked').first();
     var button = $(this).find('button[type="submit"]').toggleClass('sending').blur(); // Validate shipping option
 
@@ -845,17 +1050,11 @@ jQuery(document).ready(function ($) {
         return url;
       }(),
       success: function success(data) {
-        var section = $('.dr-checkout__delivery');
-        var nextSection = section.next();
-        var prevSection = section.prev();
-        var resultText = $input.length > 0 ? "".concat($input.data('desc'), " ").concat($input.data('cost')) : 'Digital Product(s) Only';
-        $(section).find('.dr-panel-result__text').text(resultText);
         button.removeClass('sending').blur();
-        shouldPaymentOpen = true;
-        section.removeClass('active').addClass('closed');
-        nextSection.addClass('active').removeClass('closed');
-        prevSection.addClass('small-closed-left');
-        section.addClass('small-closed-right');
+        var $section = $('.dr-checkout__delivery');
+        var resultText = $input.length > 0 ? "".concat($input.data('desc'), " ").concat($input.data('cost')) : 'Digital Product(s) Only';
+        $section.find('.dr-panel-result__text').text(resultText);
+        moveToNextSection($section);
       },
       error: function error(jqXHR) {
         console.log(jqXHR);
@@ -881,15 +1080,10 @@ jQuery(document).ready(function ($) {
     $(formdata).each(function (index, obj) {
       paymentPayload[obj.name] = obj.value;
     });
-    var section = $('.dr-checkout__payment');
-    var nextSection = section.next();
-    $(section).find('.dr-panel-result__text').text("Credit card ending in ".concat(paymentPayload['credit-card-number'].substr(paymentPayload['credit-card-number'].length - 4)));
-    shouldPaymentOpen = true;
-    section.removeClass('active').addClass('closed');
-    nextSection.addClass('active').removeClass('closed');
-    section.addClass('small-closed-left');
-    nextSection.removeClass('d-none').addClass('small-closed-right');
     $('#dr-checkout-err-field').text('').hide();
+    var $section = $('.dr-checkout__payment');
+    $section.find('.dr-panel-result__text').text("Credit card ending in ".concat(paymentPayload['credit-card-number'].substr(paymentPayload['credit-card-number'].length - 4)));
+    moveToNextSection($section);
   });
   $('form#checkout-confirmation-form').on('submit', function (e) {
     e.preventDefault();
@@ -916,10 +1110,12 @@ jQuery(document).ready(function ($) {
         return url;
       }(),
       success: function success(data) {
-        var _data$cart$pricing = data.cart.pricing,
-            formattedShippingAndHandling = _data$cart$pricing.formattedShippingAndHandling,
-            formattedOrderTotal = _data$cart$pricing.formattedOrderTotal;
-        if (formattedShippingAndHandling == "$0.00") formattedShippingAndHandling = "FREE";
+        var _data$cart$pricing2 = data.cart.pricing,
+            formattedShippingAndHandling = _data$cart$pricing2.formattedShippingAndHandling,
+            formattedOrderTotal = _data$cart$pricing2.formattedOrderTotal,
+            formattedTax = _data$cart$pricing2.formattedTax;
+        if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = "FREE";
+        $('div.dr-summary__tax > .item-value').text(formattedTax);
         $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
         $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
       },
@@ -937,15 +1133,15 @@ jQuery(document).ready(function ($) {
       digitalRiverPayload = {
         "type": "creditCard",
         "owner": {
-          "firstName": cart.shippingAddress.firstName || payload.shipping.firstName,
-          "lastName": cart.shippingAddress.lastName || payload.shipping.lastName,
-          "email": cart.shippingAddress.emailAddress || payload.shipping.emailAddress,
+          "firstName": payload.billing.firstName,
+          "lastName": payload.billing.lastName,
+          "email": payload.billing.emailAddress,
           "address": {
-            "line1": cart.shippingAddress.line1 || payload.shipping.line1,
-            "city": cart.shippingAddress.city || payload.shipping.city,
-            "state": cart.shippingAddress.state || payload.shipping.state,
-            "country": cart.shippingAddress.country || payload.shipping.country,
-            "postalCode": cart.shippingAddress.postalCode || payload.shipping.postalCode
+            "line1": payload.billing.line1,
+            "city": payload.billing.city,
+            "state": payload.billing.state,
+            "country": payload.billing.country,
+            "postalCode": payload.billing.postalCode
           }
         },
         "creditCard": {
@@ -1146,58 +1342,21 @@ jQuery(document).ready(function ($) {
 
   $('.dr-accordion__edit').on('click', function (e) {
     e.preventDefault();
-    $('.dr-checkout__payment').removeClass('small-closed-left');
-    $('.dr-checkout__confirmation').addClass('d-none').removeClass('small-closed-right');
-    var $this = $(this).parent();
-    var otherSections = $this.parent().siblings();
-    var section = $this.parent();
-    var nextSection = $this.parent().next();
-    var prevSection = section.prev();
+    var $section = $(e.target).parent().parent();
+    var $allSections = $section.siblings().andSelf();
+    var $finishedSections = $allSections.eq(finishedSectionIdx).prevAll().andSelf();
+    var $activeSection = $allSections.filter($('.active'));
+    var $nextSection = $section.next();
+    var $prevSection = $section.prev();
 
-    if (/_email/.test(section.attr('class'))) {
-      shouldShippingOpen = false;
-      shouldDeliveryOpen = false;
-      shouldPaymentOpen = false;
-      otherSections.removeClass('small-closed-left');
-      otherSections.removeClass('small-closed-right');
-    }
-
-    if (/_shipping/.test(section.attr('class'))) {
-      if (!shouldShippingOpen) {
-        return;
-      } else {
-        shouldDeliveryOpen = false;
-        shouldPaymentOpen = false;
-      }
-    }
-
-    if (/_delivery/.test(section.attr('class'))) {
-      if (!shouldDeliveryOpen) {
-        return;
-      } else {
-        shouldPaymentOpen = false;
-      }
-    }
-
-    if (/_payment/.test(section.attr('class')) && !shouldPaymentOpen) {
+    if ($allSections.index($section) > $allSections.index($activeSection)) {
       return;
     }
 
-    otherSections.addClass('closed').removeClass('active');
-    section.removeClass('closed').addClass('active');
-
-    if (section.hasClass('dr-checkout__delivery')) {
-      if (section.hasClass('closed') && prevSection.hasClass('closed')) {
-        prevSection.addClass('small-closed-left');
-        section.addClass('small-closed-right');
-      } else {
-        prevSection.removeClass('small-closed-left');
-        section.removeClass('small-closed-right');
-      }
-    } else {
-      section.removeClass('small-closed-left');
-      nextSection.removeClass('small-closed-right');
-    }
+    $finishedSections.addClass('closed');
+    $activeSection.removeClass('active');
+    $section.removeClass('closed').addClass('active');
+    adjustColumns();
   }); // print thank you page
 
   $('#print-button').on('click', function (ev) {
@@ -1230,16 +1389,16 @@ jQuery(document).ready(function ($) {
   });
   $('#shipping-field-country').on('change', function () {
     if (this.value === 'US') {
-      $('#shipping-field-state').removeClass('d-none');
+      $('#shipping-field-state').parent('.form-group').removeClass('d-none');
     } else {
-      $('#shipping-field-state').addClass('d-none');
+      $('#shipping-field-state').parent('.form-group').addClass('d-none');
     }
   });
   $('#billing-field-country').on('change', function () {
     if (this.value === 'US') {
-      $('#billing-field-state').removeClass('d-none');
+      $('#billing-field-state').parent('.form-group').removeClass('d-none');
     } else {
-      $('#billing-field-state').addClass('d-none');
+      $('#billing-field-state').parent('.form-group').addClass('d-none');
     }
   });
 
@@ -1329,6 +1488,7 @@ jQuery(document).ready(function ($) {
 /* eslint-disable no-alert, no-console */
 jQuery(document).ready(function ($) {
   var ajaxUrl = drExpressOptions.ajaxUrl;
+  var apiBaseUrl = 'https://' + drExpressOptions.domain + '/v1/shoppers';
   $('#dr_login_form').on('submit', function (e) {
     e.preventDefault();
     var $form = $('#dr_login_form');
@@ -1455,7 +1615,7 @@ jQuery(document).ready(function ($) {
       if (!response.success) {
         $errMsg.text(response.data[0].message).show();
       } else {
-        $('#drResetPasswordModalBody').html('').html("\n                    <h3>Password reset email sent</h3>\n                    <p>You will be receiving an email \n                    soon with instructions on resetting your\n                    login password</p>\n                ");
+        $('#drResetPasswordModalBody').html('').html("\n                    <h3>Password reset email sent</h3>\n                    <p>You will be receiving an email\n                    soon with instructions on resetting your\n                    login password</p>\n                ");
         $('#dr-pass-reset-submit').hide();
       }
 
@@ -1507,6 +1667,33 @@ jQuery(document).ready(function ($) {
       $button.removeClass('sending').blur();
     });
   });
+
+  if ($('section.logged-in').length) {
+    toggleCartBtns();
+  }
+
+  function toggleCartBtns() {
+    $.ajax({
+      type: 'GET',
+      headers: {
+        "Accept": "application/json"
+      },
+      url: function () {
+        var url = "".concat(apiBaseUrl, "/me/carts/active?");
+        url += "&expand=all";
+        url += "&token=".concat(drExpressOptions.accessToken);
+        return url;
+      }(),
+      success: function success(data) {
+        if ($('section.dr-login-sections__section.logged-in').length && data.cart.totalItemsInCart == 0) {
+          $('section.dr-login-sections__section.logged-in > div').hide();
+        }
+      },
+      error: function error(jqXHR) {
+        console.log(jqXHR);
+      }
+    });
+  }
 });
 
 function readCookie(name) {
@@ -1633,6 +1820,7 @@ jQuery(document).ready(function ($) {
               url += 'format=json';
               url += "&productId=".concat(productID);
               if (quantity) url += "&quantity=".concat(quantity);
+              if (drExpressOptions.testOrder == "true") url += '&testOrder=true';
               url += "&token=".concat(drExpressOptions.accessToken);
               return url;
             }(),
@@ -1770,6 +1958,10 @@ jQuery(document).ready(function ($) {
     lineItems = cart.lineItems && cart.lineItems.lineItem ? cart.lineItems.lineItem : [];
     $('.dr-minicart-count').text(cart.totalItemsInCart);
     $('.dr-minicart-header').siblings().remove();
+
+    if ($('section.dr-login-sections__section.logged-in').length && cart.totalItemsInCart == 0) {
+      $('section.dr-login-sections__section.logged-in > div').hide();
+    }
 
     if (!lineItems.length) {
       var emptyMsg = '<p class="dr-minicart-empty-msg">Your shopping cart is currently empty.</p>';

@@ -94,12 +94,20 @@ class DR_Express_Cart extends AbstractHttpService {
         );
 
         $res = $this->get( "/v1/shoppers/me/carts/active?".http_build_query( $params ) );
+        $hasPhysicalProduct = false;
 
         if ( isset( $res['cart']['lineItems']['lineItem'] ) ) {
 	        $line_items = $res['cart']['lineItems']['lineItem'];
 		        foreach ( $line_items as $line_item ) {
+                    if ( $line_item['product']['productType'] === 'PHYSICAL' ) {
+                        $hasPhysicalProduct = true;
+                    }
 			        $this->line_items[] = $line_item;
 		        }
+        }
+
+        if ( isset( $res['cart'] ) ) {
+            $res['cart']['hasPhysicalProduct'] = $hasPhysicalProduct;
         }
 
         $this->cart = isset( $res['cart'] ) ? $res['cart'] : false;
@@ -118,6 +126,8 @@ class DR_Express_Cart extends AbstractHttpService {
             return;
         }
 
+        $hasPhysicalProduct = false;
+
         $default = array(
             'token'      => $this->token,
             'expand'     => 'all',
@@ -125,7 +135,24 @@ class DR_Express_Cart extends AbstractHttpService {
             'orderState' => 'Open'
         );
 
-        return $this->get( "/v1/shoppers/me/orders/{$id}?".http_build_query( $default ) );
+        $res = $this->get( "/v1/shoppers/me/orders/{$id}?".http_build_query( $default ) );
+        $hasPhysicalProduct = false;
+
+        if ( isset( $res['order']['lineItems']['lineItem'] ) ) {
+            $line_items = $res['order']['lineItems']['lineItem'];
+                foreach ( $line_items as $line_item ) {
+                    if ( $line_item['product']['productType'] === 'PHYSICAL' ) {
+                        $hasPhysicalProduct = true;
+                        break;
+                    }
+                }
+        }
+
+        if ( isset( $res['order'] ) ) {
+            $res['order']['hasPhysicalProduct'] = $hasPhysicalProduct;
+        }
+
+        return $res;
     }
 
     /**

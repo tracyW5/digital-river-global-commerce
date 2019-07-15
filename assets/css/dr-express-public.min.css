@@ -8,6 +8,8 @@ iframe{width:1px;min-width:100%;border:0}
 .pagination-desc{margin-right:10px}
 .dr-loader-container{position:relative;margin:0 auto;overflow:hidden}
 .dr-loader{position:relative;margin:0 auto;text-align:center}
+.dr-legal-footer a{font-family:"Open Sans",sans-serif;font-size:16px;color:#000;line-height:16px;margin-right:10px;text-decoration:underline}
+.dr-legal-footer .dr-aboutDigitalRiver{margin-right:0}
 #dr-minicart .dr-minicart-display{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;position:absolute;text-align:left;top:61px;right:0;width:19.5rem;min-height:300px;max-height:400px;background-color:#fff;border:1px solid #ddd;-webkit-box-shadow:0 3px 10px rgba(0,0,0,0.2);box-shadow:0 3px 10px rgba(0,0,0,0.2);z-index:99;font-size:18px}
 #dr-minicart .dr-minicart-header,#dr-minicart .dr-minicart-body,#dr-minicart .dr-minicart-footer{padding:0 10px}
 #dr-minicart .dr-minicart-header{padding:1rem 0 1rem 1rem;border-bottom:1px solid #eee}
@@ -55,6 +57,7 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .dr-express-wrapper .form-control::-ms-expand{background-color:transparent;border:0}
 .dr-express-wrapper .form-control:focus{color:#495057;background-color:#fff;border-color:#80bdff;outline:0;-webkit-box-shadow:0 0 0 .2rem rgba(0,123,255,0.25);box-shadow:0 0 0 .2rem rgba(0,123,255,0.25)}
 .dr-express-wrapper .form-control::-webkit-input-placeholder{color:#6c757d;opacity:1}
+.dr-express-wrapper .form-control::-moz-placeholder{color:#6c757d;opacity:1}
 .dr-express-wrapper .form-control:-ms-input-placeholder{color:#6c757d;opacity:1}
 .dr-express-wrapper .form-control::-ms-input-placeholder{color:#6c757d;opacity:1}
 .dr-express-wrapper .form-control::placeholder{color:#6c757d;opacity:1}
@@ -225,7 +228,7 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .offset-10{margin-left:83.3333333333%}
 .offset-11{margin-left:91.6666666667%}
 .dr-express-wrapper button,.dr-express-wrapper input,.dr-express-wrapper select,.dr-express-wrapper textarea{font-family:"Open Sans",sans-serif;font-size:16px;line-height:16px;color:#000;border-radius:0;-webkit-print-color-adjust:exact !important}
-.dr-express-wrapper select.custom-select{background-color:white;height:48px;border-radius:0;color:#000}
+.dr-express-wrapper select.custom-select{font-size:inherit;background-color:white;height:48px;border-radius:0;color:#000}
 .dr-express-wrapper select.custom-select:focus{border:1px solid #d1d1d1;outline:0;-webkit-box-shadow:none;box-shadow:none}
 .dr-express-wrapper p:empty{display:none}
 .dr-express-wrapper form{margin:0 0 1.5em}
@@ -239,6 +242,7 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .is-focused .dr-express-wrapper textarea,.dr-express-wrapper textarea:focus,.is-focused .dr-express-wrapper select,.dr-express-wrapper select:focus,.is-focused .dr-express-wrapper input[type=""],.dr-express-wrapper input[type=""]:focus,.is-focused .dr-express-wrapper [type="email"],.dr-express-wrapper [type="email"]:focus,.is-focused .dr-express-wrapper [type="tel"],.dr-express-wrapper [type="tel"]:focus,.is-focused .dr-express-wrapper [type="number"],.dr-express-wrapper [type="number"]:focus,.is-focused .dr-express-wrapper [type="search"],.dr-express-wrapper [type="search"]:focus,.is-focused .dr-express-wrapper [type="url"],.dr-express-wrapper [type="url"]:focus,.is-focused .dr-express-wrapper [type="password"],.dr-express-wrapper [type="password"]:focus,.is-focused .dr-express-wrapper [type="text"],.dr-express-wrapper [type="text"]:focus,.is-focused .dr-express-wrapper input[type=""].form-control,.dr-express-wrapper input[type=""].form-control:focus,.is-focused .dr-express-wrapper input[type="email"].form-control,.dr-express-wrapper input[type="email"].form-control:focus,.is-focused .dr-express-wrapper input[type="tel"].form-control,.dr-express-wrapper input[type="tel"].form-control:focus,.is-focused .dr-express-wrapper input[type="number"].form-control,.dr-express-wrapper input[type="number"].form-control:focus,.is-focused .dr-express-wrapper input[type="search"].form-control,.dr-express-wrapper input[type="search"].form-control:focus,.is-focused .dr-express-wrapper input[type="url"].form-control,.dr-express-wrapper input[type="url"].form-control:focus,.is-focused .dr-express-wrapper input[type="password"].form-control,.dr-express-wrapper input[type="password"].form-control:focus,.is-focused .dr-express-wrapper input[type="text"].form-control,.dr-express-wrapper input[type="text"].form-control:focus{border:1px solid #d1d1d1}
 .dr-express-wrapper textarea[disabled],.dr-express-wrapper textarea:disabled,.dr-express-wrapper select[disabled],.dr-express-wrapper select:disabled,.dr-express-wrapper input[type=""][disabled],.dr-express-wrapper input[type=""]:disabled,.dr-express-wrapper [type="email"][disabled],.dr-express-wrapper [type="email"]:disabled,.dr-express-wrapper [type="tel"][disabled],.dr-express-wrapper [type="tel"]:disabled,.dr-express-wrapper [type="number"][disabled],.dr-express-wrapper [type="number"]:disabled,.dr-express-wrapper [type="search"][disabled],.dr-express-wrapper [type="search"]:disabled,.dr-express-wrapper [type="url"][disabled],.dr-express-wrapper [type="url"]:disabled,.dr-express-wrapper [type="password"][disabled],.dr-express-wrapper [type="password"]:disabled,.dr-express-wrapper [type="text"][disabled],.dr-express-wrapper [type="text"]:disabled,.dr-express-wrapper input[type=""].form-control[disabled],.dr-express-wrapper input[type=""].form-control:disabled,.dr-express-wrapper input[type="email"].form-control[disabled],.dr-express-wrapper input[type="email"].form-control:disabled,.dr-express-wrapper input[type="tel"].form-control[disabled],.dr-express-wrapper input[type="tel"].form-control:disabled,.dr-express-wrapper input[type="number"].form-control[disabled],.dr-express-wrapper input[type="number"].form-control:disabled,.dr-express-wrapper input[type="search"].form-control[disabled],.dr-express-wrapper input[type="search"].form-control:disabled,.dr-express-wrapper input[type="url"].form-control[disabled],.dr-express-wrapper input[type="url"].form-control:disabled,.dr-express-wrapper input[type="password"].form-control[disabled],.dr-express-wrapper input[type="password"].form-control:disabled,.dr-express-wrapper input[type="text"].form-control[disabled],.dr-express-wrapper input[type="text"].form-control:disabled{opacity:.8;cursor:not-allowed}
 .dr-express-wrapper ::-webkit-input-placeholder{opacity:.5;white-space:nowrap}
+.dr-express-wrapper ::-moz-placeholder{opacity:.5;white-space:nowrap}
 .dr-express-wrapper :-ms-input-placeholder{opacity:.5;white-space:nowrap}
 .dr-express-wrapper ::-ms-input-placeholder{opacity:.5;white-space:nowrap}
 .dr-express-wrapper ::placeholder{opacity:.5;white-space:nowrap}
@@ -330,6 +334,7 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .dr-login .dr-login-sections__section.section-returning .dr-login-form{position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;margin-top:auto}
 .dr-login .dr-login-sections__section.section-returning .dr-login-form input{height:51px;padding:0 10px}
 .dr-login .dr-login-sections__section.section-returning .dr-login-form input::-webkit-input-placeholder{font-family:"Open Sans",sans-serif}
+.dr-login .dr-login-sections__section.section-returning .dr-login-form input::-moz-placeholder{font-family:"Open Sans",sans-serif}
 .dr-login .dr-login-sections__section.section-returning .dr-login-form input:-ms-input-placeholder{font-family:"Open Sans",sans-serif}
 .dr-login .dr-login-sections__section.section-returning .dr-login-form input::-ms-input-placeholder{font-family:"Open Sans",sans-serif}
 .dr-login .dr-login-sections__section.section-returning .dr-login-form input::placeholder{font-family:"Open Sans",sans-serif}
@@ -352,9 +357,9 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .dr-check-account__link{font-size:14px;font-weight:600;text-decoration:underline;color:#000}
 .dr-checkout{width:50%}
 .dr-checkout .d-none{display:none !important}
-.dr-checkout__email,.dr-checkout__shipping,.dr-checkout__delivery,.dr-checkout__payment,.dr-checkout__confirmation{background:#fff;margin-bottom:20px;padding:0 10px}
-.dr-checkout__shipping .billing-section{display:none}
-.dr-checkout__shipping .billing-section__name{font-family:Open Sans;font-size:16px;font-weight:600;line-height:16px;text-transform:uppercase;color:#333;margin:16px 0}
+.dr-checkout__email,.dr-checkout__shipping,.dr-checkout__billing,.dr-checkout__delivery,.dr-checkout__payment,.dr-checkout__confirmation{background:#fff;margin-bottom:20px;padding:0 10px}
+.dr-checkout__billing .billing-section{display:none}
+.dr-checkout__billing .billing-section__name{font-family:Open Sans;font-size:16px;font-weight:600;line-height:16px;text-transform:uppercase;color:#333;margin:16px 0}
 .dr-checkout .small-closed-left{clear:both;width:48%;float:left}
 .dr-checkout .small-closed-right{width:48%;float:right}
 .dr-checkout .dr-accordion__title-long{display:block}
@@ -368,26 +373,26 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .active .dr-accordion,.closed .dr-accordion{border-bottom:1px solid #d1d1d1}
 .closed .dr-accordion__edit{display:block}
 .closed .dr-accordion__edit,.closed .dr-accordion__name{opacity:.5}
-.dr-accordion__icon.email-icon,.dr-accordion__icon.shipping-icon,.dr-accordion__icon.delivery-icon,.dr-accordion__icon.payment-icon{display:block;background-position:center;background-size:cover;margin-right:15px}
+.dr-accordion__icon.email-icon,.dr-accordion__icon.shipping-icon,.dr-accordion__icon.billing-icon,.dr-accordion__icon.delivery-icon,.dr-accordion__icon.payment-icon{display:block;background-position:center;background-size:cover;margin-right:15px}
 .dr-accordion__icon.email-icon{width:32px;height:32px;background:url("../images/email.svg")}
-.dr-accordion__icon.shipping-icon{width:25px;height:25px;background:url("../images/address.svg")}
+.dr-accordion__icon.shipping-icon,.dr-accordion__icon.billing-icon{width:25px;height:25px;background:url("../images/address.svg")}
 .dr-accordion__icon.delivery-icon{width:34px;height:34px;background:url("../images/delivery.svg")}
 .dr-accordion__icon.payment-icon{width:32px;height:32px;background:url("../images/payment.svg")}
 .active .dr-accordion__icon.email-icon{background:url("../images/email-active.svg")}
-.active .dr-accordion__icon.shipping-icon{background:url("../images/address-active.svg")}
+.active .dr-accordion__icon.shipping-icon,.active .dr-accordion__icon.billing-icon{background:url("../images/address-active.svg")}
 .active .dr-accordion__icon.delivery-icon{background:url("../images/delivery-active.svg")}
 .active .dr-accordion__icon.payment-icon{background:url("../images/payment-active.svg")}
 .closed .dr-accordion__icon.email-icon{background:url("../images/email-closed.svg")}
-.closed .dr-accordion__icon.shipping-icon{background:url("../images/address-closed.svg")}
+.closed .dr-accordion__icon.shipping-icon,.closed .dr-accordion__icon.billing-icon{background:url("../images/address-closed.svg")}
 .closed .dr-accordion__icon.delivery-icon{background:url("../images/delivery-closed.svg")}
 .closed .dr-accordion__icon.payment-icon{background:url("../images/payment-closed.svg")}
 .dr-panel-edit{display:none;width:100%;padding-top:20px;padding-bottom:20px;overflow:hidden}
 .dr-checkout__el.active .dr-panel-edit{display:block}
 .dr-checkout__el.closed .dr-panel-edit{display:none}
 .dr-panel-edit__btn{margin-top:1rem;text-transform:uppercase}
-.dr-panel-edit.dr-panel-edit--shipping .dr-panel-edit__el{margin-bottom:20px}
-.dr-panel-edit.dr-panel-edit--shipping .dr-panel-edit__check .field-text{font-family:Open Sans;font-size:18px;color:#333}
-.dr-panel-edit.dr-panel-edit--shipping .dr-panel-edit__check .field-checkbox label{font-family:Open Sans;font-size:16px;color:#333}
+.dr-panel-edit.dr-panel-edit--shipping .dr-panel-edit__el,.dr-panel-edit.dr-panel-edit--billing .dr-panel-edit__el{margin-bottom:20px}
+.dr-panel-edit.dr-panel-edit--shipping .dr-panel-edit__check .field-text,.dr-panel-edit.dr-panel-edit--billing .dr-panel-edit__check .field-text{font-family:Open Sans;font-size:18px;color:#333}
+.dr-panel-edit.dr-panel-edit--shipping .dr-panel-edit__check .field-checkbox label,.dr-panel-edit.dr-panel-edit--billing .dr-panel-edit__check .field-checkbox label{font-family:Open Sans;font-size:16px;color:#333}
 .dr-panel-edit.dr-panel-edit--delivery .dr-panel-edit__el{width:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}
 .dr-panel-edit.dr-panel-edit--delivery .dr-panel-edit__el .field-radio{position:relative;width:32%;height:100%}
 .dr-panel-edit.dr-panel-edit--delivery .dr-panel-edit__el .field-radio input[type=radio]{position:absolute;top:18px;left:12px}

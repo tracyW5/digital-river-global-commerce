@@ -59,6 +59,11 @@ class DR_Express_Shopper extends AbstractHttpService {
 	 */
 	protected $shopper_data;
 
+    /**
+     * Undocumented variable
+     */
+    protected $dr_express_api_key;
+
 	/**
 	 * DR_Express_Shopper constructor.
 	 *
@@ -67,6 +72,7 @@ class DR_Express_Shopper extends AbstractHttpService {
 	public function __construct( $authenticator, $handler = false ) {
 		parent::__construct($handler);
 		$this->authenticator = $authenticator;
+        $this->dr_express_api_key = get_option( 'dr_express_api_key' );
 
 		$this->init();
 	}
@@ -81,6 +87,25 @@ class DR_Express_Shopper extends AbstractHttpService {
 		if ( ! $this->user_id && $this->token ) {
 			$this->get_access_token_information();
 		}
+	}
+
+	/**
+	 * Generate full access token
+	 *
+	 * @param string $username
+	 * @param string $password
+	 *
+	 * @return mixed $data
+	 */
+	public function generate_access_token_by_login_id( $username, $password ) {
+		$data = $this->authenticator->generate_access_token_by_login_id( $username, $password );
+
+		$this->refresh_token        = null;
+		$this->token                = isset( $data['access_token'] ) ? $data['access_token'] : null;
+		$this->tokenType            = isset( $data['token_type'] ) ? $data['token_type'] : null;
+		$this->expires_in           = isset( $data['expires_in'] ) ? $data['expires_in'] : null;
+
+		return $data;
 	}
 
 	/**
@@ -122,7 +147,11 @@ class DR_Express_Shopper extends AbstractHttpService {
 			"grant_type"               => "client_credentials"
 		);
 
-		$data =  $this->authenticator->generate_access_token( '', $params );
+		if ( $username != ''  && $password != '') {
+			$data =  $this->authenticator->generate_access_token_by_login_id($username, base64_encode($password));
+		} else {
+			$data =  $this->authenticator->generate_access_token( '', $params );
+		}
 
 		$this->refresh_token        = null;
 		$this->token                = isset( $data['access_token'] ) ? $data['access_token'] : null;
@@ -245,6 +274,32 @@ class DR_Express_Shopper extends AbstractHttpService {
 			$this->user_id = $res['shopper']['id'];
 
 			return $res['shopper'];
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
+	public function retrieve_shopper_address( $params = array() ) {
+		$default = array(
+			'token'             => $this->token,
+			'client_id'         => $this->dr_express_api_key,
+			'expand'            => 'all'
+		);
+
+		$params = array_merge(
+			$default,
+			array_intersect_key( $params, $default )
+		);
+
+		$url = "/v1/shoppers/me?".http_build_query( $params );
+		try {
+			$res = $this->get($url);
+
+			if ( isset($res['shopper']['addresses']['address']) && !empty($res['shopper']['addresses']['address']) ) {
+				return $res['shopper']['addresses']['address'];
+			} else {
+				return false;
+			}
 		} catch (\Exception $e) {
 			return false;
 		}

@@ -67,6 +67,7 @@ jQuery(document).ready(($) => {
                         url += 'format=json'
                         url += `&productId=${productID}`
                         if (quantity) url += `&quantity=${quantity}`;
+                        if(drExpressOptions.testOrder == "true")url += '&testOrder=true';
                         url += `&token=${drExpressOptions.accessToken}`
                         return url;
                     })(),
@@ -80,7 +81,7 @@ jQuery(document).ready(($) => {
                 });
             });
         }
-        
+
 
         removeLineItem(lineItemID) {
             return new Promise((resolve, reject) => {
@@ -190,6 +191,9 @@ jQuery(document).ready(($) => {
 
         $('.dr-minicart-count').text(cart.totalItemsInCart);
         $('.dr-minicart-header').siblings().remove();
+        if ($('section.dr-login-sections__section.logged-in').length && cart.totalItemsInCart == 0) {
+            $('section.dr-login-sections__section.logged-in > div').hide();
+        }
 
         if (!lineItems.length) {
             const emptyMsg = '<p class="dr-minicart-empty-msg">Your shopping cart is currently empty.</p>';

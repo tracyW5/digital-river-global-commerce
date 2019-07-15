@@ -10,23 +10,21 @@
  * @package    DR_Express
  * @subpackage DR_Express/public/templates/parts
  */
+
+    $display = '';
+    if ($cart['cart']['totalItemsInCart'] == 0 ) {
+        echo __( 'Your cart is empty!', 'dr-express' );
+        $display = 'style="display:none;"';
+    }
+    
+    $customerEmail = '';
+    if ( $customer && $customer['id'] != 'Anonymous' ) {
+        $customerEmail = $customer['emailAddress'];
+    }
 ?>
+
 <div class="dr-checkout-wrapper" id="dr-checkout-page-wrapper">
-
-    <div class="dr-checkout-wrapper__actions">
-
-        <div class="dr-check-account">
-
-            <?php if ( $customer && 'Anonymous' === $customer['id'] ) : ?>
-
-                <span class="dr-check-account__text"><?php echo __( 'Have an account?', 'dr-express' ); ?></span>
-
-                <a href="<?php echo esc_url( dr_get_page_link( 'login' ) ); ?>" class="dr-check-account__link"><?php echo __( 'Sign in', 'dr-express' ); ?></a>
-
-            <?php endif; ?>
-
-        </div>
-
+    <div class="dr-checkout-wrapper__actions" <?php echo $display; ?>>
         <div class="back-link">
 
             <a href="" onclick="history.back(); return false;">&#60; Back</a>
@@ -35,15 +33,21 @@
 
     </div>
 
-    <div class="dr-checkout-wrapper__content">
+    <div class="dr-checkout-wrapper__content" <?php echo $display; ?>>
 
         <div class="dr-checkout">
 
             <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-email.php'; ?>
 
-            <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-shipping.php'; ?>
+            <?php if( $cart['cart']['hasPhysicalProduct'] ) :
+                include_once PLUGIN_DIR . 'public/templates/checkout/checkout-shipping.php';
+            endif; ?>
 
-            <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-delivery.php'; ?>
+            <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-billing.php'; ?>
+
+            <?php if( $cart['cart']['hasPhysicalProduct'] ) :
+                include_once PLUGIN_DIR . 'public/templates/checkout/checkout-delivery.php';
+            endif; ?>
 
             <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-payment.php'; ?>
 
@@ -68,6 +72,12 @@
             <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-summary.php'; ?>
 
         </div>
+
+    </div>
+
+    <div class="dr-checkout__actions-bottom">
+
+        <a href="<?php echo get_post_type_archive_link( 'dr_product' ); ?>" class="continue-shopping"><?php echo __( 'Continue Shopping', 'dr-express' ); ?></a>
 
     </div>
 

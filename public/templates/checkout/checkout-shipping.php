@@ -1,3 +1,12 @@
+<?php
+$shippingAddress = $cart['cart']['shippingAddress'];
+if ($customer_address) {
+    $shippingAddress = $customer_address[0];
+}
+if ( $cart['cart']['shippingAddress']['line1'] != '') {
+    $shippingAddress = $cart['cart']['shippingAddress'];
+}
+?>
 <div class="dr-checkout__shipping dr-checkout__el">
     <button class="dr-accordion">
 
@@ -38,7 +47,7 @@
 
                 </label>
 
-                <input id="shipping-field-first-name" type="text" value="<?php echo $cart['cart']['shippingAddress']['firstName'] ?>" name="shipping-firstName" class="form-control float-field float-field--first-name" required>
+                <input id="shipping-field-first-name" type="text" value="<?php echo $shippingAddress['firstName'] ?>" name="shipping-firstName" class="form-control float-field float-field--first-name" required>
 
                 <div class="invalid-feedback">
 
@@ -60,7 +69,7 @@
 
                 </label>
 
-                <input id="shipping-field-last-name" type="text" value="<?php echo $cart['cart']['shippingAddress']['lastName'] ?>" name="shipping-lastName" class="form-control float-field float-field--last-name" required>
+                <input id="shipping-field-last-name" type="text" value="<?php echo $shippingAddress['lastName'] ?>" name="shipping-lastName" class="form-control float-field float-field--last-name" required>
 
                 <div class="invalid-feedback">
 
@@ -82,7 +91,7 @@
 
                 </label>
 
-                <input id="shipping-field-address1" type="text" value="<?php echo $cart['cart']['shippingAddress']['line1'] ?>" name="shipping-line1" class="form-control float-field float-field--address1" required>
+                <input id="shipping-field-address1" type="text" value="<?php echo $shippingAddress['line1'] ?>" name="shipping-line1" class="form-control float-field float-field--address1" required>
 
                 <div class="invalid-feedback">
 
@@ -104,7 +113,7 @@
 
                 </label>
 
-                <input id="shipping-field-address2" type="text" name="shipping-line2" value="<?php echo $cart['cart']['shippingAddress']['line2'] ?>" class="form-control float-field float-field--address2">
+                <input id="shipping-field-address2" type="text" name="shipping-line2" value="<?php echo $shippingAddress['line2'] ?>" class="form-control float-field float-field--address2">
             
             </div>
 
@@ -120,7 +129,7 @@
                     
                 </label>
 
-                <input id="shipping-field-city" type="text" name="shipping-city" value="<?php echo $cart['cart']['shippingAddress']['city'] ?>" class="form-control float-field float-field--city" required>
+                <input id="shipping-field-city" type="text" name="shipping-city" value="<?php echo $shippingAddress['city'] ?>" class="form-control float-field float-field--city" required>
 
                 <div class="invalid-feedback">
 
@@ -134,7 +143,7 @@
 
         <div class="form-group dr-panel-edit__el">
 
-            <select class="custom-select" name="shipping-country" id="shipping-field-country" required>
+            <select class="form-control custom-select" name="shipping-country" id="shipping-field-country" required>
                 <option value="">
                     <?php echo __( 'Select Country *' ); ?>
                 </option>
@@ -145,7 +154,7 @@
                         $abrvCountyName = code_to_counry($locale, true);
 
                         $output = "<option ";
-                        $output .= ($cart['cart']['shippingAddress']['country'] === $abrvCountyName ? 'selected ' : '');
+                        $output .= ($shippingAddress['country'] === $abrvCountyName ? 'selected ' : '');
                         $output .= "value=\"{$abrvCountyName}\">{$country}</option>";
                         echo $output;
                     ?>
@@ -160,10 +169,10 @@
 
         </div>
 
-            
-        <div class="form-group dr-panel-edit__el">
 
-            <select class="custom-select <?php echo $cart['cart']['shippingAddress']['country'] !== 'US' ? 'd-none' : '' ?>" name="shipping-countrySubdivision" id="shipping-field-state">
+        <div class="form-group dr-panel-edit__el <?php echo $shippingAddress['country'] !== 'US' ? 'd-none' : '' ?>">
+
+            <select class="form-control custom-select" name="shipping-countrySubdivision" id="shipping-field-state" required>
 
                 <option value="">
                     <?php echo __( 'Select State *' ); ?>
@@ -172,8 +181,8 @@
                 <?php foreach ($usa_states as $key => $state): ?>
                         <?php 
                             $option = "<option ";
-                            $option .= $cart['cart']['shippingAddress']['countrySubdivision'] === $state ? 'selected ' : '';
-                            $option .= "value=\"{$state}\">{$state}</option>";
+                            $option .= $shippingAddress['countrySubdivision'] === $key ? 'selected ' : '';
+                            $option .= "value=\"{$key}\">{$state}</option>";
                             echo $option;
                         ?>
                 <?php endforeach; ?>
@@ -198,7 +207,7 @@
 
                 </label>
 
-                <input id="shipping-field-zip" type="text" name="shipping-postalCode" value="<?php echo $cart['cart']['shippingAddress']['postalCode'] ?>" class="form-control float-field float-field--zip" required>
+                <input id="shipping-field-zip" type="text" name="shipping-postalCode" value="<?php echo $shippingAddress['postalCode'] ?>" class="form-control float-field float-field--zip" required>
 
                 <div class="invalid-feedback">
 
@@ -220,256 +229,13 @@
 
                 </label>
                 
-                <input id="shipping-field-phone" type="text" name="shipping-phoneNumber" value="<?php echo $cart['cart']['shippingAddress']['phoneNumber'] ?>" class="form-control float-field float-field--phone">
+                <input id="shipping-field-phone" type="text" name="shipping-phoneNumber" value="<?php echo $shippingAddress['phoneNumber'] ?>" class="form-control float-field float-field--phone">
             
             </div>
 
         </div>
         
-        <div id="dr-err-field" class="invalid-feedback" style="display: none"></div>
-
-        <div class="form-group dr-panel-edit__check">
-
-            <p class="field-text">
-
-                <?php echo __( 'What is your billing address?' ); ?>
-
-            </p>
-
-            <div class="field-checkbox">
-
-                <input type="checkbox" name="checkbox-billing" id="checkbox-billing" checked="checked">
-
-                <label for="checkbox-billing" class="checkbox-label">
-
-                    <?php echo __( 'Billing address is the same as delivery address' ); ?>
-
-                </label>
-            
-            </div>
-            
-            <!--<div class="field-checkbox">
-
-                <input type="checkbox" name="checkbox-subscribe" id="checkbox-subscribe" value="value">
-
-                <label for="checkbox-subscribe" class="checkbox-label">
-
-                <?php // echo __( 'Subscribe me to the Newsletter' ); ?>
-            
-                </label>
-
-            </div>-->
-
-        </div>
-
-        <div class="billing-section">
-
-            <div class="billing-section__name">
-
-            <?php echo __( 'Billing information' ); ?>
-
-            </div>
-
-            <div class="form-group dr-panel-edit__el">
-
-                <div class="float-container float-container--first-name">
-
-                    <label for="billing-field-first-name" class="float-label ">
-
-                        <?php echo __( 'First Name *' ); ?>
-
-                    </label>
-
-                    <input id="billing-field-first-name" type="text" name="billing-firstName" value="<?php echo $cart['cart']['billingAddress']['firstName'] ?>" class="form-control float-field float-field--first-name" required>
-
-                    <div class="invalid-feedback">
-
-                        <?php echo __( 'This field is required.' ); ?>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="form-group dr-panel-edit__el">
-
-                <div class="float-container float-container--last-name">
-
-                    <label for="billing-field-last-name" class="float-label">
-
-                        <?php echo __( 'Last Name *' ); ?>
-
-                    </label>
-
-                    <input id="billing-field-last-name" type="text" name="billing-lastName" value="<?php echo $cart['cart']['billingAddress']['lastName'] ?>" class="form-control float-field float-field--last-name" required>
-
-                    <div class="invalid-feedback">
-
-                        <?php echo __( 'This field is required.' ); ?>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="form-group dr-panel-edit__el">
-
-                <div class="float-container float-container--address1">
-
-                    <label for="billing-field-address1" class="float-label ">
-
-                        <?php echo __( 'Address line 1 *' ); ?>
-
-                    </label>
-
-                    <input id="billing-field-address1" type="text" name="billing-line1" value="<?php echo $cart['cart']['billingAddress']['line1'] ?>" class="form-control float-field float-field--address1" required>
-
-                    <div class="invalid-feedback">
-
-                        <?php echo __( 'This field is required.' ); ?>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="form-group dr-panel-edit__el">
-
-                <div class="float-container float-container--address2">
-
-                    <label for="billing-field-address2" class="float-label">
-
-                        <?php echo __( 'Address line 2/Company' ); ?>
-
-                    </label>
-
-                    <input id="billing-field-address2" type="text" name="billing-line2" value="<?php echo $cart['cart']['billingAddress']['line2'] ?>" class="form-control float-field float-field--address2" >
-
-                </div>
-
-            </div>
-
-            <div class="form-group dr-panel-edit__el">
-
-                <div class="float-container float-container--city">
-
-                    <label for="billing-field-city" class="float-label">
-
-                        <?php echo __( 'City *' ); ?>
-                        
-                    </label>
-
-                    <input id="billing-field-city" type="text" name="billing-city" value="<?php echo $cart['cart']['billingAddress']['city'] ?>" class="form-control float-field float-field--city" required>
-
-                    <div class="invalid-feedback">
-
-                        <?php echo __( 'This field is required.' ); ?>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="form-group dr-panel-edit__el">
-
-                <select class="custom-select" name="billing-country" id="billing-field-country" required>
-                    
-                    <option value="">
-                        <?php echo __( 'Select Country *' ); ?>
-                    </option>
-
-                    <?php foreach ( $locales['locales'] as $locale => $currency ): ?>
-                        <?php
-                            $country = code_to_counry($locale);
-                            $abrvCountyName = code_to_counry($locale, true);
-
-                            $output = "<option ";
-                            $output .= ($cart['cart']['billingAddress']['country'] === $abrvCountyName ? 'selected ' : '');
-                            $output .= "value=\"{$abrvCountyName}\">{$country}</option>";
-                            echo $output;
-                        ?>
-                    <?php endforeach; ?>
-
-                </select>
-
-                <div class="invalid-feedback">
-
-                    <?php echo __( 'This field is required.' ); ?>
-
-                </div>
-
-            </div>
-
-            <div class="dr-panel-edit__el">
-
-                <select class="custom-select <?php echo $cart['cart']['billingAddress']['country'] !== 'US' ? 'd-none' : '' ?>" name="billing-countrySubdivision" id="billing-field-state" required>
-
-                    <option value="">
-                        <?php echo __( 'Select State *' ); ?>
-                    </option>
-
-                    <?php foreach ($usa_states as $key => $state): ?>
-                        <?php 
-                            $option = "<option ";
-                            $option .= $cart['cart']['shippingAddress']['countrySubdivision'] === $state ? 'selected ' : '';
-                            $option .= "value=\"{$state}\">{$state}</option>";
-                            echo $option;
-                        ?>
-                    <?php endforeach; ?>
-
-                </select>
-
-                <div class="invalid-feedback">
-
-                    <?php echo __( 'This field is required.' ); ?>
-
-                </div>
-
-            </div>
-
-            <div class="dr-panel-edit__el">
-
-                <div class="float-container float-container--zip">
-
-                    <label for="billing-field-zip" class="float-label">
-
-                        <?php echo __( 'Zipcode *' ); ?>
-
-                    </label>
-
-                    <input id="billing-field-zip" type="text" name="billing-postalCode" value="<?php echo $cart['cart']['billingAddress']['postalCode'] ?>" class="form-control float-field float-field--zip" required>
-
-                    <div class="invalid-feedback">
-
-                        <?php echo __( 'This field is required.' ); ?>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="form-group dr-panel-edit__el">
-
-                <div class="float-container float-container--phone">
-
-                    <label for="billing-field-phone" class="float-label ">
-
-                        <?php echo __( 'Phone' ); ?>
-                    
-                    </label>
-                    
-                    <input id="billing-field-phone" type="text" name="billing-phoneNumber" value="<?php echo $cart['cart']['billingAddress']['phoneNumber'] ?>" class="form-control float-field float-field--phone" >
-
-                </div>
-
-            </div>
-
-        </div>
+        <div class="invalid-feedback dr-err-field" style="display: none"></div>
 
         <button type="submit" class="dr-panel-edit__btn dr-btn">
 

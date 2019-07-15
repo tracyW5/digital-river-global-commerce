@@ -17,7 +17,7 @@ $subtotal_items = $cart['cart']['totalItemsInCart'];
 $subtotal_items_text = $cart['cart']['totalItemsInCart'] > 1 ? __('items') : __('item');
 $subtotal_value = $cart['cart']['pricing']['formattedSubtotal'];
 $estimated_tax_value = $cart['cart']['pricing']['formattedTax'];
-$shipping_price_value = $cart['cart']['pricing']['formattedShippingAndHandling'] === '$0.00' ? 'FREE' : $cart['cart']['pricing']['formattedShippingAndHandling'];
+$shipping_price_value = $cart['cart']['pricing']['shippingAndHandling']['value'] === 0 ? 'FREE' : $cart['cart']['pricing']['formattedShippingAndHandling'];
 $discount = $cart['cart']['pricing']['discount']['value'];
 $formatted_discount = $cart['cart']['pricing']['formattedDiscount'];
 $total_value = $cart['cart']['pricing']['formattedOrderTotal'];
@@ -38,7 +38,7 @@ $delivery_info = 'Delivery in 2-5 working days and extended 30 days return perio
     <p class="item-value"><?php echo $estimated_tax_value; ?></p>
 
 </div>
-
+<?php if( $cart['cart']['hasPhysicalProduct'] ) : ?>
 <div class="dr-summary__shipping">
 
     <p class="item-label"><?php echo __('Shipping') ?></p>
@@ -46,6 +46,7 @@ $delivery_info = 'Delivery in 2-5 working days and extended 30 days return perio
     <p class="item-value"><?php echo $shipping_price_value; ?></p>
 
 </div>
+<?php endif; ?>
 
 <div class="dr-summary__discount" <?php if ( $discount === 0 ) echo 'style="display: none;"' ?>>
 
