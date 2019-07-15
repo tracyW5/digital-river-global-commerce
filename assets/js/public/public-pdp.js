@@ -67,6 +67,7 @@ jQuery(document).ready(($) => {
                         url += 'format=json'
                         url += `&productId=${productID}`
                         if (quantity) url += `&quantity=${quantity}`;
+                        if(drExpressOptions.testOrder == "true")url += '&testOrder=true';
                         url += `&token=${drExpressOptions.accessToken}`
                         return url;
                     })(),

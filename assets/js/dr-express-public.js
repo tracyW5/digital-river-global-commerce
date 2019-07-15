@@ -379,8 +379,18 @@ jQuery(document).ready(function ($) {
     });
   }
 
+  function afterAjax() {
+    if ($('.dr-cart__products').length > 0) $('body').css({
+      'pointer-events': 'auto',
+      'opacity': 1
+    });
+  }
+
   $(document).ajaxSend(function () {
     beforeAjax();
+  });
+  $(document).ajaxStop(function () {
+    afterAjax();
   });
 
   function fetchFreshCart() {
@@ -503,6 +513,7 @@ jQuery(document).ready(function ($) {
       },
       url: function () {
         var url = buyUri;
+        if (drExpressOptions.testOrder == "true") url += '&testOrder=true';
         url += "&token=".concat(drExpressOptions.accessToken);
         return url;
       }(),
@@ -1809,6 +1820,7 @@ jQuery(document).ready(function ($) {
               url += 'format=json';
               url += "&productId=".concat(productID);
               if (quantity) url += "&quantity=".concat(quantity);
+              if (drExpressOptions.testOrder == "true") url += '&testOrder=true';
               url += "&token=".concat(drExpressOptions.accessToken);
               return url;
             }(),
