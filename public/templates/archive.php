@@ -16,71 +16,54 @@
 
 <div class="main-content" id="main">
 
-    <div class="container">
-        
-        <div class="row">
+	<div class="container">
 
-            <div class="col-md-6">
-                <span><?php echo __('Category:') ?></span>
-                <select class="form-control archive-select" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);" >
-                    <option value="" selected disabled><?php echo __('Select') ?></option>
-                    <?php $categories = get_terms( array (
-                            'taxonomy' => 'dr_product_category',
-                            'orderby' => 'name',
-                            'order' => 'ASC',
-                            'hide_empty' => true,
-                    ) ); ?>
+		<div class="row">
 
-                    <?php foreach ( $categories as $category ): ?>
-                        <option value="<?php echo get_term_link($category); ?>"><?php echo $category->name; ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+			<div class="col">
+				<div class=float-right>
+					<?php dr_express_currency_toggler(); ?>
+				</div>
+			</div>
 
-            <div class="col-md-6">
-                <div class=float-right>
-	                <?php dr_express_currency_toggler(); ?>
-                </div>
-            </div>
+		</div>
 
-        </div>
+		<div class="row">
 
-        <div class="row">
+			<div class="col-md-12">
 
-            <div class="col-md-12">
+				<?php if ( have_posts() ) : ?>
+					<section class="page-header">
+						<?php
+							the_archive_title( '<h1 class="page-title">', '</h1>' );
+							the_archive_description( '<div class="page-description">', '</div>' );
+						?>
+					</section>
+				<?php endif; ?>
 
-                <?php if ( have_posts() ) : ?>
-                    <section class="page-header">
-                        <?php
-                            the_archive_title( '<h1 class="page-title">', '</h1>' );
-                            the_archive_description( '<div class="page-description">', '</div>' );
-                        ?>
-                    </section>
-                <?php endif; ?>
+			</div><!-- .col -->
 
-            </div><!-- .col -->
+		</div><!-- .row -->
 
-        </div><!-- .row -->
-        
-        <div class="row">
+		<div class="row">
 
-            <?php if ( have_posts() ): ?>
-                <?php while ( have_posts() ): ?>
-                    <div class="col-md-4">
-                        <?php the_post(); ?>
-                        <?php dr_express_get_template_part( 'content', 'archive' );  ?>
-                    </div>
-                <?php endwhile; ?>
-                <div class="col-md-12">
-                    <?php dr_express_the_posts_pagination( $wp_query ); ?>
-                </div>
-            <?php else: ?>
-                <?php dr_express_get_template_part( 'content', 'none' ); ?>
-            <?php endif; ?>
+			<?php if ( have_posts() ): ?>
+				<?php while ( have_posts() ): ?>
+					<div class="col-md-4">
+						<?php the_post(); ?>
+						<?php dr_express_get_template_part( 'content', 'archive' );  ?>
+					</div>
+				<?php endwhile; ?>
+				<div class="col-md-12">
+					<?php dr_express_the_posts_pagination( $wp_query ); ?>
+				</div>
+			<?php else: ?>
+				<?php dr_express_get_template_part( 'content', 'none' ); ?>
+			<?php endif; ?>
 
-        </div><!-- .row -->
+		</div><!-- .row -->
 
-    </div><!-- .container -->
+	</div><!-- .container -->
 
 </div>
 

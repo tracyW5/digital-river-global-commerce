@@ -5,9 +5,7 @@
     
     <span class="dr-accordion__name">
 
-        <span class="dr-accordion__icon payment-icon"></span>
-    
-        <?php echo __( 'Payment' ); ?>
+        <?php echo isset( $steps_titles['payment'] ) ? $steps_titles['payment'] : ''; ?>
 
     </span>
 
