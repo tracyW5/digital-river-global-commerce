@@ -272,7 +272,9 @@ jQuery(document).ready(($) => {
     };
 
     (function () {
-        displayMiniCart(drExpressOptions.cart.cart);
+        drService.getCart()
+            .then(cart => displayMiniCart(cart))
+            .catch(jqXHR => errorCallback(jqXHR));
     }());
 
     $('.dr-minicart-toggle, .dr-minicart-close-btn').click((e) => {
