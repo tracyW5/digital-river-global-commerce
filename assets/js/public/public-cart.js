@@ -322,7 +322,10 @@ jQuery(document).ready(($) => {
       $('.dr-cart__products').html("");
       let hasPhysicalProduct = false;
       $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
+        console.log(lineitem);
         let permalink = '';
+        let permalinkProductId = lineitem.product.id;
+        if(lineitem.product.parentProduct)permalinkProductId = lineitem.product.parentProduct.id;
         if(lineitem.product.productType == "PHYSICAL")hasPhysicalProduct = true;
         $.ajax({
           type: 'POST',
@@ -330,7 +333,7 @@ jQuery(document).ready(($) => {
           url: drExpressOptions.ajaxUrl,
           data: {
             action: 'get_permalink',
-            productID: lineitem.product.id
+            productID: permalinkProductId
           },
           success: (response) => {
             permalink = response;
