@@ -1066,9 +1066,9 @@ input[type=radio] { position: relative; opacity: 1; width: -webkit-max-content; 
 
 .closed .dr-accordion__icon.payment-icon { background: url("../images/payment-closed.svg"); }
 
-.DRElement { padding: 12px 10px; color: #888; border: 1px solid #ced4da; background-color: #fff; }
+.DRElement { padding: 0 10px; color: #888; border: 1px solid #ced4da; background-color: #fff; }
 
-.DRElement, .DRElement--empty, .DRElement--complete, .DRElement--invalid { font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; }
+.DRElement, .DRElement--empty, .DRElement--complete, .DRElement--invalid { font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; height: 48px; }
 
 .DRElement--complete { color: #69bf29; border-color: #69bf29; }
 

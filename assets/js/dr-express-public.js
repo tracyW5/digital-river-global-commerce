@@ -806,7 +806,8 @@ jQuery(document).ready(function ($) {
       var styles = {
         color: tempStyle.color,
         fontFamily: tempStyle.fontFamily.replace(new RegExp('"', 'g'), ''),
-        fontSize: tempStyle.fontSize
+        fontSize: tempStyle.fontSize,
+        height: tempStyle.height
       };
       document.body.removeChild(tempDivEl);
       return styles;
