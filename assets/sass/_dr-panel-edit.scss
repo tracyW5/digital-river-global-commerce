@@ -1,13 +1,14 @@
 .DRElement {
-    padding: 12px 10px;
+    padding: 0 10px;
     color: #888;
     border: 1px solid #ced4da;
     background-color: #fff;
 
+    // styles must be defined here for elements embedded in iframe
     &, &--empty, &--complete, &--invalid {
-        // font must put here for defining style for JS usage
         font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif;
         font-size: 14px;
+        height: 48px;
     }
 
     &--complete {

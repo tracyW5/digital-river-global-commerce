@@ -383,8 +383,8 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .closed .dr-accordion__icon.shipping-icon,.closed .dr-accordion__icon.billing-icon{background:url("../images/address-closed.svg")}
 .closed .dr-accordion__icon.delivery-icon{background:url("../images/delivery-closed.svg")}
 .closed .dr-accordion__icon.payment-icon{background:url("../images/payment-closed.svg")}
-.DRElement{padding:12px 10px;color:#888;border:1px solid #ced4da;background-color:#fff}
-.DRElement,.DRElement--empty,.DRElement--complete,.DRElement--invalid{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;font-size:14px}
+.DRElement{padding:0 10px;color:#888;border:1px solid #ced4da;background-color:#fff}
+.DRElement,.DRElement--empty,.DRElement--complete,.DRElement--invalid{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;font-size:14px;height:48px}
 .DRElement--complete{color:#69bf29;border-color:#69bf29}
 .DRElement--invalid{color:#dc3545;border-color:#dc3545}
 .dr-panel-edit{display:none;width:100%;padding-top:20px;padding-bottom:20px;overflow:hidden}
