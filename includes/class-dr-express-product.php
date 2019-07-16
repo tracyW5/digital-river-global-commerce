@@ -183,6 +183,9 @@ class DR_Express_Product {
 					case 'sizes':
 						$_product_meta['sizes'] = $attribute['value'];
 						break;
+					case 'platform':
+						$_product_meta['platform'] = $attribute['value'];
+						break;
 					case 'duration':
 						$_product_meta['duration'] = $attribute['value'];
 						break;
@@ -225,10 +228,14 @@ class DR_Express_Product {
 
 		if ( isset( $args['variationAttributes']['attribute'] ) ) {
 			foreach ( $args['variationAttributes']['attribute'] as $attribute ) {
-
+				$_product_meta['variation_attributes'][] = $attribute['name'];
+				
 				switch ( $attribute['name'] ) {
 					case 'productType':
 						$_product_meta['variation_types'] = $attribute['domainValues'];
+						break;
+					case 'platform':
+						$_product_meta['platform'] = $attribute['domainValues'];
 						break;
 					case 'color':
 						$_product_meta['color'] = $attribute['domainValues'];

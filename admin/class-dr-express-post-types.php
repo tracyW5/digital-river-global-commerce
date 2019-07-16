@@ -84,7 +84,7 @@ class DR_Express_Post_Types {
 					'singular_name' => __( 'DR Variation', 'dr-express' ),
 					'all_items' => __( 'All Variations', 'dr-express' ),
 				),
-				'public' => false,
+				'public' => true,
 				'show_in_rest' => true,
 				'rest_base' => 'dr_products_variations',
 				'hierarchical' => true,
@@ -94,6 +94,8 @@ class DR_Express_Post_Types {
 				'capabilities' => array(
 					'create_posts' => 'do_not_allow'
 				),
+				'map_meta_cap' => true,
+				'publicly_queryable' => false
 			)
 		);
 	}
@@ -152,11 +154,13 @@ class DR_Express_Post_Types {
 	 * @since    1.0.0
 	 */
 	public function add_product_details_meta_box() {
+		$post_types = array( 'dr_product', 'dr_product_variation' );
+
 		add_meta_box(
 			'dr_product_details_box', // Unique ID
 			__( 'Product Details', 'dr-express' ), // Box title
 			array( $this, 'render_product_details_meta_box' ), // Content callback, must be of type callable
-			'dr_product' // Post type
+			$post_types // Post type
 		);
 	}
 
@@ -166,6 +170,9 @@ class DR_Express_Post_Types {
 	 * @since    1.0.0
 	 */
 	public function render_product_details_meta_box( $post ) {
+		echo '<h2 id="drcc-link"><a href="https://gc.digitalriver.com/gc/ent/site/selectSite.do?siteID=' . get_option('dr_express_site_id') . ' target="_blank">Manage Products</a></h2>';
+		
+		include_once 'partials/dr-express-product-variations.php';
 		include_once 'partials/dr-express-product-details-meta-box.php';
 	}
 

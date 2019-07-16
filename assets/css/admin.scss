@@ -29,6 +29,62 @@ body.taxonomy-dr_product_category #col-left {
     width: 100%;
 }
 
+fieldset {
+    background-color: #F1F1F1;
+    clear: both;
+    border: 1px solid #ccc;
+    padding: 15px 20px 20px 20px;
+    margin: 15px 0 20px;
+    display: table-cell;
+}
+
+fieldset legend {
+    cursor: move;
+    margin-left: 3px;
+    color: #000000;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.data-table {
+    clear: both;
+    width: 100%;
+    overflow: auto;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(204, 204, 204);
+}
+
+.data-table th {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    text-align: left;
+    white-space: nowrap;
+    font-weight: bold;
+    padding: 8px 10px 8px 5px;
+}
+
+.data-table td {
+    background-color: rgb(255, 255, 255);
+    text-align: left;
+    vertical-align: top;
+    padding: 5px 10px 5px 5px;
+}
+
+.data-table th:last-child {
+    border-right: 0px;
+}
+
+dl dt {
+    float: left;
+    padding-right: 10px;
+}
+
+dl dt label {
+    font-weight: bold;
+    vertical-align: baseline;
+}
+
 /*
 * jQuery UI CSS Framework
 * Copyright (c) 2009 AUTHORS.txt (http://jqueryui.com/about)
