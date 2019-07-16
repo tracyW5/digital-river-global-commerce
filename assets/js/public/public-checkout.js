@@ -471,7 +471,7 @@ jQuery(document).ready(($) => {
             paymentPayload[obj.name] = obj.value;
         });
 
-        $('#dr-checkout-err-field').text('').hide();
+        $('#dr-payment-failed-msg, #dr-checkout-err-field').text('').hide();
 
         const $section = $('.dr-checkout__payment');
 
@@ -493,7 +493,7 @@ jQuery(document).ready(($) => {
                 },
                 amount: cart.pricing.orderTotal.value,
                 currency: cart.pricing.orderTotal.currency
-            }
+            };
 
             $button.addClass('sending').blur();
             digitalriverjs.createSource(cardNumber, creditCardPayload).then(function(result) {

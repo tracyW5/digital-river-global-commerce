@@ -1147,7 +1147,7 @@ jQuery(document).ready(function ($) {
     $(formdata).each(function (index, obj) {
       paymentPayload[obj.name] = obj.value;
     });
-    $('#dr-checkout-err-field').text('').hide();
+    $('#dr-payment-failed-msg, #dr-checkout-err-field').text('').hide();
     var $section = $('.dr-checkout__payment');
 
     if (paymentPayload.selector === 'credit-card') {
