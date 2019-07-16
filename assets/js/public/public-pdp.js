@@ -359,11 +359,16 @@ jQuery(document).ready(($) => {
 
         var varId = $(this).val();
         var price = $(this).children("option:selected").data('price');
-        var $prodPrice = $('.dr-pd-price');
+        var regularPrice = $(this).children("option:selected").data('regular-price');
+        var salePriceValue = $(this).children("option:selected").data('sale-price-value');
+        var listPriceValue = $(this).children("option:selected").data('list-price-value');
+        var $prodPrice = $('.single-dr_product .dr-pd-content .dr-pd-price');
         var $buyBtn = $('.dr-buy-btn');
-
+        var prodPriceHtml ="";
         $buyBtn.attr('data-product-id', varId);
-        $prodPrice.html('<strong>' + price + '</strong>');
+        if(listPriceValue > salePriceValue)prodPriceHtml ='<del class="dr-strike-price">'+regularPrice+'</del>';
+        prodPriceHtml +='<strong>' + price + '</strong>';
+        $prodPrice.html(prodPriceHtml);
     });
 
     $( "iframe[name^='controller-']" ).css('display', 'none');

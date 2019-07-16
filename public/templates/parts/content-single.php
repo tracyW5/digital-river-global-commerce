@@ -20,6 +20,17 @@ $purchasable = get_post_meta( get_the_ID(), 'purchasable', true );
 
 $variations = dr_get_product_variations( get_the_ID() );
 if ( $variations && isset( $variations[0] ) ) {
+  //sort variation array  by sale price here!
+  $variations_sort = array();
+  foreach ( $variations as $variation ){
+    $var_pricing = dr_get_product_pricing( $variation->ID );
+    $variation->sort_pricing = $var_pricing['sale_price_value'];
+    array_push($variations_sort,$variation);
+  }
+  usort($variations_sort, function($a, $b){
+    return bccomp($a->sort_pricing, $b->sort_pricing);
+  });
+  $variations = $variations_sort;
 	$gc_id = get_post_meta( $variations[0]->ID, 'gc_product_id', true );
 	$pricing = dr_get_product_pricing( $variations[0]->ID );
 	$product_image = get_post_meta( $variations[0]->ID, 'gc_product_images_url', true );
@@ -27,11 +38,10 @@ if ( $variations && isset( $variations[0] ) ) {
 	$pricing = dr_get_product_pricing( get_the_ID() );
 
 }
-
-$list_price = isset( $pricing['list_price_value'] ) ? $pricing['list_price_value'] : '';
-$sale_price = isset( $pricing['sale_price_value'] ) ? $pricing['sale_price_value'] : '';
+$list_price_value = isset( $pricing['list_price_value'] ) ? $pricing['list_price_value'] : '';
+$sale_price_value = isset( $pricing['sale_price_value'] ) ? $pricing['sale_price_value'] : '';
 $price = isset( $pricing['price'] ) ? $pricing['price'] : '';
-
+$regular_price = isset( $pricing['regular_price'] ) ? $pricing['regular_price'] : '';
 ?>
 
 <div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
@@ -67,10 +77,13 @@ $price = isset( $pricing['price'] ) ? $pricing['price'] : '';
                 <?php foreach ( $variations as $variation ) :
 							    $var_gc_id = get_post_meta( $variation->ID, 'gc_product_id', true );
 							    $variation_type = get_post_meta( $variation->ID, $var_type, true );
-							    $var_pricing = dr_get_product_pricing( $variation->ID );
+                  $var_pricing = dr_get_product_pricing( $variation->ID );
 							    ?>
                                 <option value="<?php echo $var_gc_id; ?>"
                                         data-price="<?php echo isset( $var_pricing['price'] ) ? $var_pricing['price'] : ''; ?>"
+                                        data-regular-price="<?php echo isset( $var_pricing['regular_price'] ) ? $var_pricing['regular_price'] : $var_pricing['price']; ?>"
+                                        data-sale-price-value="<?php echo isset( $var_pricing['sale_price_value'] ) ? $var_pricing['sale_price_value'] : ''; ?>"
+                                        data-list-price-value="<?php echo isset( $var_pricing['list_price_value'] ) ? $var_pricing['list_price_value'] : ''; ?>"
                                 >
                     <?php
                       if(ucwords( $variation_type) != ""){
@@ -89,10 +102,10 @@ $price = isset( $pricing['price'] ) ? $pricing['price'] : '';
                 <form id="dr-pd-form">
                     <div class="dr-pd-price-wrapper" id="dr-pd-price-wrapper">
 
-					    <?php if ( (int) $list_price > (int) $sale_price ) : ?>
+					    <?php if ( (float) $list_price_value > (float) $sale_price_value ) : ?>
                             <p class="dr-pd-price">
                                 <del class="dr-strike-price">
-								    <?php echo $list_price; ?>
+								    <?php echo $regular_price; ?>
                                 </del>
                                 <span class="dr-sale-price">
                                 <strong><?php echo $price; ?></strong>
