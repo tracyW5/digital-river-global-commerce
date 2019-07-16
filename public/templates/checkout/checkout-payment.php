@@ -51,15 +51,15 @@
 
             <div class="cards">
 
-                <div class="american-express-icon"></div>
+                <div class="amex-icon"></div>
 
-                <div  class="diners-club-icon"></div>
+                <div  class="dinersclub-icon"></div>
 
                 <div  class="discover-icon"></div>
 
                 <div  class="jcb-icon"></div>
 
-                <div  class="master-card-icon"></div>
+                <div  class="mastercard-icon"></div>
 
                 <div  class="visa-icon"></div>
 
@@ -68,21 +68,22 @@
         </div>
 
         <div class="credit-card-info">
+            <div class="clearfix">
+                <div class="form-group card-number-wrapper">
+                    <div id="card-number"></div>
+                    <div class="invalid-feedback" id="card-number-error"></div>
+                </div>
 
-            <input id="card-number" name="credit-card-number" class="form-control cc-number" type="tel" pattern="\d*" maxlength="19" placeholder="<?php echo __( 'Card Number' ); ?>" required>
-            
-            <div class="cc-expires-section">
+                <div class="form-group card-expiration-wrapper">
+                    <div id="card-expiration"></div>
+                    <div class="invalid-feedback" id="card-expiration-error"></div>
+                </div>
 
-                <input id="card-expiration-mm" name="credit-card-expires-mm" class="form-control cc-expires" type="tel" pattern="\d*" maxlength="5" placeholder="<?php echo __( 'MM' ); ?>" required  style="background-image: none">
-                
-                <div class="del">/</div>
-                
-                <input id="card-expiration-yy" name="credit-card-expires-yy" class="form-control cc-expires" type="tel" pattern="\d*" maxlength="2" placeholder="<?php echo __( 'YY' ); ?>" required  style="background-image: none">
-            
+                <div class="form-group card-cvv-wrapper">
+                    <div id="card-cvv"></div>
+                    <div class="invalid-feedback" id="card-cvv-error"></div>
+                </div>
             </div>
-           
-            <input id="card-cvv" name="credit-card-cvv" class="form-control cc-cvv" type="tel" pattern="\d*" maxlength="4" placeholder="<?php echo __( 'CVV' ); ?>" required  style="background-image: none">
-
         </div>
 
     </div>

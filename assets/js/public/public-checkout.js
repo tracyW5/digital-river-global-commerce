@@ -66,12 +66,82 @@ jQuery(document).ready(($) => {
     var digitalriverjs = new DigitalRiver(drExpressOptions.digitalRiverKey);
     var payload  = { shipping: {}, billing: {} };
     var paymentPayload = {};
+    var paymentSourceId = null;
 
     // Section progress
     let finishedSectionIdx = -1;
 
     // Submit first (email) form
     var emailPayload;
+
+    // Create elements through DR.js
+    if ($('.credit-card-section').length) {
+        const options = {
+          classes: {
+            base: 'DRElement',
+            complete: 'DRElement--complete',
+            empty: 'DRElement--empty',
+            invalid: 'DRElement--invalid'
+          },
+          style: {
+            base: getStyleOptionsFromClass('DRElement'),
+            complete: getStyleOptionsFromClass('DRElement--complete'),
+            empty: getStyleOptionsFromClass('DRElement--empty'),
+            invalid: getStyleOptionsFromClass('DRElement--invalid')
+          }
+        };
+        var cardNumber = digitalriverjs.createElement('cardnumber', options);
+        var cardExpiration = digitalriverjs.createElement('cardexpiration', options);
+        var cardCVV = digitalriverjs.createElement('cardcvv', options);
+
+        cardNumber.mount('card-number');
+        cardExpiration.mount('card-expiration');
+        cardCVV.mount('card-cvv');
+
+        cardNumber.on('change', function(evt) {
+            activeCardLogo(evt);
+            displayDRElementError(evt, $('#card-number-error'));
+        });
+        cardExpiration.on('change', function(evt) {
+            displayDRElementError(evt, $('#card-expiration-error'));
+        });
+        cardCVV.on('change', function(evt) {
+            displayDRElementError(evt, $('#card-cvv-error'));
+        });
+
+        function getStyleOptionsFromClass(className) {
+            const tempDiv = document.createElement('div');
+            tempDiv.setAttribute('id', 'tempDiv' + className);
+            tempDiv.className = className;
+            document.body.appendChild(tempDiv);
+            const tempDivEl = document.getElementById('tempDiv' + className);
+            const tempStyle = window.getComputedStyle(tempDivEl);
+
+            const styles = {
+                color: tempStyle.color,
+                fontFamily: tempStyle.fontFamily.replace(new RegExp('"', 'g'), ''),
+                fontSize: tempStyle.fontSize
+            }
+            document.body.removeChild(tempDivEl);
+
+            return styles;
+        }
+
+        function activeCardLogo(evt) {
+            $('.cards .active').removeClass('active');
+            if (evt.brand && evt.brand !== 'unknown') {
+                $(`.cards .${evt.brand}-icon`).addClass('active');
+            }
+        }
+
+        function displayDRElementError(evt, $target) {
+            if (evt.error) {
+                $target.text(evt.error.message).show();
+            } else {
+                $target.text('').hide();
+            }
+        }
+    }
 
     function prepareAddress($form) {
         const addressType = ($form.attr('id') === 'checkout-shipping-form') ? 'shipping' : 'billing';
@@ -388,6 +458,7 @@ jQuery(document).ready(($) => {
     $('form#checkout-payment-form').on('submit', function(e) {
         e.preventDefault();
         let $form = $('form#checkout-payment-form');
+        const $button = $form.find('button[type="submit"]');
 
         $form.addClass('was-validated');
         if ($form[0].checkValidity() === false) {
@@ -400,20 +471,58 @@ jQuery(document).ready(($) => {
             paymentPayload[obj.name] = obj.value;
         });
 
-        $('#dr-checkout-err-field').text('').hide();
+        $('#dr-payment-failed-msg, #dr-checkout-err-field').text('').hide();
 
         const $section = $('.dr-checkout__payment');
-        $section.find('.dr-panel-result__text').text(
-            `Credit card ending in ${paymentPayload['credit-card-number'].substr(paymentPayload['credit-card-number'].length - 4)}`
-        );
-        moveToNextSection($section);
+
+        if (paymentPayload.selector === 'credit-card') {
+            const cart = drExpressOptions.cart.cart;
+            const creditCardPayload = {
+                type: 'creditCard',
+                owner: {
+                    firstName: payload.billing.firstName,
+                    lastName: payload.billing.lastName,
+                    email: payload.billing.emailAddress,
+                    address: {
+                        line1: payload.billing.line1,
+                        city: payload.billing.city,
+                        state: payload.billing.state,
+                        country: payload.billing.country,
+                        postalCode: payload.billing.postalCode
+                    }
+                },
+                amount: cart.pricing.orderTotal.value,
+                currency: cart.pricing.orderTotal.currency
+            };
+
+            $button.addClass('sending').blur();
+            digitalriverjs.createSource(cardNumber, creditCardPayload).then(function(result) {
+                $button.removeClass('sending').blur();
+                if (result.error) {
+                    if (result.error.state === 'failed') {
+                        $('#dr-payment-failed-msg').text('Failed payment for specified credit card').show();
+                    }
+                    if (result.error.errors) {
+                        $('#dr-payment-failed-msg').text(result.error.errors[0].message).show();
+                    }
+                } else {
+                    if (result.source.state === 'chargeable') {
+                        paymentSourceId = result.source.id;
+                        $section.find('.dr-panel-result__text').text(
+                            `Credit card ending in ${result.source.creditCard.lastFourDigits}`
+                        );
+                        moveToNextSection($section);
+                    }
+                }
+            });
+        }
     });
 
     $('form#checkout-confirmation-form').on('submit', function(e) {
         e.preventDefault();
         $(this).find('button[type="submit"]').toggleClass('sending').blur();
         $('#dr-payment-failed-msg').hide();
-        sendPaymentData();
+        applyPaymentToCart(paymentSourceId);
     });
 
     function applyShippingAndUpdateCart(shippingoptionID){
@@ -448,97 +557,6 @@ jQuery(document).ready(($) => {
       });
     }
 
-
-    function sendPaymentData() {
-        const cart = drExpressOptions.cart.cart;
-        let digitalRiverPayload = {};
-
-        if (paymentPayload.selector === 'credit-card') {
-            digitalRiverPayload = {
-                "type": "creditCard",
-                "owner": {
-                    "firstName": payload.billing.firstName,
-                    "lastName": payload.billing.lastName,
-                    "email": payload.billing.emailAddress,
-                    "address": {
-                        "line1": payload.billing.line1,
-                        "city": payload.billing.city,
-                        "state": payload.billing.state,
-                        "country": payload.billing.country,
-                        "postalCode": payload.billing.postalCode
-                    }
-                },
-                "creditCard": {
-                    "number": $('#card-number').val(),
-                    "expirationMonth":  $('#card-expiration-mm').val(),
-                    "expirationYear": $('#card-expiration-yy').val(),
-                    "cvv": $('#card-cvv').val(),
-                },
-                "amount": cart.pricing.orderTotal.value,
-                "currency": cart.pricing.orderTotal.currency
-            }
-        }
-
-        if (paymentPayload.selector === 'paypal') {
-            let payPalItems = [];
-            $.each(cart.lineItems.lineItem, function( index, item ) {
-                payPalItems.push({
-                    "name": item.product.name,
-                    "quantity": item.quantity,
-                    "unitAmount": item.product.inventoryStatus.availableQuantity
-                })
-            });
-
-            digitalRiverPayload = {
-                "type": "payPal",
-                "amount": cart.pricing.orderTotal.value,
-                "currency": "USD",
-                "payPal": {
-                    "returnUrl": window.location.href + '?ppsuccess=true',
-                    "cancelUrl": window.location.href + '?ppcancel=true',
-                    "items": payPalItems,
-                    "taxAmount": cart.pricing.tax.value,
-                    "requestShipping": requestShipping,
-                    "shipping": {
-                        "recipient":  `${cart.shippingAddress.firstName} ${cart.shippingAddress.lastName} `,
-                        "phoneNumber":  cart.shippingAddress.phoneNumber,
-                        "address": {
-                            "line1": cart.shippingAddress.line1,
-                            "line2": cart.shippingAddress.line2,
-                            "city": cart.shippingAddress.city,
-                            "state": cart.shippingAddress.state,
-                            "country":  cart.shippingAddress.country,
-                            "postalCode": cart.shippingAddress.postalCode
-                        }
-                    }
-                }
-            }
-        }
-
-        digitalriverjs.createSource(digitalRiverPayload).then(function(result) {
-            if (result.error) {
-                $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
-
-                if (result.error.state === 'failed') {
-                    $('#dr-payment-failed-msg').text('Failed payment for specified credit card').show();
-                }
-
-                if (result.error.errors) {
-                    $('#dr-payment-failed-msg').text(result.error.errors[0].message).show();
-                }
-            } else {
-                // Success!  You can now send the token to your server for use in downstream API calls.
-                if (result.source.type === 'creditCard' && result.source.state === 'chargeable') {
-                    applyPaymentToCart(result.source.id);
-                }
-
-                if (result.source.type === 'payPal') {
-                    window.location.href = result.source.redirect.redirectUrl
-                }
-            }
-        });
-    }
-
     // Initial state for payPal
     if ( drExpressOptions.payPal.sourceId ) {
         $('.dr-checkout').children().addClass('closed');
@@ -555,6 +573,8 @@ jQuery(document).ready(($) => {
     }
 
     function applyPaymentToCart(id) {
+        if (!id) return;
+
         let data = {
             'paymentMethod': {
               'sourceId': id
