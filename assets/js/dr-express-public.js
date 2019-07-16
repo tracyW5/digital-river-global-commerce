@@ -2032,7 +2032,13 @@ jQuery(document).ready(function ($) {
   };
 
   (function () {
-    displayMiniCart(drExpressOptions.cart.cart);
+    if ($('#dr-minicart'.length)) {
+      drService.getCart().then(function (cart) {
+        return displayMiniCart(cart);
+      }).catch(function (jqXHR) {
+        return errorCallback(jqXHR);
+      });
+    }
   })();
 
   $('.dr-minicart-toggle, .dr-minicart-close-btn').click(function (e) {
