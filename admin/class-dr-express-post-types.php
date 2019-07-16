@@ -85,6 +85,7 @@ class DR_Express_Post_Types {
 					'all_items' => __( 'All Variations', 'dr-express' ),
 				),
 				'public' => true,
+				'show_in_menu' => 'edit.php?post_type=dr_product',
 				'show_in_rest' => true,
 				'rest_base' => 'dr_products_variations',
 				'hierarchical' => true,
