@@ -9,7 +9,9 @@
 
         </span>
 
-       <span class="dr-accordion__edit">Edit></span>
+        <?php if ($customerEmail == '') { ?>
+            <span class="dr-accordion__edit">Edit></span>
+        <?php } ?>
   
     </button>
 
