@@ -8,16 +8,13 @@ if ( $cart['cart']['billingAddress']['line1'] != '') {
 }
 ?>
 <div class="dr-checkout__billing dr-checkout__el">
-
     <button class="dr-accordion">
 
         <span class="dr-accordion__name">
 
-            <span class="dr-accordion__icon billing-icon"></span>
-
             <span class="dr-accordion__title-long">
 
-                <?php echo __( 'Billing information' ); ?>
+                <?php echo isset( $steps_titles['billing'] ) ? $steps_titles['billing'] : ''; ?>
 
             </span>
 

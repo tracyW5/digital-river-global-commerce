@@ -16,11 +16,9 @@ $result = 'Standard $0.00';
         
         <span class="dr-accordion__name">
 
-            <span class="dr-accordion__icon delivery-icon"></span>
-
             <span class="dr-accordion__title-long">
 
-                <?php echo __( 'Delivery options' ); ?>
+                <?php echo isset( $steps_titles['delivery'] ) ? $steps_titles['delivery'] : ''; ?>
 
             </span>
 

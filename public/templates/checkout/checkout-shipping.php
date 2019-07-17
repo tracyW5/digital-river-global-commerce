@@ -12,11 +12,9 @@ if ( $cart['cart']['shippingAddress']['line1'] != '') {
 
         <span class="dr-accordion__name">
 
-            <span class="dr-accordion__icon shipping-icon"></span>
-
             <span class="dr-accordion__title-long">
 
-                <?php echo __( 'Shipping information' ); ?>
+                <?php echo isset( $steps_titles['shipping'] ) ? $steps_titles['shipping'] : ''; ?>
 
             </span>
 

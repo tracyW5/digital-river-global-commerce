@@ -3,9 +3,8 @@
     <button class="dr-accordion">
 
         <span class="dr-accordion__name">
-            <span class="dr-accordion__icon email-icon"></span>
 
-            <?php echo __( 'Email' ); ?>
+            <?php echo isset( $steps_titles['email'] ) ? $steps_titles['email'] : ''; ?>
 
         </span>
 
