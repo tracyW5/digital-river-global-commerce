@@ -31,10 +31,17 @@ class DR_Shortcode_Checkout {
 		$customer = DR_Express()->shopper->retrieve_shopper();
 		$customer_address = DR_Express()->shopper->retrieve_shopper_address();
 		$usa_states = retrieve_usa_states();
+		$steps_titles = apply_filters( 'dr_express_checkout_titles', array(
+			'email'    => __( 'Email', 'dr_express' ),
+			'shipping' => __( 'Shipping', 'information', 'dr_express' ),
+			'billing'  => __( 'Billing', 'information', 'dr_express' ),
+			'delivery' => __( 'Delivery', 'options', 'dr_express' ),
+			'payment'  => __( 'Payment', 'dr_express' ),
+		) );
 		
 		dr_get_template(
 			'checkout/checkout.php',
-			compact('cart', 'customer', 'customer_address', 'usa_states', 'locales')
+			compact( 'cart', 'customer', 'customer_address', 'usa_states', 'locales', 'steps_titles' )
 		);
 	}
 }
