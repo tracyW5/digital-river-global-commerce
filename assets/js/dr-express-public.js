@@ -560,7 +560,6 @@ jQuery(document).ready(function ($) {
     $('.dr-cart__products').html("");
     var hasPhysicalProduct = false;
     $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
-      console.log(lineitem);
       var permalink = '';
       var permalinkProductId = lineitem.product.id;
       if (lineitem.product.parentProduct) permalinkProductId = lineitem.product.parentProduct.id;
@@ -955,6 +954,7 @@ jQuery(document).ready(function ($) {
 
     adjustColumns($section);
     freshSummary($section);
+    updateTaxLabel();
   }
 
   function freshSummary($section) {
@@ -1005,6 +1005,14 @@ jQuery(document).ready(function ($) {
     } else {
       $paymentSection.removeClass('small-closed-left');
       $confirmSection.removeClass('small-closed-right').addClass('d-none');
+    }
+  }
+
+  function updateTaxLabel() {
+    if ($('.dr-checkout__el.active').hasClass('dr-checkout__payment') || $('.dr-checkout__el.active').hasClass('dr-checkout__confirmation')) {
+      $('.dr-summary__tax > .item-label').text('Tax');
+    } else {
+      $('.dr-summary__tax > .item-label').text('Estimated Tax');
     }
   }
 
@@ -1379,6 +1387,7 @@ jQuery(document).ready(function ($) {
     $activeSection.removeClass('active');
     $section.removeClass('closed').addClass('active');
     adjustColumns();
+    updateTaxLabel();
   }); // print thank you page
 
   $('#print-button').on('click', function (ev) {

@@ -239,6 +239,7 @@ jQuery(document).ready(($) => {
 
         adjustColumns($section);
         freshSummary($section);
+        updateTaxLabel();
     }
 
     function freshSummary($section) {
@@ -286,6 +287,14 @@ jQuery(document).ready(($) => {
         } else {
             $paymentSection.removeClass('small-closed-left');
             $confirmSection.removeClass('small-closed-right').addClass('d-none');
+        }
+    }
+
+    function updateTaxLabel() {
+        if ($('.dr-checkout__el.active').hasClass('dr-checkout__payment') || $('.dr-checkout__el.active').hasClass('dr-checkout__confirmation')) {
+            $('.dr-summary__tax > .item-label').text('Tax');
+        } else {
+            $('.dr-summary__tax > .item-label').text('Estimated Tax');
         }
     }
 
@@ -701,6 +710,7 @@ jQuery(document).ready(($) => {
         $section.removeClass('closed').addClass('active');
 
         adjustColumns();
+        updateTaxLabel();
     });
 
     // print thank you page
