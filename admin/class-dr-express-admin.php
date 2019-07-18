@@ -119,8 +119,8 @@ class DR_Express_Admin {
 	 */
 	public function add_settings_page() {
 		add_menu_page(
-			__( 'DR Express Settings', 'dr-express' ),
-			__( 'DR Express', 'dr-express' ),
+			__( 'DR Settings', 'dr-express' ),
+			__( 'DR Settings', 'dr-express' ),
 			'manage_options',
 			'dr-express',
 			array( $this, 'display_settings_page' ),
@@ -151,7 +151,7 @@ class DR_Express_Admin {
 
 		add_settings_section(
 			$this->option_name . '_general',
-			__( 'Please setup your Digital River data here.', 'dr-express' ),
+			null, // No need to print section title
 			array( $this, $this->option_name . '_general_cb' ),
 			$this->plugin_name
 		);
@@ -231,7 +231,7 @@ class DR_Express_Admin {
 	 * @since  1.0.0
 	 */
 	public function dr_express_general_cb() {
-		echo '<p>' . __( 'Please change the settings accordingly.', 'dr-express' ) . '</p>';
+		return; // No need to print section message
 	}
 
 	/**
