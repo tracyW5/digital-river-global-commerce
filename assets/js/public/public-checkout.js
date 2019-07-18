@@ -43,13 +43,11 @@ jQuery(document).ready(($) => {
         $.ajax({
             type: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${drExpressOptions.accessToken}`
             },
             data: address,
-            url: (() => {
-                let url = `${apiBaseUrl}/me/addresses?token=${drExpressOptions.accessToken}&client_id=${apiKey}&format=json`;
-                return url;
-            })(),
+            url: `${apiBaseUrl}/me/addresses?client_id=${apiKey}&format=json`,
             success: (data) => {
                 console.log('address update success:',data);
             },
@@ -159,7 +157,7 @@ jQuery(document).ready(($) => {
 
         // Build payload
         $.each($form.serializeArray(), function(index, obj) {
-            let key = obj.name.split('-')[1];
+            const key = obj.name.split('-')[1];
             payload[addressType][key] = obj.value;
         });
         payload[addressType].emailAddress = emailPayload;
@@ -177,22 +175,18 @@ jQuery(document).ready(($) => {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type':'application/json',
-                    Authorization: `Bearer ${drExpressOptions.accessToken}`,
+                    Authorization: `Bearer ${drExpressOptions.accessToken}`
                 },
-                url: (() => {
-                    let url = `${apiBaseUrl}/me/carts/active?`;
-                    url += `&token=${drExpressOptions.accessToken}&${queryStr}`;
-                    return url;
-                })(),
+                url: `${apiBaseUrl}/me/carts/active?${queryStr}`,
                 data: JSON.stringify({
                     cart: cartRequest
-                }),
-                success: (data) => {
-                    resolve(data);
-                },
-                error: (jqXHR) => {
-                    reject(jqXHR);
-                }
+                })
+            })
+            .done((data) => {
+                resolve(data);
+            })
+            .fail((jqXHR) => {
+                reject(jqXHR);
             });
         });
     }
@@ -243,25 +237,24 @@ jQuery(document).ready(($) => {
     }
 
     function freshSummary($section) {
-      if($section.hasClass('dr-checkout__shipping') || $section.hasClass('dr-checkout__billing')){
+      if ($section.hasClass('dr-checkout__shipping') || $section.hasClass('dr-checkout__billing') || $section.hasClass('dr-checkout__delivery')) {
         $.ajax({
           type: 'GET',
           headers: {
               Accept: 'application/json',
               'Content-Type':'application/json',
-              Authorization: `Bearer ${drExpressOptions.accessToken}`,
+              Authorization: `Bearer ${drExpressOptions.accessToken}`
           },
-          url: (() => {
-              let url = `${apiBaseUrl}/me/carts/active?`;
-              url += `&token=${drExpressOptions.accessToken}`;
-              return url;
-          })(),
+          url: `${apiBaseUrl}/me/carts/active`,
           success: (data) => {
-            let { formattedShippingAndHandling, formattedOrderTotal,formattedTax } = data.cart.pricing;
-            if(data.cart.pricing.shippingAndHandling.value === 0 )formattedShippingAndHandling = "FREE";
-            $('div.dr-summary__tax > .item-value').text(formattedTax);
-            $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
-            $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
+            if ($section.next().hasClass('dr-checkout__delivery')) {
+                applyShippingOption();
+            } else {
+                const {formattedOrderTotal, formattedTax} = data.cart.pricing;
+            
+                $('div.dr-summary__tax > .item-value').text(formattedTax);
+                $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
+            }
           }
         });
       }
@@ -304,8 +297,8 @@ jQuery(document).ready(($) => {
         // If no items are in cart, do not even continue, maybe give feedback
         if (! drExpressOptions.cart.cart.lineItems.hasOwnProperty('lineItem')) return;
 
-        let $form = $('#checkout-email-form');
-        let email = $form.find('input[name=email]').val().trim();
+        const $form = $('#checkout-email-form');
+        const email = $form.find('input[name=email]').val().trim();
 
         $form.addClass('was-validated');
 
@@ -386,7 +379,7 @@ jQuery(document).ready(($) => {
         $.each(shippingOptions.shippingOption, function( index, option ) {
             if ($('input[type=radio]#' + option.id).length) return;
 
-            let html = `
+            const html = `
                 <div class="field-radio">
                     <input type="radio"
                         name="selector"
@@ -415,34 +408,32 @@ jQuery(document).ready(($) => {
             $('form#checkout-delivery-form .dr-panel-edit__el').append(html);
             $('form#checkout-delivery-form').children().find('input:radio').first().prop("checked", true);
         });
-        // Initial Shipping Option
-        let shippingInitID = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
-        applyShippingAndUpdateCart(shippingInitID);
+    }
+
+    function applyShippingOption() {
+        const shippingOptionId = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
+        applyShippingAndUpdateCart(shippingOptionId);
     }
 
     // Submit delivery form
     $('form#checkout-delivery-form').on('submit', function(e) {
         e.preventDefault();
 
-        let $input = $(this).children().find('input:radio:checked').first();
-        let button = $(this).find('button[type="submit"]').toggleClass('sending').blur();
+        const $input = $(this).children().find('input:radio:checked').first();
+        const button = $(this).find('button[type="submit"]').toggleClass('sending').blur();
         // Validate shipping option
-        let data = {
-            token           : drExpressOptions.accessToken,
+        const data = {
             expand          : 'all',
-            fields          : null,
             shippingOptionId: $input.data('id')
         };
 
         $.ajax({
             type: 'POST',
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${drExpressOptions.accessToken}`
             },
-            url: (() => {
-                let url = `${apiBaseUrl}/me/carts/active/apply-shipping-option?${$.param(data)}`;
-                return url;
-            })(),
+            url: `${apiBaseUrl}/me/carts/active/apply-shipping-option?${$.param(data)}`,
             success: (data) => {
                 button.removeClass('sending').blur();
 
@@ -458,16 +449,14 @@ jQuery(document).ready(($) => {
     });
 
     $('form#checkout-delivery-form').on('change', 'input[type="radio"]', function() {
-      let shippingObject =  $('form#checkout-delivery-form').children().find('input:radio:checked').first();
-      let shippingoptionID = shippingObject.data('id');
-      applyShippingAndUpdateCart(shippingoptionID);
+        applyShippingOption();
     });
 
 
 
     $('form#checkout-payment-form').on('submit', function(e) {
         e.preventDefault();
-        let $form = $('form#checkout-payment-form');
+        const $form = $('form#checkout-payment-form');
         const $button = $form.find('button[type="submit"]');
 
         $form.addClass('was-validated');
@@ -475,7 +464,7 @@ jQuery(document).ready(($) => {
             return false;
         }
 
-        let formdata = $(this).serializeArray();
+        const formdata = $(this).serializeArray();
         paymentPayload = {};
         $(formdata).each(function(index, obj){
             paymentPayload[obj.name] = obj.value;
@@ -536,27 +525,24 @@ jQuery(document).ready(($) => {
     });
 
     function applyShippingAndUpdateCart(shippingoptionID){
-      let data = {
-        token           : drExpressOptions.accessToken,
+      const data = {
         expand          : 'all',
-        fields          : null,
         shippingOptionId: shippingoptionID
       };
-
 
       $.ajax({
         type: 'POST',
         headers: {
             "Content-Type": "application/json",
-            Accept: "application/json"
+            Accept: "application/json",
+            Authorization: `Bearer ${drExpressOptions.accessToken}`
         },
-        url: (() => {
-            let url = `${apiBaseUrl}/me/carts/active/apply-shipping-option?${$.param(data)}`;
-            return url;
-        })(),
+        url: `${apiBaseUrl}/me/carts/active/apply-shipping-option?${$.param(data)}`,
         success: (data) => {
-          let { formattedShippingAndHandling, formattedOrderTotal,formattedTax } = data.cart.pricing;
-          if(data.cart.pricing.shippingAndHandling.value === 0 )formattedShippingAndHandling = "FREE";
+          const {formattedShippingAndHandling, formattedOrderTotal, formattedTax} = data.cart.pricing;
+
+          if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = 'FREE';
+
           $('div.dr-summary__tax > .item-value').text(formattedTax);
           $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
           $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
@@ -585,7 +571,7 @@ jQuery(document).ready(($) => {
     function applyPaymentToCart(id) {
         if (!id) return;
 
-        let data = {
+        const data = {
             'paymentMethod': {
               'sourceId': id
             }
@@ -598,12 +584,7 @@ jQuery(document).ready(($) => {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${drExpressOptions.accessToken}`
             },
-            url: (() => {
-                let url = `${apiBaseUrl}/me/carts/active/apply-payment-method?`;
-                url += `&token=${drExpressOptions.accessToken}`;
-                url += `&expand=all`;
-                return url;
-            })(),
+            url: `${apiBaseUrl}/me/carts/active/apply-payment-method?expand=all`,
             data: JSON.stringify(data),
             success: () => {
                 const billingSameAsShipping = $('[name="checkbox-billing"]').is(':checked');
@@ -628,26 +609,22 @@ jQuery(document).ready(($) => {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type':'application/json',
-                    Authorization: `Bearer ${drExpressOptions.accessToken}`,
+                    Authorization: `Bearer ${drExpressOptions.accessToken}`
                 },
-                url: (() => {
-                    let url = `${apiBaseUrl}/me/carts/active?`;
-                    url += `&token=${drExpressOptions.accessToken}`;
-                    return url;
-                })(),
+                url: `${apiBaseUrl}/me/carts/active`,
                 data: JSON.stringify({
                     cart: {
                         billingAddress
                     }
-                }),
-                success: (data) => {
-                    resolve(data);
-                },
-                error: (jqXHR) => {
-                    $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
-                    $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
-                    reject(jqXHR);
-                }
+                })
+            })
+            .done((data) => {
+                resolve(data);
+            })
+            .fail((jqXHR) => {
+                $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
+                $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
+                reject(jqXHR);
             });
         });
     }
@@ -660,12 +637,7 @@ jQuery(document).ready(($) => {
                 'Content-Type':'application/json',
                 Authorization: `Bearer ${drExpressOptions.accessToken}`
             },
-            url: (() => {
-                let url = `${apiBaseUrl}/me/carts/active/submit-cart?`;
-                url += `&token=${drExpressOptions.accessToken}`;
-                url += `&expand=all`;
-                return url;
-            })(),
+            url: `${apiBaseUrl}/me/carts/active/submit-cart?expand=all`,
             success: (data) => {
                 window.location.replace(
                     `${drExpressOptions.thankYouEndpoint}?order=${data.submitCart.order.id}`
@@ -681,7 +653,7 @@ jQuery(document).ready(($) => {
 
     // check billing info
     $('[name="checkbox-billing"]').on('click', function (ev) {
-        let $this = $(this);
+        const $this = $(this);
 
         if (!$this.is(':checked')) {
             $('.billing-section').css('display', 'block');
@@ -694,12 +666,12 @@ jQuery(document).ready(($) => {
     $('.dr-accordion__edit').on('click', function(e) {
         e.preventDefault();
 
-        let $section = $(e.target).parent().parent();
-        let $allSections = $section.siblings().andSelf();
-        let $finishedSections = $allSections.eq(finishedSectionIdx).prevAll().andSelf();
-        let $activeSection = $allSections.filter($('.active'));
-        let $nextSection =  $section.next();
-        let $prevSection = $section.prev();
+        const $section = $(e.target).parent().parent();
+        const $allSections = $section.siblings().andSelf();
+        const $finishedSections = $allSections.eq(finishedSectionIdx).prevAll().andSelf();
+        const $activeSection = $allSections.filter($('.active'));
+        const $nextSection =  $section.next();
+        const $prevSection = $section.prev();
 
         if ($allSections.index($section) > $allSections.index($activeSection)) {
             return;
