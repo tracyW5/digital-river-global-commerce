@@ -539,7 +539,7 @@ jQuery(document).ready(($) => {
         },
         url: `${apiBaseUrl}/me/carts/active/apply-shipping-option?${$.param(data)}`,
         success: (data) => {
-          const {formattedShippingAndHandling, formattedOrderTotal, formattedTax} = data.cart.pricing;
+          let {formattedShippingAndHandling, formattedOrderTotal, formattedTax} = data.cart.pricing;
 
           if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = 'FREE';
 

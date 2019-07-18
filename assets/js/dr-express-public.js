@@ -719,8 +719,6 @@ jQuery(document).ready(function ($) {
 });
 "use strict";
 
-function _readOnlyError(name) { throw new Error("\"" + name + "\" is read-only"); }
-
 jQuery(document).ready(function ($) {
   var siteID = drExpressOptions.siteID;
   var apiKey = drExpressOptions.apiKey;
@@ -1215,7 +1213,7 @@ jQuery(document).ready(function ($) {
             formattedShippingAndHandling = _data$cart$pricing2.formattedShippingAndHandling,
             formattedOrderTotal = _data$cart$pricing2.formattedOrderTotal,
             formattedTax = _data$cart$pricing2.formattedTax;
-        if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = (_readOnlyError("formattedShippingAndHandling"), 'FREE');
+        if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = 'FREE';
         $('div.dr-summary__tax > .item-value').text(formattedTax);
         $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
         $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
