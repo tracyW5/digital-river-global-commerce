@@ -1042,7 +1042,7 @@ jQuery(document).ready(function ($) {
     }).then(function (data) {
       saveShippingAddress();
       $button.removeClass('sending').blur();
-      setShippingOptions(data.cart.shippingOptions);
+      setShippingOptions(data.cart);
       var $section = $('.dr-checkout__shipping');
       displaySavedAddress(data.cart.shippingAddress, $section.find('.dr-panel-result__text'));
       moveToNextSection($section);
@@ -1076,17 +1076,11 @@ jQuery(document).ready(function ($) {
     });
   });
 
-  function setShippingOptions(shippingOptions) {
-    $('#checkout-delivery-form-msg').hide();
-
-    if (!shippingOptions.hasOwnProperty('shippingOption')) {
-      $('#checkout-delivery-form-msg').text('Digital product(s) only').show();
-      return;
-    }
-
-    $.each(shippingOptions.shippingOption, function (index, option) {
-      if ($('input[type=radio]#' + option.id).length) return;
-      var html = "\n                <div class=\"field-radio\">\n                    <input type=\"radio\"\n                        name=\"selector\"\n                        id=\"".concat(option.id, "\"\n                        data-cost=\"").concat(option.formattedCost, "\"\n                        data-id=\"").concat(option.id, "\"\n                        data-desc=\"").concat(option.description, "\"\n                        >\n                    <label for=\"radio-standart\">\n                        <span>\n                            ").concat(option.description, "\n                        </span>\n                        <span class=\"black\">\n                            ").concat(option.formattedCost, "\n                        </span>\n                        <span class=\"smoller\">\n                            Estimated Arrival:\n                        </span>\n                        <span class=\"black\">\n                            Apr 08 - Apr 11\n                        </span>\n                    </label>\n                </div>\n            ");
+  function setShippingOptions(cart) {
+    var freeShipping = cart.pricing.shippingAndHandling.value === 0;
+    $.each(cart.shippingOptions.shippingOption, function (index, option) {
+      if ($('#shipping-option-' + option.id).length) return;
+      var html = "\n                <div class=\"field-radio\">\n                    <input type=\"radio\"\n                        name=\"selector\"\n                        id=\"shipping-option-".concat(option.id, "\"\n                        data-cost=\"").concat(option.formattedCost, "\"\n                        data-id=\"").concat(option.id, "\"\n                        data-desc=\"").concat(option.description, "\"\n                        >\n                    <label for=\"shipping-option-").concat(option.id, "\">\n                        <span>\n                            ").concat(option.description, "\n                        </span>\n                        <span class=\"black\">\n                            ").concat(freeShipping ? 'FREE' : option.formattedCost, "\n                        </span>\n                        <span class=\"smoller\">\n                            Estimated Arrival:\n                        </span>\n                        <span class=\"black\">\n                            Apr 08 - Apr 11\n                        </span>\n                    </label>\n                </div>\n            ");
       $('form#checkout-delivery-form .dr-panel-edit__el').append(html);
       $('form#checkout-delivery-form').children().find('input:radio').first().prop("checked", true);
     });
@@ -1117,7 +1111,7 @@ jQuery(document).ready(function ($) {
       success: function success(data) {
         button.removeClass('sending').blur();
         var $section = $('.dr-checkout__delivery');
-        var resultText = $input.length > 0 ? "".concat($input.data('desc'), " ").concat($input.data('cost')) : 'Digital Product(s) Only';
+        var resultText = $input.length > 0 ? "".concat($input.data('desc'), " ").concat($input.data('cost')) : '';
         $section.find('.dr-panel-result__text').text(resultText);
         moveToNextSection($section);
       },
@@ -1420,7 +1414,7 @@ jQuery(document).ready(function ($) {
       },
       payment: function payment() {
         var cart = drExpressOptions.cart.cart;
-        var requestShipping = $('#checkout-delivery-form-msg').text().trim() === '';
+        var requestShipping = $('.dr-checkout__shipping').length ? true : false;
         var payPalItems = [];
         $.each(cart.lineItems.lineItem, function (index, item) {
           payPalItems.push({
