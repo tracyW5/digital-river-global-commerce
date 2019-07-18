@@ -339,7 +339,7 @@ jQuery(document).ready(($) => {
             saveShippingAddress();
             $button.removeClass('sending').blur();
 
-            setShippingOptions(data.cart.shippingOptions);
+            setShippingOptions(data.cart);
 
             const $section = $('.dr-checkout__shipping');
             displaySavedAddress(data.cart.shippingAddress, $section.find('.dr-panel-result__text'));
@@ -375,32 +375,27 @@ jQuery(document).ready(($) => {
         });
     });
 
-    function setShippingOptions(shippingOptions) {
-        $('#checkout-delivery-form-msg').hide();
+    function setShippingOptions(cart) {
+        const freeShipping = cart.pricing.shippingAndHandling.value === 0;
 
-        if (! shippingOptions.hasOwnProperty('shippingOption')) {
-            $('#checkout-delivery-form-msg').text('Digital product(s) only').show();
-            return;
-        }
-
-        $.each(shippingOptions.shippingOption, function( index, option ) {
-            if ($('input[type=radio]#' + option.id).length) return;
+        $.each(cart.shippingOptions.shippingOption, function( index, option ) {
+            if ($('#shipping-option-' + option.id).length) return;
 
             let html = `
                 <div class="field-radio">
                     <input type="radio"
                         name="selector"
-                        id="${option.id}"
+                        id="shipping-option-${option.id}"
                         data-cost="${option.formattedCost}"
                         data-id="${option.id}"
                         data-desc="${option.description}"
                         >
-                    <label for="radio-standart">
+                    <label for="shipping-option-${option.id}">
                         <span>
                             ${option.description}
                         </span>
                         <span class="black">
-                            ${option.formattedCost}
+                            ${freeShipping ? 'FREE' : option.formattedCost}
                         </span>
                         <span class="smoller">
                             Estimated Arrival:
@@ -447,7 +442,7 @@ jQuery(document).ready(($) => {
                 button.removeClass('sending').blur();
 
                 const $section = $('.dr-checkout__delivery');
-                const resultText = $input.length > 0 ? `${$input.data('desc')} ${$input.data('cost')}` : 'Digital Product(s) Only';
+                const resultText = $input.length > 0 ? `${$input.data('desc')} ${$input.data('cost')}` : '';
                 $section.find('.dr-panel-result__text').text(resultText);
                 moveToNextSection($section);
             },
@@ -784,7 +779,7 @@ jQuery(document).ready(($) => {
             },
             payment: function() {
                 const cart = drExpressOptions.cart.cart;
-                const requestShipping = ($('#checkout-delivery-form-msg').text().trim() === '');
+                const requestShipping = $('.dr-checkout__shipping').length ? true : false;
                 let payPalItems = [];
 
                 $.each(cart.lineItems.lineItem, function( index, item ) {
