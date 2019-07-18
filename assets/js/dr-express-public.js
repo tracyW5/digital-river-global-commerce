@@ -719,6 +719,8 @@ jQuery(document).ready(function ($) {
 });
 "use strict";
 
+function _readOnlyError(name) { throw new Error("\"" + name + "\" is read-only"); }
+
 jQuery(document).ready(function ($) {
   var siteID = drExpressOptions.siteID;
   var apiKey = drExpressOptions.apiKey;
@@ -763,13 +765,11 @@ jQuery(document).ready(function ($) {
     $.ajax({
       type: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: "Bearer ".concat(drExpressOptions.accessToken)
       },
       data: address,
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/addresses?token=").concat(drExpressOptions.accessToken, "&client_id=").concat(apiKey, "&format=json");
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/addresses?client_id=").concat(apiKey, "&format=json"),
       success: function success(data) {
         console.log('address update success:', data);
       },
@@ -899,20 +899,14 @@ jQuery(document).ready(function ($) {
           'Content-Type': 'application/json',
           Authorization: "Bearer ".concat(drExpressOptions.accessToken)
         },
-        url: function () {
-          var url = "".concat(apiBaseUrl, "/me/carts/active?");
-          url += "&token=".concat(drExpressOptions.accessToken, "&").concat(queryStr);
-          return url;
-        }(),
+        url: "".concat(apiBaseUrl, "/me/carts/active?").concat(queryStr),
         data: JSON.stringify({
           cart: cartRequest
-        }),
-        success: function success(data) {
-          resolve(data);
-        },
-        error: function error(jqXHR) {
-          reject(jqXHR);
-        }
+        })
+      }).done(function (data) {
+        resolve(data);
+      }).fail(function (jqXHR) {
+        reject(jqXHR);
       });
     });
   }
@@ -958,7 +952,7 @@ jQuery(document).ready(function ($) {
   }
 
   function freshSummary($section) {
-    if ($section.hasClass('dr-checkout__shipping') || $section.hasClass('dr-checkout__billing')) {
+    if ($section.hasClass('dr-checkout__shipping') || $section.hasClass('dr-checkout__billing') || $section.hasClass('dr-checkout__delivery')) {
       $.ajax({
         type: 'GET',
         headers: {
@@ -966,20 +960,17 @@ jQuery(document).ready(function ($) {
           'Content-Type': 'application/json',
           Authorization: "Bearer ".concat(drExpressOptions.accessToken)
         },
-        url: function () {
-          var url = "".concat(apiBaseUrl, "/me/carts/active?");
-          url += "&token=".concat(drExpressOptions.accessToken);
-          return url;
-        }(),
+        url: "".concat(apiBaseUrl, "/me/carts/active"),
         success: function success(data) {
-          var _data$cart$pricing = data.cart.pricing,
-              formattedShippingAndHandling = _data$cart$pricing.formattedShippingAndHandling,
-              formattedOrderTotal = _data$cart$pricing.formattedOrderTotal,
-              formattedTax = _data$cart$pricing.formattedTax;
-          if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = "FREE";
-          $('div.dr-summary__tax > .item-value').text(formattedTax);
-          $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
-          $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
+          if ($section.next().hasClass('dr-checkout__delivery')) {
+            applyShippingOption();
+          } else {
+            var _data$cart$pricing = data.cart.pricing,
+                formattedOrderTotal = _data$cart$pricing.formattedOrderTotal,
+                formattedTax = _data$cart$pricing.formattedTax;
+            $('div.dr-summary__tax > .item-value').text(formattedTax);
+            $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
+          }
         }
       });
     }
@@ -1100,10 +1091,12 @@ jQuery(document).ready(function ($) {
       var html = "\n                <div class=\"field-radio\">\n                    <input type=\"radio\"\n                        name=\"selector\"\n                        id=\"".concat(option.id, "\"\n                        data-cost=\"").concat(option.formattedCost, "\"\n                        data-id=\"").concat(option.id, "\"\n                        data-desc=\"").concat(option.description, "\"\n                        >\n                    <label for=\"radio-standart\">\n                        <span>\n                            ").concat(option.description, "\n                        </span>\n                        <span class=\"black\">\n                            ").concat(option.formattedCost, "\n                        </span>\n                        <span class=\"smoller\">\n                            Estimated Arrival:\n                        </span>\n                        <span class=\"black\">\n                            Apr 08 - Apr 11\n                        </span>\n                    </label>\n                </div>\n            ");
       $('form#checkout-delivery-form .dr-panel-edit__el').append(html);
       $('form#checkout-delivery-form').children().find('input:radio').first().prop("checked", true);
-    }); // Initial Shipping Option
+    });
+  }
 
-    var shippingInitID = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
-    applyShippingAndUpdateCart(shippingInitID);
+  function applyShippingOption() {
+    var shippingOptionId = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
+    applyShippingAndUpdateCart(shippingOptionId);
   } // Submit delivery form
 
 
@@ -1113,20 +1106,16 @@ jQuery(document).ready(function ($) {
     var button = $(this).find('button[type="submit"]').toggleClass('sending').blur(); // Validate shipping option
 
     var data = {
-      token: drExpressOptions.accessToken,
       expand: 'all',
-      fields: null,
       shippingOptionId: $input.data('id')
     };
     $.ajax({
       type: 'POST',
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: "Bearer ".concat(drExpressOptions.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active/apply-shipping-option?").concat($.param(data));
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/carts/active/apply-shipping-option?").concat($.param(data)),
       success: function success(data) {
         button.removeClass('sending').blur();
         var $section = $('.dr-checkout__delivery');
@@ -1140,9 +1129,7 @@ jQuery(document).ready(function ($) {
     });
   });
   $('form#checkout-delivery-form').on('change', 'input[type="radio"]', function () {
-    var shippingObject = $('form#checkout-delivery-form').children().find('input:radio:checked').first();
-    var shippingoptionID = shippingObject.data('id');
-    applyShippingAndUpdateCart(shippingoptionID);
+    applyShippingOption();
   });
   $('form#checkout-payment-form').on('submit', function (e) {
     e.preventDefault();
@@ -1212,27 +1199,23 @@ jQuery(document).ready(function ($) {
 
   function applyShippingAndUpdateCart(shippingoptionID) {
     var data = {
-      token: drExpressOptions.accessToken,
       expand: 'all',
-      fields: null,
       shippingOptionId: shippingoptionID
     };
     $.ajax({
       type: 'POST',
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json"
+        Accept: "application/json",
+        Authorization: "Bearer ".concat(drExpressOptions.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active/apply-shipping-option?").concat($.param(data));
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/carts/active/apply-shipping-option?").concat($.param(data)),
       success: function success(data) {
         var _data$cart$pricing2 = data.cart.pricing,
             formattedShippingAndHandling = _data$cart$pricing2.formattedShippingAndHandling,
             formattedOrderTotal = _data$cart$pricing2.formattedOrderTotal,
             formattedTax = _data$cart$pricing2.formattedTax;
-        if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = "FREE";
+        if (data.cart.pricing.shippingAndHandling.value === 0) formattedShippingAndHandling = (_readOnlyError("formattedShippingAndHandling"), 'FREE');
         $('div.dr-summary__tax > .item-value').text(formattedTax);
         $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
         $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
@@ -1271,12 +1254,7 @@ jQuery(document).ready(function ($) {
         'Content-Type': 'application/json',
         Authorization: "Bearer ".concat(drExpressOptions.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active/apply-payment-method?");
-        url += "&token=".concat(drExpressOptions.accessToken);
-        url += "&expand=all";
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/carts/active/apply-payment-method?expand=all"),
       data: JSON.stringify(data),
       success: function success() {
         var billingSameAsShipping = $('[name="checkbox-billing"]').is(':checked');
@@ -1309,24 +1287,18 @@ jQuery(document).ready(function ($) {
           'Content-Type': 'application/json',
           Authorization: "Bearer ".concat(drExpressOptions.accessToken)
         },
-        url: function () {
-          var url = "".concat(apiBaseUrl, "/me/carts/active?");
-          url += "&token=".concat(drExpressOptions.accessToken);
-          return url;
-        }(),
+        url: "".concat(apiBaseUrl, "/me/carts/active"),
         data: JSON.stringify({
           cart: {
             billingAddress: billingAddress
           }
-        }),
-        success: function success(data) {
-          resolve(data);
-        },
-        error: function error(jqXHR) {
-          $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
-          $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
-          reject(jqXHR);
-        }
+        })
+      }).done(function (data) {
+        resolve(data);
+      }).fail(function (jqXHR) {
+        $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
+        $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
+        reject(jqXHR);
       });
     });
   }
@@ -1339,12 +1311,7 @@ jQuery(document).ready(function ($) {
         'Content-Type': 'application/json',
         Authorization: "Bearer ".concat(drExpressOptions.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active/submit-cart?");
-        url += "&token=".concat(drExpressOptions.accessToken);
-        url += "&expand=all";
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/carts/active/submit-cart?expand=all"),
       success: function success(data) {
         window.location.replace("".concat(drExpressOptions.thankYouEndpoint, "?order=").concat(data.submitCart.order.id));
       },
