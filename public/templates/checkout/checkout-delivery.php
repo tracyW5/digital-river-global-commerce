@@ -40,8 +40,6 @@ $result = 'Standard $0.00';
 
         <div class="dr-panel-edit__el"></div>
 
-        <div id="checkout-delivery-form-msg" class="dr-panel-edit__info delivery-info hide"></div>
-
         <button type="submit" class="dr-panel-edit__btn dr-btn">
             
             <?php echo __( 'Save and continue' ); ?>

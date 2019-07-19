@@ -425,6 +425,7 @@ jQuery(document).ready(($) => {
         $.ajax({
             type: 'POST',
             headers: {
+                Accept: 'application/json',
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${drExpressOptions.accessToken}`
             },
@@ -433,7 +434,8 @@ jQuery(document).ready(($) => {
                 button.removeClass('sending').blur();
 
                 const $section = $('.dr-checkout__delivery');
-                const resultText = $input.length > 0 ? `${$input.data('desc')} ${$input.data('cost')}` : '';
+                const freeShipping = data.cart.pricing.shippingAndHandling.value === 0;
+                const resultText = `${$input.data('desc')} ${freeShipping ? 'FREE' : $input.data('cost')}`;
                 $section.find('.dr-panel-result__text').text(resultText);
                 moveToNextSection($section);
             },
