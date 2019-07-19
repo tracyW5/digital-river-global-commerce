@@ -1,15 +1,15 @@
 <?php
 /**
- * DR Express
+ * Digital River for WordPress
  *
  * @link              https://www.digitalriver.com
  * @since             1.0.0
  * @package           DR_Express
  *
  * @wordpress-plugin
- * Plugin Name:       DR Express
+ * Plugin Name:       Digital River for WordPress
  * Plugin URI:        https://www.digitalriver.com
- * Description:       The DR Express plugin from Digital River allows you to easily integrate with Digital River's Global Commerce platform
+ * Description:       The Digital River for WordPress plugin from Digital River allows you to easily integrate with Digital River's Global Commerce platform
  * Version:           1.0.0
  * Author:            Digital River
  * Author URI:        https://www.digitalriver.com

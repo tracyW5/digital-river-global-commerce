@@ -40,10 +40,10 @@ class DR_Express_Post_Types {
 			'dr_product',
 			array(
 				'labels' => array(
-					'name' => __( 'DR Products', 'dr-express' ),
-					'singular_name' => __( 'DR Product', 'dr-express' ),
-					'all_items' => __( 'All Products', 'dr-express' ),
-					'menu_name' => __( 'DR Products', 'dr-express' ),
+					'name' => __( 'Products', 'dr-express' ),
+					'singular_name' => __( 'Product', 'dr-express' ),
+					'all_items' => __( 'Products', 'dr-express' ),
+					'menu_name' => __( 'Digital River', 'dr-express' ),
 					'add_new' => __( 'Add New', 'dr-express' ),
 					'add_new_item' => __( 'Add new product', 'dr-express' ),
 					'edit' => __( 'Edit', 'dr-express' ),
@@ -82,7 +82,7 @@ class DR_Express_Post_Types {
 				'labels' => array(
 					'name' => __( 'DR Variations', 'dr-express' ),
 					'singular_name' => __( 'DR Variation', 'dr-express' ),
-					'all_items' => __( 'All Variations', 'dr-express' ),
+					'all_items' => __( 'Variations', 'dr-express' ),
 				),
 				'public' => true,
 				'show_in_menu' => 'edit.php?post_type=dr_product',
@@ -112,7 +112,7 @@ class DR_Express_Post_Types {
 			'dr_product',
 			array(
 				'labels' => array(
-					'name' => __( 'DR Product Categories', 'dr-express' ),
+					'name' => __( 'Product Categories', 'dr-express' ),
 					'singular_name' => __( 'Category', 'dr-express' ),
 					'menu_name' => __( 'Categories', 'dr-express' ),
 					'search_items' => __( 'Search categories', 'dr-express' ),
@@ -172,7 +172,7 @@ class DR_Express_Post_Types {
 	 */
 	public function render_product_details_meta_box( $post ) {
 		echo '<h2 id="drcc-link"><a href="https://gc.digitalriver.com/gc/ent/site/selectSite.do?siteID=' . get_option('dr_express_site_id') . ' target="_blank">Manage Products</a></h2>';
-		
+
 		include_once 'partials/dr-express-product-variations.php';
 		include_once 'partials/dr-express-product-details-meta-box.php';
 	}

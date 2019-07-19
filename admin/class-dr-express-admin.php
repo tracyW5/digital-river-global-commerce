@@ -118,9 +118,10 @@ class DR_Express_Admin {
 	 * @since    1.0.0
 	 */
 	public function add_settings_page() {
-		add_menu_page(
-			__( 'DR Settings', 'dr-express' ),
-			__( 'DR Settings', 'dr-express' ),
+		add_submenu_page(
+      'edit.php?post_type=dr_product',
+			__( 'Settings', 'dr-express' ),
+			__( 'Settings', 'dr-express' ),
 			'manage_options',
 			'dr-express',
 			array( $this, 'display_settings_page' ),
