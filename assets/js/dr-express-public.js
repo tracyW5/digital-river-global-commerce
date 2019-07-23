@@ -720,545 +720,487 @@ jQuery(document).ready(function ($) {
 "use strict";
 
 jQuery(document).ready(function ($) {
-  var siteID = drExpressOptions.siteID;
-  var apiKey = drExpressOptions.apiKey;
-  var domain = drExpressOptions.domain;
-  var apiBaseUrl = 'https://' + domain + '/v1/shoppers';
-  var drLocale = drExpressOptions.drLocale || 'en_US';
-
-  function getAddress(addressType) {
-    var address = {
-      address: {
-        nickName: $('#' + addressType + '-field-address1').val(),
-        firstName: $('#' + addressType + '-field-first-name').val(),
-        lastName: $('#' + addressType + '-field-last-name').val(),
-        line1: $('#' + addressType + '-field-address1').val(),
-        line2: $('#' + addressType + '-field-address2').val(),
-        city: $('#' + addressType + '-field-city').val(),
-        countrySubdivision: $('#' + addressType + '-field-state').val(),
-        postalCode: $('#' + addressType + '-field-zip').val(),
-        countryName: $('#' + addressType + '-field-country :selected').text(),
-        country: $('#' + addressType + '-field-country :selected').val(),
-        phoneNumber: $('#' + addressType + '-field-phone').val()
-      }
-    };
-    return address;
-  }
-
-  function saveShippingAddress() {
-    var address = getAddress('shipping');
-    address.address.isDefault = true;
-    console.log('save shipping: ', address);
-    saveShopperAddress(JSON.stringify(address));
-  }
-
-  function saveBillingAddress() {
-    var address = getAddress('billing');
-    address.address.isDefault = false;
-    console.log('save billing: ', address);
-    saveShopperAddress(JSON.stringify(address));
-  }
-
-  function saveShopperAddress(address) {
-    $.ajax({
-      type: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: "Bearer ".concat(drExpressOptions.accessToken)
-      },
-      data: address,
-      url: "".concat(apiBaseUrl, "/me/addresses?client_id=").concat(apiKey, "&format=json"),
-      success: function success(data) {
-        console.log('address update success:', data);
-      },
-      error: function error(jqXHR) {
-        console.log(jqXHR);
-      }
-    });
-  } //floating labels
-
-
-  FloatLabel.init(); // Globals
-
-  var digitalriverjs = new DigitalRiver(drExpressOptions.digitalRiverKey);
-  var payload = {
-    shipping: {},
-    billing: {}
-  };
-  var paymentPayload = {};
-  var paymentSourceId = null; // Section progress
-
-  var finishedSectionIdx = -1; // Submit first (email) form
-
-  var emailPayload; // Create elements through DR.js
-
-  if ($('.credit-card-section').length) {
-    var getStyleOptionsFromClass = function getStyleOptionsFromClass(className) {
-      var tempDiv = document.createElement('div');
-      tempDiv.setAttribute('id', 'tempDiv' + className);
-      tempDiv.className = className;
-      document.body.appendChild(tempDiv);
-      var tempDivEl = document.getElementById('tempDiv' + className);
-      var tempStyle = window.getComputedStyle(tempDivEl);
-      var styles = {
-        color: tempStyle.color,
-        fontFamily: tempStyle.fontFamily.replace(new RegExp('"', 'g'), ''),
-        fontSize: tempStyle.fontSize,
-        height: tempStyle.height
+  if ($('#checkout-payment-form').length) {
+    var getAddress = function getAddress(addressType) {
+      var address = {
+        address: {
+          nickName: $('#' + addressType + '-field-address1').val(),
+          firstName: $('#' + addressType + '-field-first-name').val(),
+          lastName: $('#' + addressType + '-field-last-name').val(),
+          line1: $('#' + addressType + '-field-address1').val(),
+          line2: $('#' + addressType + '-field-address2').val(),
+          city: $('#' + addressType + '-field-city').val(),
+          countrySubdivision: $('#' + addressType + '-field-state').val(),
+          postalCode: $('#' + addressType + '-field-zip').val(),
+          countryName: $('#' + addressType + '-field-country :selected').text(),
+          country: $('#' + addressType + '-field-country :selected').val(),
+          phoneNumber: $('#' + addressType + '-field-phone').val()
+        }
       };
-      document.body.removeChild(tempDivEl);
-      return styles;
+      return address;
     };
 
-    var activeCardLogo = function activeCardLogo(evt) {
-      $('.cards .active').removeClass('active');
+    var saveShippingAddress = function saveShippingAddress() {
+      var address = getAddress('shipping');
+      address.address.isDefault = true;
+      console.log('save shipping: ', address);
+      saveShopperAddress(JSON.stringify(address));
+    };
 
-      if (evt.brand && evt.brand !== 'unknown') {
-        $(".cards .".concat(evt.brand, "-icon")).addClass('active');
+    var saveBillingAddress = function saveBillingAddress() {
+      var address = getAddress('billing');
+      address.address.isDefault = false;
+      console.log('save billing: ', address);
+      saveShopperAddress(JSON.stringify(address));
+    };
+
+    var saveShopperAddress = function saveShopperAddress(address) {
+      $.ajax({
+        type: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+        },
+        data: address,
+        url: "".concat(apiBaseUrl, "/me/addresses?client_id=").concat(apiKey, "&format=json"),
+        success: function success(data) {
+          console.log('address update success:', data);
+        },
+        error: function error(jqXHR) {
+          console.log(jqXHR);
+        }
+      });
+    }; //floating labels
+
+
+    var prepareAddress = function prepareAddress($form) {
+      var addressType = $form.attr('id') === 'checkout-shipping-form' ? 'shipping' : 'billing'; // Validate form
+
+      $form.addClass('was-validated');
+      $form.find('.dr-err-field').hide();
+      var validateItems = document.querySelectorAll("[name^=".concat(addressType, "-]"));
+
+      for (var i = 0, len = validateItems.length; i < len; i++) {
+        if ($(validateItems[i]).is(':visible') && validateItems[i].checkValidity() === false) {
+          return false;
+        }
+      } // Build payload
+
+
+      $.each($form.serializeArray(), function (index, obj) {
+        var key = obj.name.split('-')[1];
+        payload[addressType][key] = obj.value;
+      });
+      payload[addressType].emailAddress = emailPayload;
+
+      if (payload[addressType].country !== 'US') {
+        payload[addressType].countrySubdivision = '';
       }
+
+      return true;
     };
 
-    var displayDRElementError = function displayDRElementError(evt, $target) {
-      if (evt.error) {
-        $target.text(evt.error.message).show();
+    var updateCart = function updateCart() {
+      var queryParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var cartRequest = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var queryStr = $.param(queryParams);
+      return new Promise(function (resolve, reject) {
+        $.ajax({
+          type: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+          },
+          url: "".concat(apiBaseUrl, "/me/carts/active?").concat(queryStr),
+          data: JSON.stringify({
+            cart: cartRequest
+          })
+        }).done(function (data) {
+          resolve(data);
+        }).fail(function (jqXHR) {
+          reject(jqXHR);
+        });
+      });
+    };
+
+    var displaySavedAddress = function displaySavedAddress(addressObj, $target) {
+      var addressArr = ["".concat(addressObj.firstName, " ").concat(addressObj.lastName), addressObj.line1, addressObj.city, addressObj.country];
+      $target.text(addressArr.join(', '));
+    };
+
+    var displayAddressErrMsg = function displayAddressErrMsg(jqXHR, $target) {
+      if (jqXHR.status === 409) {
+        if (jqXHR.responseJSON.errors.error[0].code === 'restricted-bill-to-country') {
+          $target.text('Address not accepted for current currency.').show();
+        }
+
+        if (jqXHR.responseJSON.errors.error[0].code === 'restricted-ship-to-country') {
+          $target.text('Address not accepted for current currency.').show();
+        }
       } else {
-        $target.text('').hide();
+        $target.text(jqXHR.responseJSON.errors.error[0].description).show();
       }
     };
 
-    var options = {
-      classes: {
-        base: 'DRElement',
-        complete: 'DRElement--complete',
-        empty: 'DRElement--empty',
-        invalid: 'DRElement--invalid'
-      },
-      style: {
-        base: getStyleOptionsFromClass('DRElement'),
-        complete: getStyleOptionsFromClass('DRElement--complete'),
-        empty: getStyleOptionsFromClass('DRElement--empty'),
-        invalid: getStyleOptionsFromClass('DRElement--invalid')
+    var moveToNextSection = function moveToNextSection($section) {
+      var $prevSection = $section.prev();
+      var $nextSection = $section.next();
+
+      if ($('.dr-checkout__el').index($section) > finishedSectionIdx) {
+        finishedSectionIdx = $('.dr-checkout__el').index($section);
+      }
+
+      $section.removeClass('active').addClass('closed');
+      $nextSection.addClass('active').removeClass('closed');
+
+      if ($nextSection.hasClass('small-closed-left')) {
+        $nextSection.removeClass('small-closed-left');
+        $nextSection.next().removeClass('small-closed-right');
+      }
+
+      adjustColumns($section);
+      updateTaxLabel();
+    };
+
+    var updateSummaryPricing = function updateSummaryPricing(cart) {
+      var _cart$pricing = cart.pricing,
+          formattedOrderTotal = _cart$pricing.formattedOrderTotal,
+          formattedTax = _cart$pricing.formattedTax;
+
+      if (Object.keys(cart.shippingMethod).length > 0) {
+        var formattedShippingAndHandling = cart.pricing.shippingAndHandling.value === 0 ? 'FREE' : cart.pricing.formattedShippingAndHandling;
+        $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
+      }
+
+      $('div.dr-summary__tax > .item-value').text(formattedTax);
+      $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
+    };
+
+    var adjustColumns = function adjustColumns($section) {
+      var $shippingSection = $('.dr-checkout__shipping');
+      var $billingSection = $('.dr-checkout__billing');
+      var $paymentSection = $('.dr-checkout__payment');
+      var $confirmSection = $('.dr-checkout__confirmation');
+
+      if ($shippingSection.is(':visible') && $shippingSection.hasClass('closed') && $billingSection.hasClass('closed')) {
+        $shippingSection.addClass('small-closed-left');
+        $billingSection.addClass('small-closed-right');
+      } else {
+        $shippingSection.removeClass('small-closed-left');
+        $billingSection.removeClass('small-closed-right');
+      }
+
+      if ($section && $section.hasClass('dr-checkout__payment')) {
+        $paymentSection.addClass('small-closed-left');
+        $confirmSection.addClass('small-closed-right').removeClass('d-none');
+      } else {
+        $paymentSection.removeClass('small-closed-left');
+        $confirmSection.removeClass('small-closed-right').addClass('d-none');
       }
     };
-    var cardNumber = digitalriverjs.createElement('cardnumber', options);
-    var cardExpiration = digitalriverjs.createElement('cardexpiration', options);
-    var cardCVV = digitalriverjs.createElement('cardcvv', options);
-    cardNumber.mount('card-number');
-    cardExpiration.mount('card-expiration');
-    cardCVV.mount('card-cvv');
-    cardNumber.on('change', function (evt) {
-      activeCardLogo(evt);
-      displayDRElementError(evt, $('#card-number-error'));
-    });
-    cardExpiration.on('change', function (evt) {
-      displayDRElementError(evt, $('#card-expiration-error'));
-    });
-    cardCVV.on('change', function (evt) {
-      displayDRElementError(evt, $('#card-cvv-error'));
-    });
-  }
 
-  function prepareAddress($form) {
-    var addressType = $form.attr('id') === 'checkout-shipping-form' ? 'shipping' : 'billing'; // Validate form
+    var updateTaxLabel = function updateTaxLabel() {
+      if ($('.dr-checkout__el.active').hasClass('dr-checkout__payment') || $('.dr-checkout__el.active').hasClass('dr-checkout__confirmation')) {
+        $('.dr-summary__tax > .item-label').text('Tax');
+      } else {
+        $('.dr-summary__tax > .item-label').text('Estimated Tax');
+      }
+    };
 
-    $form.addClass('was-validated');
-    $form.find('.dr-err-field').hide();
-    var validateItems = document.querySelectorAll("[name^=".concat(addressType, "-]"));
+    var setShippingOptions = function setShippingOptions(cart) {
+      var freeShipping = cart.pricing.shippingAndHandling.value === 0;
+      var shippingOptionId = cart.shippingMethod.code;
+      $.each(cart.shippingOptions.shippingOption, function (index, option) {
+        if ($('#shipping-option-' + option.id).length) return;
+        var html = "\n                    <div class=\"field-radio\">\n                        <input type=\"radio\"\n                            name=\"selector\"\n                            id=\"shipping-option-".concat(option.id, "\"\n                            data-cost=\"").concat(option.formattedCost, "\"\n                            data-id=\"").concat(option.id, "\"\n                            data-desc=\"").concat(option.description, "\"\n                            >\n                        <label for=\"shipping-option-").concat(option.id, "\">\n                            <span>\n                                ").concat(option.description, "\n                            </span>\n                            <span class=\"black\">\n                                ").concat(freeShipping ? 'FREE' : option.formattedCost, "\n                            </span>\n                            <span class=\"smoller\">\n                                Estimated Arrival:\n                            </span>\n                            <span class=\"black\">\n                                Apr 08 - Apr 11\n                            </span>\n                        </label>\n                    </div>\n                ");
+        $('form#checkout-delivery-form .dr-panel-edit__el').append(html);
+      });
+      $('form#checkout-delivery-form').children().find('input:radio[data-id="' + shippingOptionId + '"]').prop("checked", true);
+    };
 
-    for (var i = 0, len = validateItems.length; i < len; i++) {
-      if ($(validateItems[i]).is(':visible') && validateItems[i].checkValidity() === false) {
+    var applyShippingOption = function applyShippingOption() {
+      var shippingOptionId = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
+      applyShippingAndUpdateCart(shippingOptionId);
+    }; // Submit delivery form
+
+
+    var applyShippingAndUpdateCart = function applyShippingAndUpdateCart(shippingOptionId) {
+      var data = {
+        expand: 'all',
+        shippingOptionId: shippingOptionId
+      };
+      $.ajax({
+        type: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+        },
+        url: "".concat(apiBaseUrl, "/me/carts/active/apply-shipping-option?").concat($.param(data)),
+        success: function success(data) {
+          updateSummaryPricing(data.cart);
+        },
+        error: function error(jqXHR) {
+          console.log(jqXHR);
+        }
+      });
+    }; // Initial state for payPal
+
+
+    var applyPaymentToCart = function applyPaymentToCart(id) {
+      if (!id) return;
+      var data = {
+        'paymentMethod': {
+          'sourceId': id
+        }
+      };
+      $.ajax({
+        type: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+        },
+        url: "".concat(apiBaseUrl, "/me/carts/active/apply-payment-method?expand=all"),
+        data: JSON.stringify(data),
+        success: function success() {
+          var billingSameAsShipping = $('[name="checkbox-billing"]').is(':checked');
+
+          if (billingSameAsShipping) {
+            submitCart();
+          } else {
+            applyBillingAddress(payload.billing).then(function () {
+              return submitCart();
+            });
+          }
+        },
+        error: function error(jqXHR) {
+          $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
+          $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
+          $('body').css({
+            'pointer-events': 'auto',
+            'opacity': 1
+          });
+        }
+      });
+    };
+
+    var applyBillingAddress = function applyBillingAddress(billingAddress) {
+      return new Promise(function (resolve, reject) {
+        $.ajax({
+          type: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+          },
+          url: "".concat(apiBaseUrl, "/me/carts/active"),
+          data: JSON.stringify({
+            cart: {
+              billingAddress: billingAddress
+            }
+          })
+        }).done(function (data) {
+          resolve(data);
+        }).fail(function (jqXHR) {
+          $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
+          $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
+          reject(jqXHR);
+        });
+      });
+    };
+
+    var submitCart = function submitCart() {
+      $.ajax({
+        type: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+        },
+        url: "".concat(apiBaseUrl, "/me/carts/active/submit-cart?expand=all"),
+        success: function success(data) {
+          window.location.replace("".concat(drExpressOptions.thankYouEndpoint, "?order=").concat(data.submitCart.order.id));
+        },
+        error: function error(jqXHR) {
+          $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
+          $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
+          $('body').css({
+            'pointer-events': 'auto',
+            'opacity': 1
+          });
+        }
+      });
+    }; // check billing info
+
+
+    var siteID = drExpressOptions.siteID;
+    var apiKey = drExpressOptions.apiKey;
+    var domain = drExpressOptions.domain;
+    var apiBaseUrl = 'https://' + domain + '/v1/shoppers';
+    var drLocale = drExpressOptions.drLocale || 'en_US';
+    FloatLabel.init(); // Globals
+
+    var digitalriverjs = new DigitalRiver(drExpressOptions.digitalRiverKey);
+    var payload = {
+      shipping: {},
+      billing: {}
+    };
+    var paymentPayload = {};
+    var paymentSourceId = null; // Section progress
+
+    var finishedSectionIdx = -1; // Submit first (email) form
+
+    var emailPayload; // Create elements through DR.js
+
+    if ($('.credit-card-section').length) {
+      var getStyleOptionsFromClass = function getStyleOptionsFromClass(className) {
+        var tempDiv = document.createElement('div');
+        tempDiv.setAttribute('id', 'tempDiv' + className);
+        tempDiv.className = className;
+        document.body.appendChild(tempDiv);
+        var tempDivEl = document.getElementById('tempDiv' + className);
+        var tempStyle = window.getComputedStyle(tempDivEl);
+        var styles = {
+          color: tempStyle.color,
+          fontFamily: tempStyle.fontFamily.replace(new RegExp('"', 'g'), ''),
+          fontSize: tempStyle.fontSize,
+          height: tempStyle.height
+        };
+        document.body.removeChild(tempDivEl);
+        return styles;
+      };
+
+      var activeCardLogo = function activeCardLogo(evt) {
+        $('.cards .active').removeClass('active');
+
+        if (evt.brand && evt.brand !== 'unknown') {
+          $(".cards .".concat(evt.brand, "-icon")).addClass('active');
+        }
+      };
+
+      var displayDRElementError = function displayDRElementError(evt, $target) {
+        if (evt.error) {
+          $target.text(evt.error.message).show();
+        } else {
+          $target.text('').hide();
+        }
+      };
+
+      var options = {
+        classes: {
+          base: 'DRElement',
+          complete: 'DRElement--complete',
+          empty: 'DRElement--empty',
+          invalid: 'DRElement--invalid'
+        },
+        style: {
+          base: getStyleOptionsFromClass('DRElement'),
+          complete: getStyleOptionsFromClass('DRElement--complete'),
+          empty: getStyleOptionsFromClass('DRElement--empty'),
+          invalid: getStyleOptionsFromClass('DRElement--invalid')
+        }
+      };
+      var cardNumber = digitalriverjs.createElement('cardnumber', options);
+      var cardExpiration = digitalriverjs.createElement('cardexpiration', options);
+      var cardCVV = digitalriverjs.createElement('cardcvv', options);
+      cardNumber.mount('card-number');
+      cardExpiration.mount('card-expiration');
+      cardCVV.mount('card-cvv');
+      cardNumber.on('change', function (evt) {
+        activeCardLogo(evt);
+        displayDRElementError(evt, $('#card-number-error'));
+      });
+      cardExpiration.on('change', function (evt) {
+        displayDRElementError(evt, $('#card-expiration-error'));
+      });
+      cardCVV.on('change', function (evt) {
+        displayDRElementError(evt, $('#card-cvv-error'));
+      });
+    }
+
+    $('#checkout-email-form').on('submit', function (e) {
+      e.preventDefault(); // If no items are in cart, do not even continue, maybe give feedback
+
+      if (!drExpressOptions.cart.cart.lineItems.hasOwnProperty('lineItem')) return;
+      var $form = $('#checkout-email-form');
+      var email = $form.find('input[name=email]').val().trim();
+      $form.addClass('was-validated');
+
+      if ($form[0].checkValidity() === false) {
         return false;
       }
-    } // Build payload
 
-
-    $.each($form.serializeArray(), function (index, obj) {
-      var key = obj.name.split('-')[1];
-      payload[addressType][key] = obj.value;
-    });
-    payload[addressType].emailAddress = emailPayload;
-
-    if (payload[addressType].country !== 'US') {
-      payload[addressType].countrySubdivision = '';
-    }
-
-    return true;
-  }
-
-  function updateCart() {
-    var queryParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var cartRequest = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var queryStr = $.param(queryParams);
-    return new Promise(function (resolve, reject) {
-      $.ajax({
-        type: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
-        },
-        url: "".concat(apiBaseUrl, "/me/carts/active?").concat(queryStr),
-        data: JSON.stringify({
-          cart: cartRequest
-        })
-      }).done(function (data) {
-        resolve(data);
-      }).fail(function (jqXHR) {
-        reject(jqXHR);
-      });
-    });
-  }
-
-  function displaySavedAddress(addressObj, $target) {
-    var addressArr = ["".concat(addressObj.firstName, " ").concat(addressObj.lastName), addressObj.line1, addressObj.city, addressObj.country];
-    $target.text(addressArr.join(', '));
-  }
-
-  function displayAddressErrMsg(jqXHR, $target) {
-    if (jqXHR.status === 409) {
-      if (jqXHR.responseJSON.errors.error[0].code === 'restricted-bill-to-country') {
-        $target.text('Address not accepted for current currency.').show();
-      }
-
-      if (jqXHR.responseJSON.errors.error[0].code === 'restricted-ship-to-country') {
-        $target.text('Address not accepted for current currency.').show();
-      }
-    } else {
-      $target.text(jqXHR.responseJSON.errors.error[0].description).show();
-    }
-  }
-
-  function moveToNextSection($section) {
-    var $prevSection = $section.prev();
-    var $nextSection = $section.next();
-
-    if ($('.dr-checkout__el').index($section) > finishedSectionIdx) {
-      finishedSectionIdx = $('.dr-checkout__el').index($section);
-    }
-
-    $section.removeClass('active').addClass('closed');
-    $nextSection.addClass('active').removeClass('closed');
-
-    if ($nextSection.hasClass('small-closed-left')) {
-      $nextSection.removeClass('small-closed-left');
-      $nextSection.next().removeClass('small-closed-right');
-    }
-
-    adjustColumns($section);
-    updateTaxLabel();
-  }
-
-  function updateSummaryPricing(cart) {
-    var _cart$pricing = cart.pricing,
-        formattedOrderTotal = _cart$pricing.formattedOrderTotal,
-        formattedTax = _cart$pricing.formattedTax;
-
-    if (Object.keys(cart.shippingMethod).length > 0) {
-      var formattedShippingAndHandling = cart.pricing.shippingAndHandling.value === 0 ? 'FREE' : cart.pricing.formattedShippingAndHandling;
-      $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
-    }
-
-    $('div.dr-summary__tax > .item-value').text(formattedTax);
-    $('div.dr-summary__total > .total-value').text(formattedOrderTotal);
-  }
-
-  function adjustColumns($section) {
-    var $shippingSection = $('.dr-checkout__shipping');
-    var $billingSection = $('.dr-checkout__billing');
-    var $paymentSection = $('.dr-checkout__payment');
-    var $confirmSection = $('.dr-checkout__confirmation');
-
-    if ($shippingSection.is(':visible') && $shippingSection.hasClass('closed') && $billingSection.hasClass('closed')) {
-      $shippingSection.addClass('small-closed-left');
-      $billingSection.addClass('small-closed-right');
-    } else {
-      $shippingSection.removeClass('small-closed-left');
-      $billingSection.removeClass('small-closed-right');
-    }
-
-    if ($section && $section.hasClass('dr-checkout__payment')) {
-      $paymentSection.addClass('small-closed-left');
-      $confirmSection.addClass('small-closed-right').removeClass('d-none');
-    } else {
-      $paymentSection.removeClass('small-closed-left');
-      $confirmSection.removeClass('small-closed-right').addClass('d-none');
-    }
-  }
-
-  function updateTaxLabel() {
-    if ($('.dr-checkout__el.active').hasClass('dr-checkout__payment') || $('.dr-checkout__el.active').hasClass('dr-checkout__confirmation')) {
-      $('.dr-summary__tax > .item-label').text('Tax');
-    } else {
-      $('.dr-summary__tax > .item-label').text('Estimated Tax');
-    }
-  }
-
-  $('#checkout-email-form').on('submit', function (e) {
-    e.preventDefault(); // If no items are in cart, do not even continue, maybe give feedback
-
-    if (!drExpressOptions.cart.cart.lineItems.hasOwnProperty('lineItem')) return;
-    var $form = $('#checkout-email-form');
-    var email = $form.find('input[name=email]').val().trim();
-    $form.addClass('was-validated');
-
-    if ($form[0].checkValidity() === false) {
-      return false;
-    }
-
-    emailPayload = email;
-    var $section = $('.dr-checkout__email');
-    $section.find('.dr-panel-result__text').text(emailPayload);
-    moveToNextSection($section);
-  });
-
-  if ($('input[name=email]').val() && $('#checkout-email-form').length) {
-    $('#checkout-email-form').submit();
-  } // Submit shipping info form
-
-
-  $('#checkout-shipping-form').on('submit', function (e) {
-    e.preventDefault();
-    var $form = $(e.target);
-    var $button = $form.find('button[type="submit"]');
-    var isFormValid = prepareAddress($form);
-    if (!isFormValid) return;
-    $button.addClass('sending').blur();
-    updateCart({
-      expand: 'all'
-    }, {
-      shippingAddress: payload.shipping
-    }).then(function (data) {
-      saveShippingAddress();
-      $button.removeClass('sending').blur();
-      setShippingOptions(data.cart);
-      var $section = $('.dr-checkout__shipping');
-      displaySavedAddress(data.cart.shippingAddress, $section.find('.dr-panel-result__text'));
+      emailPayload = email;
+      var $section = $('.dr-checkout__email');
+      $section.find('.dr-panel-result__text').text(emailPayload);
       moveToNextSection($section);
-      updateSummaryPricing(data.cart);
-    }).catch(function (jqXHR) {
-      $button.removeClass('sending').blur();
-      displayAddressErrMsg(jqXHR, $form.find('.dr-err-field'));
     });
-  });
-  $('#checkout-billing-form').on('submit', function (e) {
-    e.preventDefault();
-    var $form = $(e.target);
-    var $button = $form.find('button[type="submit"]');
-    var billingSameAsShipping = $('[name="checkbox-billing"]').is(':visible:checked');
-    var isFormValid = prepareAddress($form);
-    if (!isFormValid) return;
-    if (billingSameAsShipping) payload.billing = Object.assign({}, payload.shipping);
-    $button.addClass('sending').blur();
-    updateCart({
-      expand: 'all'
-    }, {
-      billingAddress: payload.billing
-    }).then(function (data) {
-      saveBillingAddress();
-      $button.removeClass('sending').blur();
-      var $section = $('.dr-checkout__billing');
-      displaySavedAddress(data.cart.billingAddress, $section.find('.dr-panel-result__text'));
-      moveToNextSection($section);
-      updateSummaryPricing(data.cart);
-    }).catch(function (jqXHR) {
-      $button.removeClass('sending').blur();
-      displayAddressErrMsg(jqXHR, $form.find('.dr-err-field'));
-    });
-  });
 
-  function setShippingOptions(cart) {
-    var freeShipping = cart.pricing.shippingAndHandling.value === 0;
-    var shippingOptionId = cart.shippingMethod.code;
-    $.each(cart.shippingOptions.shippingOption, function (index, option) {
-      if ($('#shipping-option-' + option.id).length) return;
-      var html = "\n                <div class=\"field-radio\">\n                    <input type=\"radio\"\n                        name=\"selector\"\n                        id=\"shipping-option-".concat(option.id, "\"\n                        data-cost=\"").concat(option.formattedCost, "\"\n                        data-id=\"").concat(option.id, "\"\n                        data-desc=\"").concat(option.description, "\"\n                        >\n                    <label for=\"shipping-option-").concat(option.id, "\">\n                        <span>\n                            ").concat(option.description, "\n                        </span>\n                        <span class=\"black\">\n                            ").concat(freeShipping ? 'FREE' : option.formattedCost, "\n                        </span>\n                        <span class=\"smoller\">\n                            Estimated Arrival:\n                        </span>\n                        <span class=\"black\">\n                            Apr 08 - Apr 11\n                        </span>\n                    </label>\n                </div>\n            ");
-      $('form#checkout-delivery-form .dr-panel-edit__el').append(html);
-    });
-    $('form#checkout-delivery-form').children().find('input:radio[data-id="' + shippingOptionId + '"]').prop("checked", true);
-  }
-
-  function applyShippingOption() {
-    var shippingOptionId = $('form#checkout-delivery-form').children().find('input:radio:checked').first().data('id');
-    applyShippingAndUpdateCart(shippingOptionId);
-  } // Submit delivery form
+    if ($('input[name=email]').val() && $('#checkout-email-form').length) {
+      $('#checkout-email-form').submit();
+    } // Submit shipping info form
 
 
-  $('form#checkout-delivery-form').on('submit', function (e) {
-    e.preventDefault();
-    var $input = $(this).children().find('input:radio:checked').first();
-    var button = $(this).find('button[type="submit"]').toggleClass('sending').blur(); // Validate shipping option
-
-    var data = {
-      expand: 'all',
-      shippingOptionId: $input.data('id')
-    };
-    $.ajax({
-      type: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: "Bearer ".concat(drExpressOptions.accessToken)
-      },
-      url: "".concat(apiBaseUrl, "/me/carts/active/apply-shipping-option?").concat($.param(data)),
-      success: function success(data) {
-        button.removeClass('sending').blur();
-        var $section = $('.dr-checkout__delivery');
-        var freeShipping = data.cart.pricing.shippingAndHandling.value === 0;
-        var resultText = "".concat($input.data('desc'), " ").concat(freeShipping ? 'FREE' : $input.data('cost'));
-        $section.find('.dr-panel-result__text').text(resultText);
+    $('#checkout-shipping-form').on('submit', function (e) {
+      e.preventDefault();
+      var $form = $(e.target);
+      var $button = $form.find('button[type="submit"]');
+      var isFormValid = prepareAddress($form);
+      if (!isFormValid) return;
+      $button.addClass('sending').blur();
+      updateCart({
+        expand: 'all'
+      }, {
+        shippingAddress: payload.shipping
+      }).then(function (data) {
+        saveShippingAddress();
+        $button.removeClass('sending').blur();
+        setShippingOptions(data.cart);
+        var $section = $('.dr-checkout__shipping');
+        displaySavedAddress(data.cart.shippingAddress, $section.find('.dr-panel-result__text'));
         moveToNextSection($section);
         updateSummaryPricing(data.cart);
-      },
-      error: function error(jqXHR) {
-        console.log(jqXHR);
-      }
-    });
-  });
-  $('form#checkout-delivery-form').on('change', 'input[type="radio"]', function () {
-    applyShippingOption();
-  });
-  $('form#checkout-payment-form').on('submit', function (e) {
-    e.preventDefault();
-    var $form = $('form#checkout-payment-form');
-    var $button = $form.find('button[type="submit"]');
-    $form.addClass('was-validated');
-
-    if ($form[0].checkValidity() === false) {
-      return false;
-    }
-
-    var formdata = $(this).serializeArray();
-    paymentPayload = {};
-    $(formdata).each(function (index, obj) {
-      paymentPayload[obj.name] = obj.value;
-    });
-    $('#dr-payment-failed-msg, #dr-checkout-err-field').text('').hide();
-    var $section = $('.dr-checkout__payment');
-
-    if (paymentPayload.selector === 'credit-card') {
-      var cart = drExpressOptions.cart.cart;
-      var creditCardPayload = {
-        type: 'creditCard',
-        owner: {
-          firstName: payload.billing.firstName,
-          lastName: payload.billing.lastName,
-          email: payload.billing.emailAddress,
-          address: {
-            line1: payload.billing.line1,
-            city: payload.billing.city,
-            state: payload.billing.state,
-            country: payload.billing.country,
-            postalCode: payload.billing.postalCode
-          }
-        },
-        amount: cart.pricing.orderTotal.value,
-        currency: cart.pricing.orderTotal.currency
-      };
-      $button.addClass('sending').blur();
-      digitalriverjs.createSource(cardNumber, creditCardPayload).then(function (result) {
+      }).catch(function (jqXHR) {
         $button.removeClass('sending').blur();
-
-        if (result.error) {
-          if (result.error.state === 'failed') {
-            $('#dr-payment-failed-msg').text('Failed payment for specified credit card').show();
-          }
-
-          if (result.error.errors) {
-            $('#dr-payment-failed-msg').text(result.error.errors[0].message).show();
-          }
-        } else {
-          if (result.source.state === 'chargeable') {
-            paymentSourceId = result.source.id;
-            $section.find('.dr-panel-result__text').text("Credit card ending in ".concat(result.source.creditCard.lastFourDigits));
-            moveToNextSection($section);
-          }
-        }
+        displayAddressErrMsg(jqXHR, $form.find('.dr-err-field'));
       });
-    }
-  });
-  $('form#checkout-confirmation-form').on('submit', function (e) {
-    e.preventDefault();
-    $(this).find('button[type="submit"]').toggleClass('sending').blur();
-    $('#dr-payment-failed-msg').hide();
-    applyPaymentToCart(paymentSourceId);
-  });
-
-  function applyShippingAndUpdateCart(shippingOptionId) {
-    var data = {
-      expand: 'all',
-      shippingOptionId: shippingOptionId
-    };
-    $.ajax({
-      type: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: "Bearer ".concat(drExpressOptions.accessToken)
-      },
-      url: "".concat(apiBaseUrl, "/me/carts/active/apply-shipping-option?").concat($.param(data)),
-      success: function success(data) {
+    });
+    $('#checkout-billing-form').on('submit', function (e) {
+      e.preventDefault();
+      var $form = $(e.target);
+      var $button = $form.find('button[type="submit"]');
+      var billingSameAsShipping = $('[name="checkbox-billing"]').is(':visible:checked');
+      var isFormValid = prepareAddress($form);
+      if (!isFormValid) return;
+      if (billingSameAsShipping) payload.billing = Object.assign({}, payload.shipping);
+      $button.addClass('sending').blur();
+      updateCart({
+        expand: 'all'
+      }, {
+        billingAddress: payload.billing
+      }).then(function (data) {
+        saveBillingAddress();
+        $button.removeClass('sending').blur();
+        var $section = $('.dr-checkout__billing');
+        displaySavedAddress(data.cart.billingAddress, $section.find('.dr-panel-result__text'));
+        moveToNextSection($section);
         updateSummaryPricing(data.cart);
-      },
-      error: function error(jqXHR) {
-        console.log(jqXHR);
-      }
+      }).catch(function (jqXHR) {
+        $button.removeClass('sending').blur();
+        displayAddressErrMsg(jqXHR, $form.find('.dr-err-field'));
+      });
     });
-  } // Initial state for payPal
+    $('form#checkout-delivery-form').on('submit', function (e) {
+      e.preventDefault();
+      var $input = $(this).children().find('input:radio:checked').first();
+      var button = $(this).find('button[type="submit"]').toggleClass('sending').blur(); // Validate shipping option
 
-
-  if (drExpressOptions.payPal.sourceId) {
-    $('.dr-checkout').children().addClass('closed');
-    $('.dr-checkout').children().removeClass('active');
-    $('.dr-checkout__payment').removeClass('closed').addClass('active');
-
-    if (drExpressOptions.payPal.failure == 'true') {// TODO: Display Error on paypal form maybe
-    }
-
-    if (drExpressOptions.payPal.success == 'true') {
-      applyPaymentToCart(drExpressOptions.payPal.sourceId);
-    }
-  }
-
-  function applyPaymentToCart(id) {
-    if (!id) return;
-    var data = {
-      'paymentMethod': {
-        'sourceId': id
-      }
-    };
-    $.ajax({
-      type: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: "Bearer ".concat(drExpressOptions.accessToken)
-      },
-      url: "".concat(apiBaseUrl, "/me/carts/active/apply-payment-method?expand=all"),
-      data: JSON.stringify(data),
-      success: function success() {
-        var billingSameAsShipping = $('[name="checkbox-billing"]').is(':checked');
-
-        if (billingSameAsShipping) {
-          submitCart();
-        } else {
-          applyBillingAddress(payload.billing).then(function () {
-            return submitCart();
-          });
-        }
-      },
-      error: function error(jqXHR) {
-        $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
-        $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
-        $('body').css({
-          'pointer-events': 'auto',
-          'opacity': 1
-        });
-      }
-    });
-  }
-
-  function applyBillingAddress(billingAddress) {
-    return new Promise(function (resolve, reject) {
+      var data = {
+        expand: 'all',
+        shippingOptionId: $input.data('id')
+      };
       $.ajax({
         type: 'POST',
         headers: {
@@ -1266,196 +1208,254 @@ jQuery(document).ready(function ($) {
           'Content-Type': 'application/json',
           Authorization: "Bearer ".concat(drExpressOptions.accessToken)
         },
-        url: "".concat(apiBaseUrl, "/me/carts/active"),
-        data: JSON.stringify({
-          cart: {
-            billingAddress: billingAddress
-          }
-        })
-      }).done(function (data) {
-        resolve(data);
-      }).fail(function (jqXHR) {
-        $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
-        $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
-        reject(jqXHR);
+        url: "".concat(apiBaseUrl, "/me/carts/active/apply-shipping-option?").concat($.param(data)),
+        success: function success(data) {
+          button.removeClass('sending').blur();
+          var $section = $('.dr-checkout__delivery');
+          var freeShipping = data.cart.pricing.shippingAndHandling.value === 0;
+          var resultText = "".concat($input.data('desc'), " ").concat(freeShipping ? 'FREE' : $input.data('cost'));
+          $section.find('.dr-panel-result__text').text(resultText);
+          moveToNextSection($section);
+          updateSummaryPricing(data.cart);
+        },
+        error: function error(jqXHR) {
+          console.log(jqXHR);
+        }
       });
     });
-  }
+    $('form#checkout-delivery-form').on('change', 'input[type="radio"]', function () {
+      applyShippingOption();
+    });
+    $('form#checkout-payment-form').on('submit', function (e) {
+      e.preventDefault();
+      var $form = $('form#checkout-payment-form');
+      var $button = $form.find('button[type="submit"]');
+      $form.addClass('was-validated');
 
-  function submitCart() {
-    $.ajax({
-      type: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: "Bearer ".concat(drExpressOptions.accessToken)
-      },
-      url: "".concat(apiBaseUrl, "/me/carts/active/submit-cart?expand=all"),
-      success: function success(data) {
-        window.location.replace("".concat(drExpressOptions.thankYouEndpoint, "?order=").concat(data.submitCart.order.id));
-      },
-      error: function error(jqXHR) {
-        $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
-        $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
-        $('body').css({
-          'pointer-events': 'auto',
-          'opacity': 1
+      if ($form[0].checkValidity() === false) {
+        return false;
+      }
+
+      var formdata = $(this).serializeArray();
+      paymentPayload = {};
+      $(formdata).each(function (index, obj) {
+        paymentPayload[obj.name] = obj.value;
+      });
+      $('#dr-payment-failed-msg, #dr-checkout-err-field').text('').hide();
+      var $section = $('.dr-checkout__payment');
+
+      if (paymentPayload.selector === 'credit-card') {
+        var cart = drExpressOptions.cart.cart;
+        var creditCardPayload = {
+          type: 'creditCard',
+          owner: {
+            firstName: payload.billing.firstName,
+            lastName: payload.billing.lastName,
+            email: payload.billing.emailAddress,
+            address: {
+              line1: payload.billing.line1,
+              city: payload.billing.city,
+              state: payload.billing.state,
+              country: payload.billing.country,
+              postalCode: payload.billing.postalCode
+            }
+          },
+          amount: cart.pricing.orderTotal.value,
+          currency: cart.pricing.orderTotal.currency
+        };
+        $button.addClass('sending').blur();
+        digitalriverjs.createSource(cardNumber, creditCardPayload).then(function (result) {
+          $button.removeClass('sending').blur();
+
+          if (result.error) {
+            if (result.error.state === 'failed') {
+              $('#dr-payment-failed-msg').text('Failed payment for specified credit card').show();
+            }
+
+            if (result.error.errors) {
+              $('#dr-payment-failed-msg').text(result.error.errors[0].message).show();
+            }
+          } else {
+            if (result.source.state === 'chargeable') {
+              paymentSourceId = result.source.id;
+              $section.find('.dr-panel-result__text').text("Credit card ending in ".concat(result.source.creditCard.lastFourDigits));
+              moveToNextSection($section);
+            }
+          }
         });
       }
     });
-  } // check billing info
+    $('form#checkout-confirmation-form').on('submit', function (e) {
+      e.preventDefault();
+      $(this).find('button[type="submit"]').toggleClass('sending').blur();
+      $('#dr-payment-failed-msg').hide();
+      applyPaymentToCart(paymentSourceId);
+    });
 
+    if (drExpressOptions.payPal.sourceId) {
+      $('.dr-checkout').children().addClass('closed');
+      $('.dr-checkout').children().removeClass('active');
+      $('.dr-checkout__payment').removeClass('closed').addClass('active');
 
-  $('[name="checkbox-billing"]').on('click', function (ev) {
-    var $this = $(this);
+      if (drExpressOptions.payPal.failure == 'true') {// TODO: Display Error on paypal form maybe
+      }
 
-    if (!$this.is(':checked')) {
-      $('.billing-section').css('display', 'block');
-    } else {
-      $('.billing-section').css('display', 'none');
-    }
-  }); // show and hide sections
-
-  $('.dr-accordion__edit').on('click', function (e) {
-    e.preventDefault();
-    var $section = $(e.target).parent().parent();
-    var $allSections = $section.siblings().andSelf();
-    var $finishedSections = $allSections.eq(finishedSectionIdx).prevAll().andSelf();
-    var $activeSection = $allSections.filter($('.active'));
-    var $nextSection = $section.next();
-    var $prevSection = $section.prev();
-
-    if ($allSections.index($section) > $allSections.index($activeSection)) {
-      return;
+      if (drExpressOptions.payPal.success == 'true') {
+        applyPaymentToCart(drExpressOptions.payPal.sourceId);
+      }
     }
 
-    $finishedSections.addClass('closed');
-    $activeSection.removeClass('active');
-    $section.removeClass('closed').addClass('active');
-    adjustColumns();
-    updateTaxLabel();
-  }); // print thank you page
+    $('[name="checkbox-billing"]').on('click', function (ev) {
+      var $this = $(this);
 
-  $('#print-button').on('click', function (ev) {
-    var printContents = $('.dr-thank-you-wrapper').html();
-    var originalContents = document.body.innerHTML;
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
-  });
+      if (!$this.is(':checked')) {
+        $('.billing-section').css('display', 'block');
+      } else {
+        $('.billing-section').css('display', 'none');
+      }
+    }); // show and hide sections
 
-  if ($('#radio-credit-card').is(':checked')) {
-    $('.credit-card-info').show();
-  }
+    $('.dr-accordion__edit').on('click', function (e) {
+      e.preventDefault();
+      var $section = $(e.target).parent().parent();
+      var $allSections = $section.siblings().andSelf();
+      var $finishedSections = $allSections.eq(finishedSectionIdx).prevAll().andSelf();
+      var $activeSection = $allSections.filter($('.active'));
+      var $nextSection = $section.next();
+      var $prevSection = $section.prev();
 
-  $('input:radio[name="selector"]').on('change', function () {
-    switch ($(this).val()) {
-      case 'credit-card':
-        $('#dr-paypal-button').hide();
-        $('.credit-card-info').show();
-        $('#dr-submit-payment').text('pay with card'.toUpperCase()).show();
-        break;
+      if ($allSections.index($section) > $allSections.index($activeSection)) {
+        return;
+      }
 
-      case 'paypal':
-        $('#dr-submit-payment').hide();
-        $('.credit-card-info').hide();
-        $('#dr-paypal-button').show();
-        $('#dr-submit-payment').text('pay with paypal'.toUpperCase());
-        break;
+      $finishedSections.addClass('closed');
+      $activeSection.removeClass('active');
+      $section.removeClass('closed').addClass('active');
+      adjustColumns();
+      updateTaxLabel();
+    }); // print thank you page
+
+    $('#print-button').on('click', function (ev) {
+      var printContents = $('.dr-thank-you-wrapper').html();
+      var originalContents = document.body.innerHTML;
+      document.body.innerHTML = printContents;
+      window.print();
+      document.body.innerHTML = originalContents;
+    });
+
+    if ($('#radio-credit-card').is(':checked')) {
+      $('.credit-card-info').show();
     }
-  });
-  $('#shipping-field-country').on('change', function () {
-    if (this.value === 'US') {
-      $('#shipping-field-state').parent('.form-group').removeClass('d-none');
-    } else {
-      $('#shipping-field-state').parent('.form-group').addClass('d-none');
-    }
-  });
-  $('#billing-field-country').on('change', function () {
-    if (this.value === 'US') {
-      $('#billing-field-state').parent('.form-group').removeClass('d-none');
-    } else {
-      $('#billing-field-state').parent('.form-group').addClass('d-none');
-    }
-  });
 
-  if ($('#dr-paypal-button').length) {
-    // need to get the actual height of the wrapper for rendering the PayPal button
-    $('#checkout-payment-form').removeClass('dr-panel-edit').css('visibility', 'hidden');
-    paypal.Button.render({
-      env: domain.indexOf('test') === -1 ? 'production' : 'sandbox',
-      locale: drLocale,
-      style: {
-        label: 'checkout',
-        size: 'responsive',
-        height: 40,
-        color: 'gold',
-        shape: 'rect',
-        layout: 'horizontal',
-        fundingicons: 'false',
-        tagline: 'false'
-      },
-      onEnter: function onEnter() {
-        $('#checkout-payment-form').addClass('dr-panel-edit').css('visibility', 'visible');
-        $('#dr-paypal-button').hide();
-      },
-      payment: function payment() {
-        var cart = drExpressOptions.cart.cart;
-        var requestShipping = $('.dr-checkout__shipping').length ? true : false;
-        var payPalItems = [];
-        $.each(cart.lineItems.lineItem, function (index, item) {
-          payPalItems.push({
-            'name': item.product.name,
-            'quantity': item.quantity,
-            'unitAmount': item.pricing.listPrice.value
+    $('input:radio[name="selector"]').on('change', function () {
+      switch ($(this).val()) {
+        case 'credit-card':
+          $('#dr-paypal-button').hide();
+          $('.credit-card-info').show();
+          $('#dr-submit-payment').text('pay with card'.toUpperCase()).show();
+          break;
+
+        case 'paypal':
+          $('#dr-submit-payment').hide();
+          $('.credit-card-info').hide();
+          $('#dr-paypal-button').show();
+          $('#dr-submit-payment').text('pay with paypal'.toUpperCase());
+          break;
+      }
+    });
+    $('#shipping-field-country').on('change', function () {
+      if (this.value === 'US') {
+        $('#shipping-field-state').parent('.form-group').removeClass('d-none');
+      } else {
+        $('#shipping-field-state').parent('.form-group').addClass('d-none');
+      }
+    });
+    $('#billing-field-country').on('change', function () {
+      if (this.value === 'US') {
+        $('#billing-field-state').parent('.form-group').removeClass('d-none');
+      } else {
+        $('#billing-field-state').parent('.form-group').addClass('d-none');
+      }
+    });
+
+    if ($('#dr-paypal-button').length) {
+      // need to get the actual height of the wrapper for rendering the PayPal button
+      $('#checkout-payment-form').removeClass('dr-panel-edit').css('visibility', 'hidden');
+      paypal.Button.render({
+        env: domain.indexOf('test') === -1 ? 'production' : 'sandbox',
+        locale: drLocale,
+        style: {
+          label: 'checkout',
+          size: 'responsive',
+          height: 40,
+          color: 'gold',
+          shape: 'rect',
+          layout: 'horizontal',
+          fundingicons: 'false',
+          tagline: 'false'
+        },
+        onEnter: function onEnter() {
+          $('#checkout-payment-form').addClass('dr-panel-edit').css('visibility', 'visible');
+          $('#dr-paypal-button').hide();
+        },
+        payment: function payment() {
+          var cart = drExpressOptions.cart.cart;
+          var requestShipping = $('.dr-checkout__shipping').length ? true : false;
+          var payPalItems = [];
+          $.each(cart.lineItems.lineItem, function (index, item) {
+            payPalItems.push({
+              'name': item.product.name,
+              'quantity': item.quantity,
+              'unitAmount': item.pricing.listPrice.value
+            });
           });
-        });
-        var payPalPayload = {
-          'type': 'payPal',
-          'amount': cart.pricing.orderTotal.value,
-          'currency': 'USD',
-          'payPal': {
-            'returnUrl': window.location.href + '?ppsuccess=true',
-            'cancelUrl': window.location.href + '?ppcancel=true',
-            'items': payPalItems,
-            'taxAmount': cart.pricing.tax.value,
-            'requestShipping': requestShipping
-          }
-        };
-
-        if (requestShipping) {
-          payPalPayload['shipping'] = {
-            'recipient': "".concat(cart.shippingAddress.firstName, " ").concat(cart.shippingAddress.lastName, " "),
-            'phoneNumber': cart.shippingAddress.phoneNumber,
-            'address': {
-              'line1': cart.shippingAddress.line1,
-              'line2': cart.shippingAddress.line2,
-              'city': cart.shippingAddress.city,
-              'state': cart.shippingAddress.state,
-              'country': cart.shippingAddress.country,
-              'postalCode': cart.shippingAddress.postalCode
+          var payPalPayload = {
+            'type': 'payPal',
+            'amount': cart.pricing.orderTotal.value,
+            'currency': 'USD',
+            'payPal': {
+              'returnUrl': window.location.href + '?ppsuccess=true',
+              'cancelUrl': window.location.href + '?ppcancel=true',
+              'items': payPalItems,
+              'taxAmount': cart.pricing.tax.value,
+              'requestShipping': requestShipping
             }
           };
-        }
 
-        return digitalriverjs.createSource(payPalPayload).then(function (result) {
-          if (result.error) {
-            $('#dr-payment-failed-msg').text(result.error.errors[0].message).show();
-          } else {
-            sessionStorage.setItem('paymentSourceId', result.source.id);
-            return result.source.payPal.token;
+          if (requestShipping) {
+            payPalPayload['shipping'] = {
+              'recipient': "".concat(cart.shippingAddress.firstName, " ").concat(cart.shippingAddress.lastName, " "),
+              'phoneNumber': cart.shippingAddress.phoneNumber,
+              'address': {
+                'line1': cart.shippingAddress.line1,
+                'line2': cart.shippingAddress.line2,
+                'city': cart.shippingAddress.city,
+                'state': cart.shippingAddress.state,
+                'country': cart.shippingAddress.country,
+                'postalCode': cart.shippingAddress.postalCode
+              }
+            };
           }
-        });
-      },
-      onAuthorize: function onAuthorize() {
-        var sourceId = sessionStorage.getItem('paymentSourceId');
-        $('body').css({
-          'pointer-events': 'none',
-          'opacity': 0.5
-        });
-        applyPaymentToCart(sourceId);
-      }
-    }, '#dr-paypal-button');
+
+          return digitalriverjs.createSource(payPalPayload).then(function (result) {
+            if (result.error) {
+              $('#dr-payment-failed-msg').text(result.error.errors[0].message).show();
+            } else {
+              sessionStorage.setItem('paymentSourceId', result.source.id);
+              return result.source.payPal.token;
+            }
+          });
+        },
+        onAuthorize: function onAuthorize() {
+          var sourceId = sessionStorage.getItem('paymentSourceId');
+          $('body').css({
+            'pointer-events': 'none',
+            'opacity': 0.5
+          });
+          applyPaymentToCart(sourceId);
+        }
+      }, '#dr-paypal-button');
+    }
   }
 });
 "use strict";

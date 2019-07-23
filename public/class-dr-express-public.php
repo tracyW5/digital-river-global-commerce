@@ -76,9 +76,10 @@ class DR_Express_Public {
 
 		wp_enqueue_script( $this->dr_express, PLUGIN_URL . 'assets/js/dr-express-public' . $suffix . '.js', array( 'jquery' ), $this->version, false );
 
-		wp_enqueue_script( 'digital-river-js', 'https://js.digitalriver.com/v1/DigitalRiver.js', array( $this->dr_express ), null, true );
-
-		wp_enqueue_script( 'paypal-checkout-js', 'https://www.paypalobjects.com/api/checkout.js', array( $this->dr_express ), null, true );
+		if ( is_page( 'checkout' ) ) {
+			wp_enqueue_script( 'digital-river-js', 'https://js.digitalriver.com/v1/DigitalRiver.js', array( $this->dr_express ), null, true );
+			wp_enqueue_script( 'paypal-checkout-js', 'https://www.paypalobjects.com/api/checkout.js', array( $this->dr_express ), null, true );
+		}
 
 		$access_token = '';
 		if ( DR_Express()->authenticator ) {
