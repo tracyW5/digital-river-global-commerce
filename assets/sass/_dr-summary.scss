@@ -5,14 +5,11 @@
 
     &--checkout,
     &--thank-you {
-        width: 46%;
+        width: 100%;
+        margin-bottom: 16px;
         padding: 20px;
-
+        float: right;
         background-color: #ffffff;
-
-        @include for-tablet-portrait-down {
-            width: 100%;
-        }
 
         .dr-summary__subtotal {
             margin-bottom: 24px;
@@ -58,6 +55,12 @@
             margin-bottom: 0;
         }
 
+    }
+
+    &--checkout {
+        @include for-desktop-up {
+            width: 46%;
+        }
     }
 
     &--thank-you {
