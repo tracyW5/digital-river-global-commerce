@@ -1,14 +1,14 @@
 //
 
 .dr-checkout {
-    width: 50%;
+    width: 100%;
 
     .d-none {
         display: none !important;
     }
 
-    @include for-tablet-portrait-down {
-        width: 100%;
+    @include for-desktop-up {
+        width: 50%;
     }
 
     &__email,
