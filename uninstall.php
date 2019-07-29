@@ -5,7 +5,7 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
+ * @package    Digital_River_Global_Commerce
  */
 
 // If uninstall not called from WordPress, then exit.

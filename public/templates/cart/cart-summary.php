@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/public/partials
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/public/partials
  */
 ?>
 
@@ -62,7 +62,7 @@ $delivery_info = 'Delivery in 2-5 working days and extended 30 days return perio
 
 	<?php if ( 1 < count($cart['cart']['lineItems'] )) : ?>
 
-        <a href="<?php echo esc_url( dr_get_page_link( 'checkout' ) ); ?>" class="dr-summary__proceed-checkout dr-btn"><?php echo __('Proceed to checkout') ?></a>
+        <a href="<?php echo esc_url( drgc_get_page_link( 'checkout' ) ); ?>" class="dr-summary__proceed-checkout dr-btn"><?php echo __('Proceed to checkout') ?></a>
 
 	<?php endif; ?>
 

@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/public/partials
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/public/partials
  */
 ?>
 
@@ -32,7 +32,7 @@ $product_qty = $line_item['quantity'];
 
         <div class="dr-product__info">
 
-            <a class="product-name" href="<?php echo get_permalink( dr_get_product_by_sku( $product_sku ) ); ?>" >
+            <a class="product-name" href="<?php echo get_permalink( drgc_get_product_by_sku( $product_sku ) ); ?>" >
                 <?php echo $product_name; ?>
             </a>
             <div class="product-sku">

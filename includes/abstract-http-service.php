@@ -94,7 +94,7 @@ abstract class AbstractHttpService {
         $this->setFormContentType();
         $this->setJsonContentType();
         $this->setEnv();
-        $this->site_id = get_option( 'dr_express_site_id' );
+        $this->site_id = get_option( 'drgc_site_id' );
     }
 
     /**
@@ -190,7 +190,7 @@ abstract class AbstractHttpService {
      * @return string
      */
     protected function normalizeUri($uri): string {
-        $domain = get_option( 'dr_express_domain' ) ?: 'api.digitalriver.com';
+        $domain = get_option( 'drgc_domain' ) ?: 'api.digitalriver.com';
         preg_match( '/^(http|https):\/\//', $domain, $matches );
         if ( empty( $matches ) ) {
             $domain = "https://{$domain}";
@@ -237,7 +237,7 @@ abstract class AbstractHttpService {
      * @return void
      */
     protected function setEnv() {
-        $this->env = ( ( strpos( get_option( 'dr_express_domain' ), 'test' ) !== false ) ? 'test' : 'production' );
+        $this->env = ( ( strpos( get_option( 'drgc_domain' ), 'test' ) !== false ) ? 'test' : 'production' );
     }
 
     /**

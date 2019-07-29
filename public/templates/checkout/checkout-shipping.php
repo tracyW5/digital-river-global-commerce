@@ -26,7 +26,7 @@ if ( $cart['cart']['shippingAddress']['line1'] != '') {
 
         </span>
 
-        <span class="dr-accordion__edit"><?php echo __( 'Edit', 'dr-express' ); ?>></span>
+        <span class="dr-accordion__edit"><?php echo __( 'Edit', 'digital-river-global-commerce' ); ?>></span>
         
     </button>
     <form id="checkout-shipping-form" class="dr-panel-edit dr-panel-edit--shipping needs-validation" novalidate>
@@ -148,8 +148,8 @@ if ( $cart['cart']['shippingAddress']['line1'] != '') {
 
                 <?php foreach ( $locales['locales'] as $locale => $currency ): ?>
                     <?php
-                        $country = code_to_counry($locale);
-                        $abrvCountyName = code_to_counry($locale, true);
+                        $country = drgc_code_to_counry($locale);
+                        $abrvCountyName = drgc_code_to_counry($locale, true);
 
                         $output = "<option ";
                         $output .= ($shippingAddress['country'] === $abrvCountyName ? 'selected ' : '');

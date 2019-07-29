@@ -1,8 +1,8 @@
-/* global drExpressOptions, iFrameResize */
+/* global drgc_params, iFrameResize */
 /* eslint-disable no-alert, no-console */
 
 jQuery(document).ready(($) => {
-    const apiBaseUrl = 'https://' + drExpressOptions.domain + '/v1/shoppers';
+    const apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers';
 
     // Very basic throttle function,
     // does not store calls white in limit period
@@ -34,7 +34,7 @@ jQuery(document).ready(($) => {
             },
             url: (() => {
                 let url = `${apiBaseUrl}/me/carts/active/line-items/${lineItemId}?`;
-                url += `&token=${drExpressOptions.accessToken}`
+                url += `&token=${drgc_params.accessToken}`
                 return url;
             })(),
             success: (data, textStatus, xhr) => {
@@ -84,7 +84,7 @@ jQuery(document).ready(($) => {
         }
 
         let params = {
-            'token'               : drExpressOptions.accessToken,
+            'token'               : drgc_params.accessToken,
             'action'              : 'update',
             'quantity'            : $qty.val(),
             'expand'              : 'all',
@@ -142,7 +142,7 @@ jQuery(document).ready(($) => {
             url: (() => {
                 let url = `${apiBaseUrl}/me/carts/active?`;
                 url += `&expand=all`
-                url += `&token=${drExpressOptions.accessToken}`
+                url += `&token=${drgc_params.accessToken}`
                 return url;
             })(),
             success: (data) => {
@@ -172,7 +172,7 @@ jQuery(document).ready(($) => {
             let url = `${apiBaseUrl}/me/point-of-promotions/Banner_ShoppingCartLocal/offers?`;
             url += `format=json`
             url += `&expand=all`
-            url += `&token=${drExpressOptions.accessToken}`
+            url += `&token=${drgc_params.accessToken}`
             return url;
         })(),
         success: (shoppingCartOfferData, textStatus, xhr) => {
@@ -196,7 +196,7 @@ jQuery(document).ready(($) => {
             let url = `${apiBaseUrl}/me/products/${productID}/offers?`;
             url += `format=json`
             url += `&expand=all`
-            url += `&token=${drExpressOptions.accessToken}`
+            url += `&token=${drgc_params.accessToken}`
             return url;
         })(),
         success: (tightData, textStatus, xhr) => {
@@ -224,7 +224,7 @@ jQuery(document).ready(($) => {
             let url = `${apiBaseUrl}/me/products/${productID}/point-of-promotions/CandyRack_ShoppingCart/offers?`;
             url += `format=json`
             url += `&expand=all`
-            url += `&token=${drExpressOptions.accessToken}`
+            url += `&token=${drgc_params.accessToken}`
             return url;
         })(),
         success: (candyRackData, textStatus, xhr) => {
@@ -276,8 +276,8 @@ jQuery(document).ready(($) => {
           },
           url: (() => {
               let url = buyUri;
-              if(drExpressOptions.testOrder == "true")url += '&testOrder=true';
-              url += `&token=${drExpressOptions.accessToken}`
+              if(drgc_params.testOrder == "true")url += '&testOrder=true';
+              url += `&token=${drgc_params.accessToken}`
               return url;
           })(),
           success: (data, textStatus, xhr) => {
@@ -298,11 +298,11 @@ jQuery(document).ready(($) => {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type':'application/json',
-                    Authorization: `Bearer ${drExpressOptions.accessToken}`,
+                    Authorization: `Bearer ${drgc_params.accessToken}`,
                 },
                 url: (() => {
                     let url = `${apiBaseUrl}/me/carts/active?`;
-                    url += `&token=${drExpressOptions.accessToken}&${queryStr}`;
+                    url += `&token=${drgc_params.accessToken}&${queryStr}`;
                     return url;
                 })(),
                 data: JSON.stringify({
@@ -329,7 +329,7 @@ jQuery(document).ready(($) => {
         $.ajax({
           type: 'POST',
           async: false,
-          url: drExpressOptions.ajaxUrl,
+          url: drgc_params.ajaxUrl,
           data: {
             action: 'get_permalink',
             productID: permalinkProductId
@@ -401,7 +401,7 @@ jQuery(document).ready(($) => {
             url: (() => {
                 let url = `${apiBaseUrl}/me?`;
                 url += `format=json`
-                url += `&token=${drExpressOptions.accessToken}`
+                url += `&token=${drgc_params.accessToken}`
                 url += `&currency=${data.currency}`
                 url += `&locale=${data.locale}`
                 return url;
@@ -441,8 +441,8 @@ jQuery(document).ready(($) => {
         } else {
             let miniCartLineItems = '<ul class="dr-minicart-list">';
             const miniCartSubtotal = `<p class="dr-minicart-subtotal"><label>Sub-Total</label><span>${cart.pricing.formattedSubtotal}</span></p>`;
-            const miniCartViewCartBtn = `<a class="dr-btn" id="dr-minicart-view-cart-btn" href="${drExpressOptions.cartUrl}">View Cart</a>`;
-            const miniCartCheckoutBtn = `<a class="dr-btn" id="dr-minicart-checkout-btn" href="${drExpressOptions.checkoutUrl}">Checkout</a>`;
+            const miniCartViewCartBtn = `<a class="dr-btn" id="dr-minicart-view-cart-btn" href="${drgc_params.cartUrl}">View Cart</a>`;
+            const miniCartCheckoutBtn = `<a class="dr-btn" id="dr-minicart-checkout-btn" href="${drgc_params.checkoutUrl}">Checkout</a>`;
 
             lineItems.forEach((li) => {
                 const productId = li.product.uri.replace(`${apiBaseUrl}/me/products/`, '');

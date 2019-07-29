@@ -1,16 +1,16 @@
-/* global drExpressOptions, iFrameResize */
+/* global drgc_params, iFrameResize */
 /* eslint-disable no-alert, no-console */
 
 jQuery(document).ready(($) => {
     class DRService {
 
         constructor() {
-            this.siteID = drExpressOptions.siteID;
-            this.apiKey = drExpressOptions.apiKey;
-            this.domain = drExpressOptions.domain;
+            this.siteID = drgc_params.siteID;
+            this.apiKey = drgc_params.apiKey;
+            this.domain = drgc_params.domain;
             this.sessionToken = null;
             this.apiBaseUrl = 'https://' + this.domain + '/v1/shoppers';
-            this.drLocale = drExpressOptions.drLocale || 'en_US';
+            this.drLocale = drgc_params.drLocale || 'en_US';
         }
 
         updateShopper() {
@@ -37,11 +37,11 @@ jQuery(document).ready(($) => {
                     type: 'GET',
                     headers: {
                         Accept: 'application/json',
-                        Authorization: `Bearer ${drExpressOptions.accessToken}`                    },
+                        Authorization: `Bearer ${drgc_params.accessToken}`                    },
                     url: (() => {
                         let url = `${this.apiBaseUrl}/me/carts/active?`;
                         url += 'format=json'
-                        url += `&token=${drExpressOptions.accessToken}`
+                        url += `&token=${drgc_params.accessToken}`
                         return url;
                     })(),
                     success: (data) => {
@@ -60,15 +60,15 @@ jQuery(document).ready(($) => {
                     type: 'POST',
                     headers: {
                         Accept: 'application/json',
-                        Authorization: `Bearer ${drExpressOptions.accessToken}`
+                        Authorization: `Bearer ${drgc_params.accessToken}`
                     },
                     url: (() => {
                         let url = `${this.apiBaseUrl}/me/carts/active?`;
                         url += 'format=json'
                         url += `&productId=${productID}`
                         if (quantity) url += `&quantity=${quantity}`;
-                        if(drExpressOptions.testOrder == "true")url += '&testOrder=true';
-                        url += `&token=${drExpressOptions.accessToken}`
+                        if(drgc_params.testOrder == "true")url += '&testOrder=true';
+                        url += `&token=${drgc_params.accessToken}`
                         return url;
                     })(),
                     success: (data) => {
@@ -93,7 +93,7 @@ jQuery(document).ready(($) => {
                     url: (() => {
                         let url = `${this.apiBaseUrl}/me/carts/active/line-items/${lineItemID}?`;
                         url += 'format=json'
-                        url += `&token=${drExpressOptions.accessToken}`
+                        url += `&token=${drgc_params.accessToken}`
                         return url;
                     })(),
                     success: () => {
@@ -202,8 +202,8 @@ jQuery(document).ready(($) => {
         } else {
             let miniCartLineItems = '<ul class="dr-minicart-list">';
             const miniCartSubtotal = `<p class="dr-minicart-subtotal"><label>Sub-Total</label><span>${cart.pricing.formattedSubtotal}</span></p>`;
-            const miniCartViewCartBtn = `<a class="dr-btn" id="dr-minicart-view-cart-btn" href="${drExpressOptions.cartUrl}">View Cart</a>`;
-            const miniCartCheckoutBtn = `<a class="dr-btn" id="dr-minicart-checkout-btn" href="${drExpressOptions.checkoutUrl}">Checkout</a>`;
+            const miniCartViewCartBtn = `<a class="dr-btn" id="dr-minicart-view-cart-btn" href="${drgc_params.cartUrl}">View Cart</a>`;
+            const miniCartCheckoutBtn = `<a class="dr-btn" id="dr-minicart-checkout-btn" href="${drgc_params.checkoutUrl}">Checkout</a>`;
 
             lineItems.forEach((li) => {
                 const productId = li.product.uri.replace(`${drService.apiBaseUrl}/me/products/`, '');

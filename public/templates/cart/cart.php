@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/public/templates/parts
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/public/templates/parts
  */
 ?>
 
@@ -24,14 +24,14 @@
                         <?php include PLUGIN_DIR . 'public/templates/cart/cart-product.php'; ?>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <?php echo __( 'Your cart is empty.', 'dr-express' ); ?>
+                    <?php echo __( 'Your cart is empty.', 'digital-river-global-commerce' ); ?>
                 <?php endif; ?>
 
             </div>
             <?php if ( 1 < count($cart['cart']['lineItems'] )) : ?>
             <div class="dr-cart__estimate" id="cart-estimate">
 
-                <?php dr_express_currency_toggler(); ?>
+                <?php drgc_currency_toggler(); ?>
 
                 <?php include_once PLUGIN_DIR . 'public/templates/cart/cart-summary.php'; ?>
 
@@ -41,7 +41,7 @@
 
         <section class="dr-cart__actions-bottom">
 
-            <a href="<?php echo get_post_type_archive_link( 'dr_product' ); ?>" class="continue-shopping"><?php echo __( 'Continue Shopping', 'dr-express' ); ?></a>
+            <a href="<?php echo get_post_type_archive_link( 'dr_product' ); ?>" class="continue-shopping"><?php echo __( 'Continue Shopping', 'digital-river-global-commerce' ); ?></a>
 
         </section>
 

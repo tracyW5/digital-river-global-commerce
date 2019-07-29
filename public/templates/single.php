@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/public/templates
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/public/templates
  */
 ?>
 
@@ -20,7 +20,7 @@
 
         <div class="row">
             <div class="col clearfix">
-                <?php dr_express_currency_toggler(); ?>
+                <?php drgc_currency_toggler(); ?>
             </div>
         </div>
 
@@ -31,10 +31,10 @@
                 <?php if ( have_posts() ) :
                     while ( have_posts() ) :
                         the_post();
-                        dr_express_get_template_part( 'content', 'single' );
+                        drgc_get_template_part( 'content', 'single' );
                     endwhile;
                     else :
-                        dr_express_get_template_part( 'content', 'none' );
+                        drgc_get_template_part( 'content', 'none' );
                     endif;
                 ?>
             </div>

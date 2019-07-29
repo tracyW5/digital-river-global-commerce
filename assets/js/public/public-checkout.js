@@ -1,10 +1,10 @@
 jQuery(document).ready(($) => {
     if ($('#checkout-payment-form').length) {
-        const siteID = drExpressOptions.siteID;
-        const apiKey = drExpressOptions.apiKey;
-        const domain = drExpressOptions.domain;
+        const siteID = drgc_params.siteID;
+        const apiKey = drgc_params.apiKey;
+        const domain = drgc_params.domain;
         const apiBaseUrl = 'https://' + domain + '/v1/shoppers';
-        const drLocale = drExpressOptions.drLocale || 'en_US';
+        const drLocale = drgc_params.drLocale || 'en_US';
 
 
         function getAddress(addressType) {
@@ -45,7 +45,7 @@ jQuery(document).ready(($) => {
                 type: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${drExpressOptions.accessToken}`
+                    Authorization: `Bearer ${drgc_params.accessToken}`
                 },
                 data: address,
                 url: `${apiBaseUrl}/me/addresses?client_id=${apiKey}&format=json`,
@@ -62,7 +62,7 @@ jQuery(document).ready(($) => {
         FloatLabel.init();
 
         // Globals
-        var digitalriverjs = new DigitalRiver(drExpressOptions.digitalRiverKey);
+        var digitalriverjs = new DigitalRiver(drgc_params.digitalRiverKey);
         var payload  = { shipping: {}, billing: {} };
         var paymentPayload = {};
         var paymentSourceId = null;
@@ -176,7 +176,7 @@ jQuery(document).ready(($) => {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type':'application/json',
-                        Authorization: `Bearer ${drExpressOptions.accessToken}`
+                        Authorization: `Bearer ${drgc_params.accessToken}`
                     },
                     url: `${apiBaseUrl}/me/carts/active?${queryStr}`,
                     data: JSON.stringify({
@@ -284,7 +284,7 @@ jQuery(document).ready(($) => {
             e.preventDefault();
 
             // If no items are in cart, do not even continue, maybe give feedback
-            if (! drExpressOptions.cart.cart.lineItems.hasOwnProperty('lineItem')) return;
+            if (! drgc_params.cart.cart.lineItems.hasOwnProperty('lineItem')) return;
 
             const $form = $('#checkout-email-form');
             const email = $form.find('input[name=email]').val().trim();
@@ -420,7 +420,7 @@ jQuery(document).ready(($) => {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${drExpressOptions.accessToken}`
+                    Authorization: `Bearer ${drgc_params.accessToken}`
                 },
                 url: `${apiBaseUrl}/me/carts/active/apply-shipping-option?${$.param(data)}`,
                 success: (data) => {
@@ -466,7 +466,7 @@ jQuery(document).ready(($) => {
             const $section = $('.dr-checkout__payment');
 
             if (paymentPayload.selector === 'credit-card') {
-                const cart = drExpressOptions.cart.cart;
+                const cart = drgc_params.cart.cart;
                 const creditCardPayload = {
                     type: 'creditCard',
                     owner: {
@@ -526,7 +526,7 @@ jQuery(document).ready(($) => {
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
-                    Authorization: `Bearer ${drExpressOptions.accessToken}`
+                    Authorization: `Bearer ${drgc_params.accessToken}`
                 },
                 url: `${apiBaseUrl}/me/carts/active/apply-shipping-option?${$.param(data)}`,
                 success: (data) => {
@@ -539,17 +539,17 @@ jQuery(document).ready(($) => {
         }
 
         // Initial state for payPal
-        if ( drExpressOptions.payPal.sourceId ) {
+        if ( drgc_params.payPal.sourceId ) {
             $('.dr-checkout').children().addClass('closed');
             $('.dr-checkout').children().removeClass('active');
             $('.dr-checkout__payment').removeClass('closed').addClass('active');
 
-            if (drExpressOptions.payPal.failure == 'true') {
+            if (drgc_params.payPal.failure == 'true') {
                 // TODO: Display Error on paypal form maybe
             }
 
-            if (drExpressOptions.payPal.success == 'true') {
-                applyPaymentToCart(drExpressOptions.payPal.sourceId);
+            if (drgc_params.payPal.success == 'true') {
+                applyPaymentToCart(drgc_params.payPal.sourceId);
             }
         }
 
@@ -567,7 +567,7 @@ jQuery(document).ready(($) => {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${drExpressOptions.accessToken}`
+                    Authorization: `Bearer ${drgc_params.accessToken}`
                 },
                 url: `${apiBaseUrl}/me/carts/active/apply-payment-method?expand=all`,
                 data: JSON.stringify(data),
@@ -594,7 +594,7 @@ jQuery(document).ready(($) => {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type':'application/json',
-                        Authorization: `Bearer ${drExpressOptions.accessToken}`
+                        Authorization: `Bearer ${drgc_params.accessToken}`
                     },
                     url: `${apiBaseUrl}/me/carts/active`,
                     data: JSON.stringify({
@@ -620,12 +620,12 @@ jQuery(document).ready(($) => {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type':'application/json',
-                    Authorization: `Bearer ${drExpressOptions.accessToken}`
+                    Authorization: `Bearer ${drgc_params.accessToken}`
                 },
                 url: `${apiBaseUrl}/me/carts/active/submit-cart?expand=all`,
                 success: (data) => {
                     window.location.replace(
-                        `${drExpressOptions.thankYouEndpoint}?order=${data.submitCart.order.id}`
+                        `${drgc_params.thankYouEndpoint}?order=${data.submitCart.order.id}`
                     )
                 },
                 error: (jqXHR) => {
@@ -740,7 +740,7 @@ jQuery(document).ready(($) => {
                     $('#dr-paypal-button').hide();
                 },
                 payment: function() {
-                    const cart = drExpressOptions.cart.cart;
+                    const cart = drgc_params.cart.cart;
                     const requestShipping = $('.dr-checkout__shipping').length ? true : false;
                     let payPalItems = [];
 

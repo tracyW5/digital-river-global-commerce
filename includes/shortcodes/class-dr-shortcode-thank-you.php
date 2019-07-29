@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes/shortcodes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes/shortcodes
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -26,9 +26,9 @@ class DR_Shortcode_Thank_You {
 	 * @param array $atts Shortcode attributes.
 	 */
 	public static function output( $atts ) {
-		$order = DR_Express()->cart->retrieve_order();
-		
-		dr_get_template(
+		$order = DRGC()->cart->retrieve_order();
+
+		drgc_get_template(
 			'thank-you/thank-you.php',
 			array(
 				'order'  => $order,
