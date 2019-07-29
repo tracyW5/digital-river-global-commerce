@@ -86,7 +86,7 @@ class DRGC_Cron extends AbstractHttpService {
 				$currencies          = array();
 				$post_terms          = array();
 				$gc_id               = isset( $product_data['id'] ) ? absint( $product_data['id'] ) : 0;
-				$existing_product_id = dr_get_product_by_gcid( $gc_id );
+				$existing_product_id = drgc_get_product_by_gcid( $gc_id );
 				$local_currencies    = DRGC()->cart->retrieve_currencies();
 
 				if ( is_array( $local_currencies ) && isset( $local_currencies['site'] ) ) {
@@ -148,7 +148,7 @@ class DRGC_Cron extends AbstractHttpService {
 					foreach ( $product_data['variations']['product'] as $var_key => $variation_data ) {
 
 						$_gc_id                 = isset( $variation_data['id'] ) ? absint( $variation_data['id'] ) : 0;
-						$existing_variation_id  = dr_get_product_by_gcid( $_gc_id, true );
+						$existing_variation_id  = drgc_get_product_by_gcid( $_gc_id, true );
 
 						$variation_product = new DRGC_Product( $existing_variation_id, 'dr_product_variation' );
 						$variation_product->set_data( $variation_data );

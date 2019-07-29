@@ -11,7 +11,7 @@
  * @subpackage Digital_River_Global_Commerce/public/templates/parts
  */
 
-$checkout_URI = dr_get_page_link( 'checkout' );
+$checkout_URI = drgc_get_page_link( 'checkout' );
 ?>
 
 <div class="dr-login-wrapper dr-login" id="full-width-page-wrapper">
@@ -23,7 +23,7 @@ $checkout_URI = dr_get_page_link( 'checkout' );
                 <?php echo __( 'Welcome ', 'digital-river-global-commerce' ) . $customer['username']; ?>
 
                 <div>
-                    <a class="btn dr-btn" href="<?php echo esc_url( dr_get_page_link( 'cart' ) ); ?>"><?php echo __( 'Cart', 'digital-river-global-commerce' ); ?></a>
+                    <a class="btn dr-btn" href="<?php echo esc_url( drgc_get_page_link( 'cart' ) ); ?>"><?php echo __( 'Cart', 'digital-river-global-commerce' ); ?></a>
                     <a class="btn dr-btn" href="<?php echo esc_url( $checkout_URI ); ?>"><?php echo __( 'Checkout', 'digital-river-global-commerce' ); ?></a>
                 </div>
 
@@ -188,7 +188,7 @@ $checkout_URI = dr_get_page_link( 'checkout' );
 
                     <a class="dr-btn dr-signup" href="#"><?php echo __( 'Sign Up', 'digital-river-global-commerce' ); ?></a>
 
-                    <a class="dr-btn" href="<?php echo esc_url( dr_get_page_link( 'cart' ) ); ?>" ><?php echo __( 'Continue As Guest', 'digital-river-global-commerce' ); ?></a>
+                    <a class="dr-btn" href="<?php echo esc_url( drgc_get_page_link( 'cart' ) ); ?>" ><?php echo __( 'Continue As Guest', 'digital-river-global-commerce' ); ?></a>
 
                 </div>
 

@@ -10,7 +10,7 @@
  * @package    Digital_River_Global_Commerce
  * @subpackage Digital_River_Global_Commerce/admin/partials
  */
-$variations = dr_get_product_variations( get_the_ID() );
+$variations = drgc_get_product_variations( get_the_ID() );
 ?>
 <?php if ( $variations ) : ?>
     <fieldset>

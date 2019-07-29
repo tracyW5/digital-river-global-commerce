@@ -92,7 +92,7 @@ class DRGC {
 	 * @access   public
 	 * @var
 	 */
-	public $dr_ajx;
+	public $drgc_ajx;
 
 	/**
 	 * DRGC main instance
@@ -204,7 +204,7 @@ class DRGC {
 		$this->loader = new DRGC_Loader();
 
 		// Initialize ajax handler
-		$this->dr_ajx = new DRGC_Ajx( array( 'instance_id' => 'DR Ajax' ) );
+		$this->drgc_ajx = new DRGC_Ajx( array( 'instance_id' => 'DR Ajax' ) );
 	}
 
 	private function start_api_handler() {
@@ -252,7 +252,7 @@ class DRGC {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
-		$plugin_admin = new DRGC_Admin( $this->get_drgc(), $this->get_version(), $this->dr_ajx );
+		$plugin_admin = new DRGC_Admin( $this->get_drgc(), $this->get_version(), $this->drgc_ajx );
 
 		new DRGC_Post_Types();
 

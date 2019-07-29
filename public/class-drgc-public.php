@@ -100,15 +100,15 @@ class DRGC_Public {
 			'wpLocale'          =>  get_locale(),
 			'drLocale'          =>  get_dr_locale( get_locale() ),
 			'ajaxUrl'           =>  admin_url( 'admin-ajax.php' ),
-			'cartUrl'           =>  dr_get_page_link( 'cart' ),
-			'checkoutUrl'	      =>  dr_get_page_link( 'checkout' ),
+			'cartUrl'           =>  drgc_get_page_link( 'cart' ),
+			'checkoutUrl'	      =>  drgc_get_page_link( 'checkout' ),
 			'siteID'            =>  get_option( 'drgc_site_id' ),
 			'apiKey'            =>  get_option( 'drgc_api_key' ),
 			'domain'            =>  get_option( 'drgc_domain' ),
 			'digitalRiverKey'   =>  get_option( 'drgc_digitalRiver_key' ),
 			'accessToken'       =>  $access_token,
 			'cart'              =>  $cart_obj,
-			'thankYouEndpoint'  =>  esc_url( dr_get_page_link( 'thank-you' ) ),
+			'thankYouEndpoint'  =>  esc_url( drgc_get_page_link( 'thank-you' ) ),
 			'payPal'            =>  array (
 				'sourceId' => isset( $_GET['sourceId'] ) ? $_GET['sourceId'] : false,
 				'failure' => isset( $_GET['ppcancel'] ) ? $_GET['ppcancel'] : false,
@@ -285,7 +285,7 @@ class DRGC_Public {
 		$message .= sprintf( __( 'Username: %s' ), $user_login ) . "</p><br>";
 		$message .= __( '<p> If this was a mistake, just ignore this email and nothing will happen.' ) . "<br>";
 		$message .= __( 'To reset your password, visit the following address:' ) . "</p><br>";
-		$message .= '<a href="' . dr_get_page_link( 'login'  ) . "?action=rp&key=$key&login=" . rawurlencode( $user_login ) . "\">\r\n";
+		$message .= '<a href="' . drgc_get_page_link( 'login'  ) . "?action=rp&key=$key&login=" . rawurlencode( $user_login ) . "\">\r\n";
 		$message .=  __( 'Reset Password</a>');
 
 		$title = sprintf( __( '[%s] Password Reset' ), $site_name );

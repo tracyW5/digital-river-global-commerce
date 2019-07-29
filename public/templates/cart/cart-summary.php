@@ -62,7 +62,7 @@ $delivery_info = 'Delivery in 2-5 working days and extended 30 days return perio
 
 	<?php if ( 1 < count($cart['cart']['lineItems'] )) : ?>
 
-        <a href="<?php echo esc_url( dr_get_page_link( 'checkout' ) ); ?>" class="dr-summary__proceed-checkout dr-btn"><?php echo __('Proceed to checkout') ?></a>
+        <a href="<?php echo esc_url( drgc_get_page_link( 'checkout' ) ); ?>" class="dr-summary__proceed-checkout dr-btn"><?php echo __('Proceed to checkout') ?></a>
 
 	<?php endif; ?>
 

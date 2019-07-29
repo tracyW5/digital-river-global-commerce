@@ -18,12 +18,12 @@ $long_description = get_post_meta( get_the_ID(), 'long_description', true );
 $gc_id = get_post_meta( get_the_ID(), 'gc_product_id', true );
 $purchasable = get_post_meta( get_the_ID(), 'purchasable', true );
 
-$variations = dr_get_product_variations( get_the_ID() );
+$variations = drgc_get_product_variations( get_the_ID() );
 if ( $variations && isset( $variations[0] ) ) {
   //sort variation array  by sale price here!
   $variations_sort = array();
   foreach ( $variations as $variation ){
-    $var_pricing = dr_get_product_pricing( $variation->ID );
+    $var_pricing = drgc_get_product_pricing( $variation->ID );
     $variation->sort_pricing = $var_pricing['sale_price_value'];
     array_push($variations_sort,$variation);
   }
@@ -32,10 +32,10 @@ if ( $variations && isset( $variations[0] ) ) {
   });
   $variations = $variations_sort;
 	$gc_id = get_post_meta( $variations[0]->ID, 'gc_product_id', true );
-	$pricing = dr_get_product_pricing( $variations[0]->ID );
+	$pricing = drgc_get_product_pricing( $variations[0]->ID );
 	$product_image = get_post_meta( $variations[0]->ID, 'gc_product_images_url', true );
 } else {
-	$pricing = dr_get_product_pricing( get_the_ID() );
+	$pricing = drgc_get_product_pricing( get_the_ID() );
 
 }
 $list_price_value = isset( $pricing['list_price_value'] ) ? $pricing['list_price_value'] : '';
@@ -77,7 +77,7 @@ $regular_price = isset( $pricing['regular_price'] ) ? $pricing['regular_price'] 
                 <?php foreach ( $variations as $variation ) :
 							    $var_gc_id = get_post_meta( $variation->ID, 'gc_product_id', true );
 							    $variation_type = get_post_meta( $variation->ID, $var_type, true );
-                  $var_pricing = dr_get_product_pricing( $variation->ID );
+                  $var_pricing = drgc_get_product_pricing( $variation->ID );
 							    ?>
                                 <option value="<?php echo $var_gc_id; ?>"
                                         data-price="<?php echo isset( $var_pricing['price'] ) ? $var_pricing['price'] : ''; ?>"

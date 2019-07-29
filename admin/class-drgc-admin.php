@@ -72,10 +72,10 @@ class DRGC_Admin {
 	 * @param      string    $drgc
 	 * @param      string    $version
 	 */
-	public function __construct( $drgc, $version, $dr_ajx ) {
+	public function __construct( $drgc, $version, $drgc_ajx ) {
 		$this->drgc = $drgc;
 		$this->version = $version;
-		$this->dr_ajx = $dr_ajx;
+		$this->drgc_ajx = $drgc_ajx;
 		$this->drgc_site_id = get_option( 'drgc_site_id' );
 		$this->drgc_api_key = get_option( 'drgc_api_key' );
 	}
@@ -101,11 +101,11 @@ class DRGC_Admin {
 		wp_enqueue_script( $this->drgc, PLUGIN_URL . 'assets/js/drgc-admin' . $suffix . '.js', array( 'jquery', 'jquery-ui-progressbar' ), $this->version, false );
 
 		// transfer drgc options from PHP to JS
-		wp_localize_script( $this->drgc, 'dr_object',
+		wp_localize_script( $this->drgc, 'drgc_admin_params',
 			array(
 				'api_key'               => $this->drgc_api_key,
 				'site_id'               => $this->drgc_site_id,
-				'dr_ajx_instance_id'    => $this->dr_ajx->instance_id,
+				'drgc_ajx_instance_id'  => $this->drgc_ajx->instance_id,
 				'ajax_url'              => admin_url( 'admin-ajax.php' ),
 				'ajax_nonce'            => wp_create_nonce( 'drgc_ajx' ),
 			)
@@ -339,7 +339,7 @@ class DRGC_Admin {
 			return;
 		}
 
-		$variations = dr_get_product_variations( $postid );
+		$variations = drgc_get_product_variations( $postid );
 
 		if ( $variations ) {
 			foreach ( $variations as $variation ) {

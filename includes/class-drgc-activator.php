@@ -61,7 +61,7 @@ class DRGC_Activator {
 		);
 
 		foreach ( $pages as $key => $page ) {
-			dr_create_page_and_reference( $page, 'drgc_page_id_' . $key );
+			drgc_create_page_and_reference( $page, 'drgc_page_id_' . $key );
 		}
 	}
 }

@@ -27,8 +27,8 @@ class DR_Shortcode_Login {
 	 */
 	public static function output( $atts ) {
 		$customer = DRGC()->shopper->retrieve_shopper();
-		
-		dr_get_template(
+
+		drgc_get_template(
 			'login/login.php',
 			array(
 				'customer'  => $customer,

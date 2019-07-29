@@ -8,7 +8,7 @@
  * @package    Digital_River_Global_Commerce
  * @subpackage Digital_River_Global_Commerce/includes
  */
-function dr_create_page_and_reference( $page, $option_key = '' ) {
+function drgc_create_page_and_reference( $page, $option_key = '' ) {
 	global $wpdb;
 
 	$page_id = NULL;
@@ -75,7 +75,7 @@ function dr_create_page_and_reference( $page, $option_key = '' ) {
  * @param string $name Name for the page
  * @return string $permalink Page URI
  */
-function dr_get_page_link( $name = '' ) {
+function drgc_get_page_link( $name = '' ) {
 	$page_id = NULL;
 
 	if ( 0 < strlen( $name ) ) {
@@ -101,7 +101,7 @@ function drgc_get_template_part( $slug, $name = '' ) {
  * @param array $args Arguments()
  * @param string $template_path Template path (templates/parts)
  */
-function dr_get_template( $template_name, $args = array(), $template_path = '' ) {
+function drgc_get_template( $template_name, $args = array(), $template_path = '' ) {
 	if ( empty( $template_path ) ) {
 		$template_path = 'templates';
 	}
@@ -138,7 +138,7 @@ function drgc_the_posts_pagination( $wp_query ) {
  * Currency switcher
  */
 function drgc_currency_toggler() {
-	$locales = get_option( 'dr_store_locales' );
+	$locales = get_option( 'drgc_store_locales' );
 	$current_locale = DRGC()->shopper->get_locale();
 
 	$output = '<div class="dr-currency-toggler">';
@@ -146,7 +146,7 @@ function drgc_currency_toggler() {
 	$output .= '<select class="custom-select dr-currency-select">';
 
 	foreach ( $locales['locales'] as $locale => $currency ) {
-		$country = code_to_counry( $locale );
+		$country = drgc_code_to_counry( $locale );
 
 		$output .= "<option ";
 		$output .= $current_locale === $locale ? 'selected ' : '';
@@ -165,7 +165,7 @@ function drgc_currency_toggler() {
  * @param boolean $variation
  * @return bool|object post
  */
-function dr_get_product_by_gcid( $gc_id , $variation = false ) {
+function drgc_get_product_by_gcid( $gc_id , $variation = false ) {
 	$args = array(
 		'posts_per_page'   => 1,
 		'post_type'        => $variation ? 'dr_product_variation' : 'dr_product',
@@ -193,7 +193,7 @@ function dr_get_product_by_gcid( $gc_id , $variation = false ) {
  * @param boolean $variation
  * @return bool|object post
  */
-function dr_get_product_by_sku( $sku, $variation = false ) {
+function drgc_get_product_by_sku( $sku, $variation = false ) {
 	$args = array(
 		'posts_per_page'   => 1,
 		'post_type'        =>  $variation ? 'dr_product_variation' : 'dr_product',
@@ -220,7 +220,7 @@ function dr_get_product_by_sku( $sku, $variation = false ) {
  * @param object $term
  * @return array
  */
-function dr_get_product_meta_filters( $term = null ) {
+function drgc_get_product_meta_filters( $term = null ) {
 	$term_query = array();
 	if ( $term ) {
 		$term_query[] = array(
@@ -288,7 +288,7 @@ function dr_get_product_meta_filters( $term = null ) {
  * @param int $post_id
  * @return array|bool
  */
-function dr_get_product_variations( $post_id = 0 ) {
+function drgc_get_product_variations( $post_id = 0 ) {
 	if ( ! $post_id ) {
 		return false;
 	}
@@ -314,9 +314,9 @@ function dr_get_product_variations( $post_id = 0 ) {
  * @param bool $abriviated
  * @return mixed|string|void
  */
-function code_to_counry( $code, $abriviated = false ) {
+function drgc_code_to_counry( $code, $abriviated = false ) {
 	$code = strtoupper( explode( '_', $code )[1] ) ;
-	$countries = list_countries();
+	$countries = drgc_list_countries();
 
 	if ( ! array_key_exists( $code, $countries ) ) return;
 
@@ -333,12 +333,12 @@ function code_to_counry( $code, $abriviated = false ) {
  * @param int $post_id
  * @return array|bool
  */
-function dr_get_product_pricing( $post_id = 0 ) {
+function drgc_get_product_pricing( $post_id = 0 ) {
 	$cart = DRGC()->cart->cart;
 
 	if ( ! $post_id || ! $cart ) return false;
 
-	$store_currencies = get_option( 'dr_store_locales' );
+	$store_currencies = get_option( 'drgc_store_locales' );
 	$product_pricing  = get_post_meta( absint( $post_id ), 'loc_pricing', true );
 	$default_locale   = isset( $store_currencies['default_locale'] ) ? $store_currencies['default_locale'] : '';
 	$current_currency = isset( $cart['pricing']['orderTotal']['currency'] ) ? $cart['pricing']['orderTotal']['currency'] : '';
@@ -365,7 +365,7 @@ function dr_get_product_pricing( $post_id = 0 ) {
  * Code per Country list
  * @return array
  */
-function list_countries() {
+function drgc_list_countries() {
    return array( 'AF' => 'Afghanistan', 'AX' => 'Aland Islands', 'AL' => 'Albania', 'DZ' => 'Algeria', 'AS' => 'American Samoa', 'AD' => 'Andorra', 'AO' => 'Angola', 'AI' => 'Anguilla', 'AQ' => 'Antarctica', 'AG' => 'Antigua and Barbuda', 'AR' => 'Argentina', 'AM' => 'Armenia', 'AW' => 'Aruba', 'AU' => 'Australia', 'AT' => 'Austria', 'AZ' => 'Azerbaijan', 'BS' => 'Bahamas the', 'BH' => 'Bahrain', 'BD' => 'Bangladesh', 'BB' => 'Barbados', 'BY' => 'Belarus', 'BE' => 'Belgium', 'BZ' => 'Belize', 'BJ' => 'Benin', 'BM' => 'Bermuda', 'BT' => 'Bhutan', 'BO' => 'Bolivia', 'BA' => 'Bosnia and Herzegovina', 'BW' => 'Botswana', 'BV' => 'Bouvet Island (Bouvetoya)', 'BR' => 'Brazil', 'IO' => 'British Indian Ocean Territory (Chagos Archipelago)', 'VG' => 'British Virgin Islands', 'BN' => 'Brunei Darussalam', 'BG' => 'Bulgaria', 'BF' => 'Burkina Faso', 'BI' => 'Burundi', 'KH' => 'Cambodia', 'CM' => 'Cameroon', 'CA' => 'Canada', 'CV' => 'Cape Verde', 'KY' => 'Cayman Islands', 'CF' => 'Central African Republic', 'TD' => 'Chad', 'CL' => 'Chile', 'CN' => 'China', 'CX' => 'Christmas Island', 'CC' => 'Cocos (Keeling) Islands', 'CO' => 'Colombia', 'KM' => 'Comoros the', 'CD' => 'Congo', 'CG' => 'Congo the', 'CK' => 'Cook Islands', 'CR' => 'Costa Rica', 'CI' => 'Cote d\'Ivoire', 'HR' => 'Croatia', 'CU' => 'Cuba', 'CY' => 'Cyprus', 'CZ' => 'Czech Republic', 'DK' => 'Denmark', 'DJ' => 'Djibouti', 'DM' => 'Dominica', 'DO' => 'Dominican Republic', 'EC' => 'Ecuador', 'EG' => 'Egypt', 'SV' => 'El Salvador', 'GQ' => 'Equatorial Guinea', 'ER' => 'Eritrea', 'EE' => 'Estonia', 'ET' => 'Ethiopia', 'FO' => 'Faroe Islands', 'FK' => 'Falkland Islands (Malvinas)', 'FJ' => 'Fiji the Fiji Islands', 'FI' => 'Finland', 'FR' => 'France, French Republic', 'GF' => 'French Guiana', 'PF' => 'French Polynesia', 'TF' => 'French Southern Territories', 'GA' => 'Gabon', 'GM' => 'Gambia the', 'GE' => 'Georgia', 'DE' => 'Germany', 'GH' => 'Ghana', 'GI' => 'Gibraltar', 'GR' => 'Greece', 'GL' => 'Greenland', 'GD' => 'Grenada', 'GP' => 'Guadeloupe', 'GU' => 'Guam', 'GT' => 'Guatemala', 'GG' => 'Guernsey', 'GN' => 'Guinea', 'GW' => 'Guinea-Bissau', 'GY' => 'Guyana', 'HT' => 'Haiti', 'HM' => 'Heard Island and McDonald Islands', 'VA' => 'Holy See (Vatican City State)', 'HN' => 'Honduras', 'HK' => 'Hong Kong', 'HU' => 'Hungary', 'IS' => 'Iceland', 'IN' => 'India', 'ID' => 'Indonesia', 'IR' => 'Iran', 'IQ' => 'Iraq', 'IE' => 'Ireland', 'IM' => 'Isle of Man', 'IL' => 'Israel', 'IT' => 'Italy', 'JM' => 'Jamaica', 'JP' => 'Japan', 'JE' => 'Jersey', 'JO' => 'Jordan', 'KZ' => 'Kazakhstan', 'KE' => 'Kenya', 'KI' => 'Kiribati', 'KP' => 'Korea', 'KR' => 'Korea', 'KW' => 'Kuwait', 'KG' => 'Kyrgyz Republic', 'LA' => 'Lao', 'LV' => 'Latvia', 'LB' => 'Lebanon', 'LS' => 'Lesotho', 'LR' => 'Liberia', 'LY' => 'Libyan Arab Jamahiriya', 'LI' => 'Liechtenstein', 'LT' => 'Lithuania', 'LU' => 'Luxembourg', 'MO' => 'Macao', 'MK' => 'Macedonia', 'MG' => 'Madagascar', 'MW' => 'Malawi', 'MY' => 'Malaysia', 'MV' => 'Maldives', 'ML' => 'Mali', 'MT' => 'Malta', 'MH' => 'Marshall Islands', 'MQ' => 'Martinique', 'MR' => 'Mauritania', 'MU' => 'Mauritius', 'YT' => 'Mayotte', 'MX' => 'Mexico', 'FM' => 'Micronesia', 'MD' => 'Moldova', 'MC' => 'Monaco', 'MN' => 'Mongolia', 'ME' => 'Montenegro', 'MS' => 'Montserrat', 'MA' => 'Morocco', 'MZ' => 'Mozambique', 'MM' => 'Myanmar', 'NA' => 'Namibia', 'NR' => 'Nauru', 'NP' => 'Nepal', 'AN' => 'Netherlands Antilles', 'NL' => 'Netherlands the', 'NC' => 'New Caledonia', 'NZ' => 'New Zealand', 'NI' => 'Nicaragua', 'NE' => 'Niger', 'NG' => 'Nigeria', 'NU' => 'Niue', 'NF' => 'Norfolk Island', 'MP' => 'Northern Mariana Islands', 'NO' => 'Norway', 'OM' => 'Oman', 'PK' => 'Pakistan', 'PW' => 'Palau', 'PS' => 'Palestinian Territory', 'PA' => 'Panama', 'PG' => 'Papua New Guinea', 'PY' => 'Paraguay', 'PE' => 'Peru', 'PH' => 'Philippines', 'PN' => 'Pitcairn Islands', 'PL' => 'Poland', 'PT' => 'Portugal, Portuguese Republic', 'PR' => 'Puerto Rico', 'QA' => 'Qatar', 'RE' => 'Reunion', 'RO' => 'Romania', 'RU' => 'Russian Federation', 'RW' => 'Rwanda', 'BL' => 'Saint Barthelemy', 'SH' => 'Saint Helena', 'KN' => 'Saint Kitts and Nevis', 'LC' => 'Saint Lucia', 'MF' => 'Saint Martin', 'PM' => 'Saint Pierre and Miquelon', 'VC' => 'Saint Vincent and the Grenadines', 'WS' => 'Samoa', 'SM' => 'San Marino', 'ST' => 'Sao Tome and Principe', 'SA' => 'Saudi Arabia', 'SN' => 'Senegal', 'RS' => 'Serbia', 'SC' => 'Seychelles', 'SL' => 'Sierra Leone', 'SG' => 'Singapore', 'SK' => 'Slovakia (Slovak Republic)', 'SI' => 'Slovenia', 'SB' => 'Solomon Islands', 'SO' => 'Somalia, Somali Republic', 'ZA' => 'South Africa', 'GS' => 'South Georgia and the South Sandwich Islands', 'ES' => 'Spain', 'LK' => 'Sri Lanka', 'SD' => 'Sudan', 'SR' => 'Suriname', 'SJ' => 'Svalbard & Jan Mayen Islands', 'SZ' => 'Swaziland', 'SE' => 'Sweden', 'CH' => 'Switzerland, Swiss Confederation', 'SY' => 'Syrian Arab Republic', 'TW' => 'Taiwan', 'TJ' => 'Tajikistan', 'TZ' => 'Tanzania', 'TH' => 'Thailand', 'TL' => 'Timor-Leste', 'TG' => 'Togo', 'TK' => 'Tokelau', 'TO' => 'Tonga', 'TT' => 'Trinidad and Tobago', 'TN' => 'Tunisia', 'TR' => 'Turkey', 'TM' => 'Turkmenistan', 'TC' => 'Turks and Caicos Islands', 'TV' => 'Tuvalu', 'UG' => 'Uganda', 'UA' => 'Ukraine', 'AE' => 'United Arab Emirates', 'GB' => 'United Kingdom', 'US' => 'United States of America', 'UM' => 'United States Minor Outlying Islands', 'VI' => 'United States Virgin Islands', 'UY' => 'Uruguay, Eastern Republic of', 'UZ' => 'Uzbekistan', 'VU' => 'Vanuatu', 'VE' => 'Venezuela', 'VN' => 'Vietnam', 'WF' => 'Wallis and Futuna', 'EH' => 'Western Sahara', 'YE' => 'Yemen', 'ZM' => 'Zambia', 'ZW' => 'Zimbabwe'
 	);
 }

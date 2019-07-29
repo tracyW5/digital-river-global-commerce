@@ -27,8 +27,8 @@ class DR_Shortcode_Thank_You {
 	 */
 	public static function output( $atts ) {
 		$order = DRGC()->cart->retrieve_order();
-		
-		dr_get_template(
+
+		drgc_get_template(
 			'thank-you/thank-you.php',
 			array(
 				'order'  => $order,

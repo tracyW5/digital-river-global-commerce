@@ -32,7 +32,7 @@ $product_qty = $line_item['quantity'];
 
         <div class="dr-product__info">
 
-            <a class="product-name" href="<?php echo get_permalink( dr_get_product_by_sku( $product_sku ) ); ?>" >
+            <a class="product-name" href="<?php echo get_permalink( drgc_get_product_by_sku( $product_sku ) ); ?>" >
                 <?php echo $product_name; ?>
             </a>
             <div class="product-sku">

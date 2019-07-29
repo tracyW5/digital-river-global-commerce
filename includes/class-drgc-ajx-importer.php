@@ -80,7 +80,7 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 			}
 		}
 
-		update_option( 'dr_store_locales', $_locale_currencies_option, 'yes' );
+		update_option( 'drgc_store_locales', $_locale_currencies_option, 'yes' );
 
 		return array(
 			'entries_count'    => $entries_count,
@@ -104,14 +104,14 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 		try {
 			$imported            = array();
 			$gc_id               = isset( $product_data['id'] ) ? absint( $product_data['id'] ) : 0;
-			$existing_product_id = dr_get_product_by_gcid( $gc_id );
-			$currencies          = get_option( 'dr_store_locales' );
+			$existing_product_id = drgc_get_product_by_gcid( $gc_id );
+			$currencies          = get_option( 'drgc_store_locales' );
 
 			if ( $existing_product_id == 0 ) {
 				$parent_product_new = new DRGC_Product( $existing_product_id );
 				$parent_product_new->set_data( $product_data );
 				$parent_product_new->save();
-				$existing_product_id = dr_get_product_by_gcid( $gc_id );
+				$existing_product_id = drgc_get_product_by_gcid( $gc_id );
 			}
 
 			$parent_product = new DRGC_Product( $existing_product_id );
@@ -159,7 +159,7 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 				foreach ( $product_data['variations']['product'] as $var_key => $variation_data ) {
 
 					$_gc_id                 = isset( $variation_data['id'] ) ? absint( $variation_data['id'] ) : 0;
-					$existing_variation_id  = dr_get_product_by_gcid( $_gc_id, true );
+					$existing_variation_id  = drgc_get_product_by_gcid( $_gc_id, true );
 
 					$variation_product = new DRGC_Product( $existing_variation_id, 'dr_product_variation' );
 					$variation_product->set_data( $variation_data );

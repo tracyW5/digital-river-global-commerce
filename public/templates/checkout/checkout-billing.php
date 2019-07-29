@@ -170,8 +170,8 @@ if ( $cart['cart']['billingAddress']['line1'] != '') {
 
                     <?php foreach ( $locales['locales'] as $locale => $currency ): ?>
                         <?php
-                            $country = code_to_counry($locale);
-                            $abrvCountyName = code_to_counry($locale, true);
+                            $country = drgc_code_to_counry($locale);
+                            $abrvCountyName = drgc_code_to_counry($locale, true);
 
                             $output = "<option ";
                             $output .= ($billingAddress['country'] === $abrvCountyName ? 'selected ' : '');

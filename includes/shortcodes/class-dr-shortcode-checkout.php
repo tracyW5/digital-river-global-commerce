@@ -26,20 +26,20 @@ class DR_Shortcode_Checkout {
 	 * @param array $atts Shortcode attributes.
 	 */
 	public static function output( $atts ) {
-		$locales = get_option( 'dr_store_locales' );
+		$locales = get_option( 'drgc_store_locales' );
 		$cart = DRGC()->cart->retrieve_cart();
 		$customer = DRGC()->shopper->retrieve_shopper();
 		$customer_address = DRGC()->shopper->retrieve_shopper_address();
 		$usa_states = retrieve_usa_states();
 		$steps_titles = apply_filters( 'drgc_checkout_titles', array(
 			'email'    => __( 'Email', 'digital-river-global-commerce' ),
-			'shipping' => __( 'Shipping', 'information', 'digital-river-global-commerce' ),
-			'billing'  => __( 'Billing', 'information', 'digital-river-global-commerce' ),
-			'delivery' => __( 'Delivery', 'options', 'digital-river-global-commerce' ),
+			'shipping' => __( 'Shipping information', 'digital-river-global-commerce' ),
+			'billing'  => __( 'Billing information', 'digital-river-global-commerce' ),
+			'delivery' => __( 'Delivery options', 'digital-river-global-commerce' ),
 			'payment'  => __( 'Payment', 'digital-river-global-commerce' ),
 		) );
-		
-		dr_get_template(
+
+		drgc_get_template(
 			'checkout/checkout.php',
 			compact( 'cart', 'customer', 'customer_address', 'usa_states', 'locales', 'steps_titles' )
 		);
