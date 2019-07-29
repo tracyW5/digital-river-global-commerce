@@ -5,8 +5,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  */
 function dr_create_page_and_reference( $page, $option_key = '' ) {
 	global $wpdb;
@@ -79,7 +79,7 @@ function dr_get_page_link( $name = '' ) {
 	$page_id = NULL;
 
 	if ( 0 < strlen( $name ) ) {
-		$page_id = get_option( 'dr_express_page_id_' . $name );
+		$page_id = get_option( 'drgc_page_id_' . $name );
 	}
 
 	return get_page_link( $page_id );
@@ -87,7 +87,7 @@ function dr_get_page_link( $name = '' ) {
 /**
  * Get template part in plugin just like theme.
  */
-function dr_express_get_template_part( $slug, $name = '' ) {
+function drgc_get_template_part( $slug, $name = '' ) {
 	$template = PLUGIN_DIR . "public/templates/parts/{$slug}-{$name}.php";
 	if ( file_exists( $template ) ) {
 		load_template( $template, false );
@@ -119,9 +119,9 @@ function dr_get_template( $template_name, $args = array(), $template_path = '' )
 /**
  * Render pagination for archive page.
  */
-function dr_express_the_posts_pagination( $wp_query ) {
+function drgc_the_posts_pagination( $wp_query ) {
 	$pagination = '<div class="pagination-container">';
-	$pagination .= '<span class="pagination-desc">' . sprintf( __( 'Showing %s out of %s', 'dr-express' ), $wp_query->post_count, $wp_query->found_posts ) . '</span>';
+	$pagination .= '<span class="pagination-desc">' . sprintf( __( 'Showing %s out of %s', 'digital-river-global-commerce' ), $wp_query->post_count, $wp_query->found_posts ) . '</span>';
 	$pagination .= get_the_posts_pagination(
 		array(
 			'mid_size' => 1,
@@ -137,9 +137,9 @@ function dr_express_the_posts_pagination( $wp_query ) {
 /**
  * Currency switcher
  */
-function dr_express_currency_toggler() {
+function drgc_currency_toggler() {
 	$locales = get_option( 'dr_store_locales' );
-	$current_locale = DR_Express()->shopper->get_locale();
+	$current_locale = DRGC()->shopper->get_locale();
 
 	$output = '<div class="dr-currency-toggler">';
 	$output .= sprintf("<span>%s</span>", __( 'Locale: ' ) );
@@ -334,7 +334,7 @@ function code_to_counry( $code, $abriviated = false ) {
  * @return array|bool
  */
 function dr_get_product_pricing( $post_id = 0 ) {
-	$cart = DR_Express()->cart->cart;
+	$cart = DRGC()->cart->cart;
 
 	if ( ! $post_id || ! $cart ) return false;
 

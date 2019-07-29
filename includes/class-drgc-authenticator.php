@@ -1,10 +1,10 @@
 <?php
 /**
- * Dr express authenticator, generates session,
+ * Authenticator, generates session,
  * access and refresh tokens, syncs with session.
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  * @version 1.0.0
  */
 
@@ -12,16 +12,16 @@ if ( ! defined('PLUGIN_DIR') ) {
 	require_once 'abstract-http-service.php';
 }
 
-class DR_Express_Authenticator extends AbstractHttpService {
+class DRGC_Authenticator extends AbstractHttpService {
 	/**
 	 * Session object
 	 */
 	protected $session;
 
 	/**
-	 * Dr express api key
+	 * Api key
 	 */
-	protected $dr_express_api_key;
+	protected $drgc_api_key;
 
 	/**
 	 * Token expires in
@@ -34,7 +34,7 @@ class DR_Express_Authenticator extends AbstractHttpService {
 	protected $refresh_token;
 
 	/**
-	 * Dr session token
+	 * DR session token
 	 */
 	protected $dr_session_token;
 
@@ -44,15 +44,15 @@ class DR_Express_Authenticator extends AbstractHttpService {
 	protected $dr_external_reference_id;
 
 	/**
-	 * DR_Express_Authenticator constructor.
+	 * DRGC_Authenticator constructor.
 	 *
 	 * @param $session
 	 */
 	public function __construct( $handler = false) {
 		parent::__construct($handler);
 
-		$this->dr_express_api_key = get_option( 'dr_express_api_key' );
-		$this->site_id = get_option( 'dr_express_site_id' );
+		$this->drgc_api_key = get_option( 'drgc_api_key' );
+		$this->site_id = get_option( 'drgc_site_id' );
 	}
 
 	/**
@@ -98,7 +98,7 @@ class DR_Express_Authenticator extends AbstractHttpService {
 			$this->refresh_token = $session_data['refresh_token'];
 		} else {
 			$this->generate_dr_session_token();
-			$this->generate_access_token( $this->dr_express_api_key );
+			$this->generate_access_token( $this->drgc_api_key );
 		}
 		
 		$this->set_schedule_refresher();
@@ -188,7 +188,7 @@ class DR_Express_Authenticator extends AbstractHttpService {
 		$data = array (
 			'username' => $username,
 			'password' => base64_encode($password),
-			'client_id' => $this->dr_express_api_key,
+			'client_id' => $this->drgc_api_key,
 			'grant_type' => 'password'
 		);
 

@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/public/templates/parts
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/public/templates/parts
  */
 
 $order_number = $order['order']['id'] ?? '';

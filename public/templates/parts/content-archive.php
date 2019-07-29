@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/public/templates/parts
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/public/templates/parts
  */
 ?>
 
@@ -65,7 +65,7 @@ if ( $variations && isset( $variations[0] ) ) {
         <?php endif; ?>
 
         <button type="button" class="dr-btn dr-buy-btn" data-product-id="<?php echo $gc_id; ?>" <?php echo 'true' !== $purchasable ? 'disabled' : ''; ?>>
-            <?php echo __( 'Add to Cart', 'dr-express'); ?>
+            <?php echo __( 'Add to Cart', 'digital-river-global-commerce'); ?>
         </button>
 
         <?php the_content(); ?>

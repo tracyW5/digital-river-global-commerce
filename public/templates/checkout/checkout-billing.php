@@ -26,7 +26,7 @@ if ( $cart['cart']['billingAddress']['line1'] != '') {
 
         </span>
 
-        <span class="dr-accordion__edit"><?php echo __( 'Edit', 'dr-express' ); ?>></span>
+        <span class="dr-accordion__edit"><?php echo __( 'Edit', 'digital-river-global-commerce' ); ?>></span>
 
     </button>
 

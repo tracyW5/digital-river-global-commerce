@@ -5,13 +5,13 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class DR_Express_Shortcodes {
+class DRGC_Shortcodes {
 
 	/**
 	 * Initialize
@@ -49,7 +49,7 @@ class DR_Express_Shortcodes {
 		$function,
 		$atts = array(),
 		$wrapper = array(
-			'class'  => 'dr-express-wrapper',
+			'class'  => 'drgc-wrapper',
 			'before' => null,
 			'after'  => null,
 		)
@@ -103,4 +103,4 @@ class DR_Express_Shortcodes {
 /*
  * Initialize the Shortcodes
  */
-new DR_Express_Shortcodes();
+new DRGC_Shortcodes();

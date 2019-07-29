@@ -1,12 +1,12 @@
 <?php
 /**
- * Dr Express Cart object
+ * Cart object
  *
  * @since      1.0.0
- * @package    DR_Express
+ * @package    Digital_River_Global_Commerce
  */
 
-class DR_Express_Cart extends AbstractHttpService {
+class DRGC_Cart extends AbstractHttpService {
     /**
      * Cart Object
      */
@@ -30,7 +30,7 @@ class DR_Express_Cart extends AbstractHttpService {
     /**
      * Undocumented variable
      */
-    protected $dr_express_api_key;
+    protected $drgc_api_key;
 
 	/**
 	 * The authenticator | object
@@ -44,7 +44,7 @@ class DR_Express_Cart extends AbstractHttpService {
         parent::__construct($handler);
 
         $this->authenticator = $authenticator;
-        $this->dr_express_api_key = get_option( 'dr_express_api_key' );
+        $this->drgc_api_key = get_option( 'drgc_api_key' );
 
         $this->init();
     }

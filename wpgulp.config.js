@@ -25,12 +25,12 @@ module.exports = {
   // JS Admin (original is Vendor) options.
   jsVendorSRC: './assets/js/admin/*.js', // Path to JS vendor folder.
   jsVendorDestination: './assets/js/', // Path to place the compiled JS vendors file.
-  jsVendorFile: 'dr-express-admin', // Compiled JS vendors file name. Default set to vendors i.e. vendors.js.
+  jsVendorFile: 'drgc-admin', // Compiled JS vendors file name. Default set to vendors i.e. vendors.js.
 
   // JS Public (original is Custom) options.
   jsCustomSRC: './assets/js/public/*.js', // Path to JS custom scripts folder.
   jsCustomDestination: './assets/js/', // Path to place the compiled JS custom scripts file.
-  jsCustomFile: 'dr-express-public', // Compiled JS custom file name. Default set to custom i.e. custom.js.
+  jsCustomFile: 'drgc-public', // Compiled JS custom file name. Default set to custom i.e. custom.js.
 
   // Images options.
   imgSRC: './assets/img/raw/**/*', // Source folder of images which should be optimized and watched. You can also specify types e.g. raw/**.{png,jpg,gif} in the glob.
@@ -43,11 +43,11 @@ module.exports = {
   watchPhp: './**/*.php', // Path to all PHP files.
 
   // Translation options.
-  textDomain: 'dr-express', // Your textdomain here.
-  translationFile: 'dr-express.pot', // Name of the translation file.
+  textDomain: 'digital-river-global-commerce', // Your textdomain here.
+  translationFile: 'digital-river-global-commerce.pot', // Name of the translation file.
   translationDestination: './languages', // Where to save the translation files.
-  packageName: 'DR Express', // Package name.
-  bugReport: 'https://github.digitalriverws.net/gc-templates/BWC', // Where can users report bugs.
+  packageName: 'Digital_River_Global_Commerce', // Package name.
+  bugReport: 'https://github.digitalriverws.net/gc-templates/digital-river-global-commerce', // Where can users report bugs.
   lastTranslator: 'GCTemplates <gcTemplates@digitalriver.com>', // Last translator Email ID.
   team: 'GCTemplates <gcTemplates@digitalriver.com>', // Team's Email ID.
 

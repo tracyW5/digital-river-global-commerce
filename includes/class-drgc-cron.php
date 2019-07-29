@@ -5,11 +5,11 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes/shortcodes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes/shortcodes
  */
 
-class DR_Express_Cron extends AbstractHttpService {
+class DRGC_Cron extends AbstractHttpService {
 	/**
 	 * Scheduled option
 	 * @var bool
@@ -23,12 +23,12 @@ class DR_Express_Cron extends AbstractHttpService {
 	public $api_key;
 
 	/**
-	 * DR_Express_Cron constructor.
+	 * DRGC_Cron constructor.
 	 */
 	public function __construct() {
-		$option 								= get_option( 'dr_express_cron_handler' );
+		$option 								= get_option( 'drgc_cron_handler' );
 		$this->enabled          = ( is_array( $option ) && '1' == $option['checkbox'] )  ? true : false;
-		$this->api_key          = get_option( 'dr_express_api_key' );
+		$this->api_key          = get_option( 'drgc_api_key' );
 		$this->init();
 	}
 
@@ -57,7 +57,7 @@ class DR_Express_Cron extends AbstractHttpService {
 	 */
 	public function do_clean_sessions() {
 		global $wpdb;
-		$table_name = $wpdb->prefix . 'dr_express_sessions';
+		$table_name = $wpdb->prefix . 'drgc_sessions';
 
 		$wpdb->query(
 			"DELETE FROM $table_name
@@ -87,7 +87,7 @@ class DR_Express_Cron extends AbstractHttpService {
 				$post_terms          = array();
 				$gc_id               = isset( $product_data['id'] ) ? absint( $product_data['id'] ) : 0;
 				$existing_product_id = dr_get_product_by_gcid( $gc_id );
-				$local_currencies    = DR_Express()->cart->retrieve_currencies();
+				$local_currencies    = DRGC()->cart->retrieve_currencies();
 
 				if ( is_array( $local_currencies ) && isset( $local_currencies['site'] ) ) {
 					$currencies['default_locale'] = $local_currencies['site']['defaultLocale'];
@@ -99,7 +99,7 @@ class DR_Express_Cron extends AbstractHttpService {
 					}
 				}
 
-				$parent_product = new DR_Express_Product( $existing_product_id );
+				$parent_product = new DRGC_Product( $existing_product_id );
 				$parent_product->set_data( $product_data );
 
 				if ( $gc_id ) {
@@ -120,7 +120,7 @@ class DR_Express_Cron extends AbstractHttpService {
 
 					if ( is_array( $categories ) ) {
 						foreach ( $categories as $key => $category ) {
-							$term = new DR_Express_Category( $category['displayName'] );
+							$term = new DRGC_Category( $category['displayName'] );
 							$term->save();
 
 							$imported['terms'][] = $term->term_id;
@@ -128,7 +128,7 @@ class DR_Express_Cron extends AbstractHttpService {
 						}
 					}
 
-					$default_term = new DR_Express_Category( 'uncategorized' );
+					$default_term = new DRGC_Category( 'uncategorized' );
 					$default_term->save();
 
 					$imported['terms'][] = $default_term->term_id;
@@ -150,7 +150,7 @@ class DR_Express_Cron extends AbstractHttpService {
 						$_gc_id                 = isset( $variation_data['id'] ) ? absint( $variation_data['id'] ) : 0;
 						$existing_variation_id  = dr_get_product_by_gcid( $_gc_id, true );
 
-						$variation_product = new DR_Express_Product( $existing_variation_id, 'dr_product_variation' );
+						$variation_product = new DRGC_Product( $existing_variation_id, 'dr_product_variation' );
 						$variation_product->set_data( $variation_data );
 						$variation_product->set_parent( $parent_product->id );
 

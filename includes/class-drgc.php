@@ -8,11 +8,11 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  */
 
-class DR_Express {
+class DRGC {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -20,7 +20,7 @@ class DR_Express {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      DR_Express_Loader    $loader    Maintains and registers all hooks for the plugin.
+	 * @var      DRGC_Loader    $loader    Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
 
@@ -29,9 +29,9 @@ class DR_Express {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      string    $dr_express    The string used to uniquely identify this plugin.
+	 * @var      string    $drgc    The string used to uniquely identify this plugin.
 	 */
-	protected $dr_express;
+	protected $drgc;
 
 	/**
 	 * The current version of the plugin.
@@ -56,7 +56,7 @@ class DR_Express {
 	 *
 	 * @since    1.0.0
 	 * @access   public
-	 * @var      DR_Express_Session
+	 * @var      DRGC_Session
 	 */
 	public $session;
 
@@ -95,7 +95,7 @@ class DR_Express {
 	public $dr_ajx;
 
 	/**
-	 * DR Express main instance
+	 * DRGC main instance
 	 *
 	 * @since 1.0.0
 	 */
@@ -112,12 +112,12 @@ class DR_Express {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		if ( defined( 'DR_EXPRESS_VERSION' ) ) {
-			$this->version = DR_EXPRESS_VERSION;
+		if ( defined( 'DRGC_VERSION' ) ) {
+			$this->version = DRGC_VERSION;
 		} else {
 			$this->version = '1.0.0';
 		}
-		$this->dr_express = 'dr-express';
+		$this->drgc = 'digital-river-global-commerce';
 
 		$this->load_dependencies();
 		$this->start_api_handler();
@@ -136,23 +136,23 @@ class DR_Express {
 		/**
 		 * Core functions
 		 */
-		require_once PLUGIN_DIR . 'includes/dr-express-core-functions.php';
+		require_once PLUGIN_DIR . 'includes/drgc-core-functions.php';
 
 		/**
 		 * Creates DB Tables
 		 */
-		require_once PLUGIN_DIR . 'includes/class-dr-express-tables.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-tables.php';
 
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once PLUGIN_DIR . 'includes/class-dr-express-loader.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-loader.php';
 
 		/**
 		 * The class responsible for handling the sessions
 		 */
-		require_once PLUGIN_DIR . 'includes/class-dr-express-session.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-session.php';
 
 		require_once PLUGIN_DIR . 'includes/abstract-http-service.php';
 
@@ -164,73 +164,73 @@ class DR_Express {
 		require_once PLUGIN_DIR . 'includes/shortcodes/class-dr-shortcode-login.php';
 		require_once PLUGIN_DIR . 'includes/shortcodes/class-dr-shortcode-checkout.php';
 		require_once PLUGIN_DIR . 'includes/shortcodes/class-dr-shortcode-thank-you.php';
-		require_once PLUGIN_DIR . 'includes/class-dr-express-shortcodes.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-shortcodes.php';
 
-		require_once PLUGIN_DIR . 'includes/class-dr-express-authenticator.php';
-		require_once PLUGIN_DIR . 'includes/class-dr-express-shopper.php';
-		require_once PLUGIN_DIR . 'includes/class-dr-express-cart.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-authenticator.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-shopper.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-cart.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once PLUGIN_DIR . 'includes/class-dr-express-i18n.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once PLUGIN_DIR . 'admin/class-dr-express-admin.php';
-		require_once PLUGIN_DIR . 'admin/class-dr-express-post-types.php';
+		require_once PLUGIN_DIR . 'admin/class-drgc-admin.php';
+		require_once PLUGIN_DIR . 'admin/class-drgc-post-types.php';
 
-		require_once PLUGIN_DIR . 'includes/class-dr-express-ajx.php';
-		require_once PLUGIN_DIR . 'includes/class-dr-express-ajx-importer.php';
-		require_once PLUGIN_DIR . 'includes/class-dr-express-cron.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-ajx.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-ajx-importer.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-cron.php';
 
-		require_once PLUGIN_DIR . 'includes/class-dr-express-product.php';
-		require_once PLUGIN_DIR . 'includes/class-dr-express-category.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-product.php';
+		require_once PLUGIN_DIR . 'includes/class-drgc-category.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once PLUGIN_DIR . 'public/class-dr-express-public.php';
+		require_once PLUGIN_DIR . 'public/class-drgc-public.php';
 
 		/**
 		 * Global variables and functions.
 		 */
-		require_once PLUGIN_DIR . 'includes/dr-express-locale-mapping.php';
+		require_once PLUGIN_DIR . 'includes/drgc-locale-mapping.php';
 
 		// Start the loader
-		$this->loader = new DR_Express_Loader();
+		$this->loader = new DRGC_Loader();
 
 		// Initialize ajax handler
-		$this->dr_ajx = new DR_Express_Ajx( array( 'instance_id' => 'DR Ajax' ) );
+		$this->dr_ajx = new DRGC_Ajx( array( 'instance_id' => 'DR Ajax' ) );
 	}
 
 	private function start_api_handler() {
-		$domain = get_option( 'dr_express_domain' );
-		$api_key = get_option( 'dr_express_api_key' );
+		$domain = get_option( 'drgc_domain' );
+		$api_key = get_option( 'drgc_api_key' );
 
 		if ( empty( $domain ) || empty( $api_key ) ) {
 			return;
 		}
 
 		// Create session
-		$this->session = new DR_Express_Session;
+		$this->session = new DRGC_Session;
 		$this->session->init();
 
 		// Initialize Authenticator
-		$this->authenticator = new DR_Express_Authenticator;
+		$this->authenticator = new DRGC_Authenticator;
 		$this->authenticator->init( $this->session );
 
 		// Initialize shopper
-		$this->shopper = new DR_Express_Shopper( $this->authenticator );
+		$this->shopper = new DRGC_Shopper( $this->authenticator );
 
 		// Initialize cart
-		$this->cart = new DR_Express_Cart( $this->authenticator );
+		$this->cart = new DRGC_Cart( $this->authenticator );
 
 		// Start up the cron import
-		new DR_Express_Cron();
+		new DRGC_Cron();
 	}
 
 	/**
@@ -240,7 +240,7 @@ class DR_Express {
 	 * @access   private
 	 */
 	private function set_locale() {
-		$plugin_i18n = new DR_Express_i18n();
+		$plugin_i18n = new DRGC_i18n();
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 	}
 
@@ -252,9 +252,9 @@ class DR_Express {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
-		$plugin_admin = new DR_Express_Admin( $this->get_dr_express(), $this->get_version(), $this->dr_ajx );
+		$plugin_admin = new DRGC_Admin( $this->get_drgc(), $this->get_version(), $this->dr_ajx );
 
-		new DR_Express_Post_Types();
+		new DRGC_Post_Types();
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -275,7 +275,7 @@ class DR_Express {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
-		$plugin_public = new DR_Express_Public( $this->get_dr_express(), $this->get_version() );
+		$plugin_public = new DRGC_Public( $this->get_drgc(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
@@ -292,22 +292,22 @@ class DR_Express {
 		$this->loader->add_filter( 'wp_nav_menu_items', $plugin_public, 'minicart_in_header', 99, 2 );
 		$this->loader->add_filter( 'template_include', $plugin_public, 'overwrite_template' );
 
-		$this->loader->add_action( 'wp_ajax_nopriv_dr_express_login', $plugin_public, 'ajax_attempt_auth' );
-		$this->loader->add_action( 'wp_ajax_dr_express_login', $plugin_public, 'ajax_attempt_auth' );
+		$this->loader->add_action( 'wp_ajax_nopriv_drgc_login', $plugin_public, 'ajax_attempt_auth' );
+		$this->loader->add_action( 'wp_ajax_drgc_login', $plugin_public, 'ajax_attempt_auth' );
 
-		$this->loader->add_action( 'wp_ajax_nopriv_dr_express_signup', $plugin_public, 'dr_signup_ajax' );
-		$this->loader->add_action( 'wp_ajax_dr_express_signup', $plugin_public, 'dr_signup_ajax' );
+		$this->loader->add_action( 'wp_ajax_nopriv_drgc_signup', $plugin_public, 'dr_signup_ajax' );
+		$this->loader->add_action( 'wp_ajax_drgc_signup', $plugin_public, 'dr_signup_ajax' );
 
-		$this->loader->add_action( 'wp_ajax_nopriv_dr_express_logout', $plugin_public, 'dr_logout_ajax' );
-		$this->loader->add_action( 'wp_ajax_dr_express_logout', $plugin_public, 'dr_logout_ajax' );
+		$this->loader->add_action( 'wp_ajax_nopriv_drgc_logout', $plugin_public, 'dr_logout_ajax' );
+		$this->loader->add_action( 'wp_ajax_drgc_logout', $plugin_public, 'dr_logout_ajax' );
 
-		$this->loader->add_action( 'wp_ajax_nopriv_dr_express_pass_reset_request', $plugin_public, 'dr_send_email_reset_pass_ajax' );
-		$this->loader->add_action( 'wp_ajax_dr_express_pass_reset_request', $plugin_public, 'dr_send_email_reset_pass_ajax' );
+		$this->loader->add_action( 'wp_ajax_nopriv_drgc_pass_reset_request', $plugin_public, 'dr_send_email_reset_pass_ajax' );
+		$this->loader->add_action( 'wp_ajax_drgc_pass_reset_request', $plugin_public, 'dr_send_email_reset_pass_ajax' );
 
-		$this->loader->add_action( 'wp_ajax_nopriv_dr_express_reset_password', $plugin_public, 'dr_reset_password_ajax' );
-    $this->loader->add_action( 'wp_ajax_dr_express_reset_password', $plugin_public, 'dr_reset_password_ajax' );
-    $this->loader->add_filter( 'get_footer', $plugin_public, 'add_legal_link', 99, 2 );
-    }
+		$this->loader->add_action( 'wp_ajax_nopriv_drgc_reset_password', $plugin_public, 'dr_reset_password_ajax' );
+		$this->loader->add_action( 'wp_ajax_drgc_reset_password', $plugin_public, 'dr_reset_password_ajax' );
+		$this->loader->add_filter( 'get_footer', $plugin_public, 'add_legal_link', 99, 2 );
+	}
 
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
@@ -326,15 +326,15 @@ class DR_Express {
 	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
 	 */
-	public function get_dr_express() {
-		return $this->dr_express;
+	public function get_drgc() {
+		return $this->drgc;
 	}
 
 	/**
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
 	 * @since     1.0.0
-	 * @return    DR_Express_Loader    Orchestrates the hooks of the plugin.
+	 * @return    DRGC_Loader    Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
 		return $this->loader;

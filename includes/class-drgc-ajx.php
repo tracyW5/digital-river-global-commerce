@@ -2,17 +2,17 @@
 /**
  * Handle ajax calls for large amount of data, preventing timeouts
  *
- * action:  "dr_express_ajx_action"
+ * action:  "drgc_ajx_action"
  * step:    "init", "process", or "end"
  *
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  */
 
-class DR_Express_Ajx {
+class DRGC_Ajx {
 	/**
 	 * Instance id of the current job
 	 */
@@ -29,7 +29,7 @@ class DR_Express_Ajx {
 		$this->instance_id = $args['instance_id'];
 
 		if ( is_admin() && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			add_action( "wp_ajax_dr_express_ajx_action", array( $this, 'ajax_action' )  );
+			add_action( "wp_ajax_drgc_ajx_action", array( $this, 'ajax_action' )  );
 		}
 	}
 
@@ -82,10 +82,10 @@ class DR_Express_Ajx {
 			return;
 		}
 
-		check_ajax_referer( 'dr_express_ajx', 'nonce' );
+		check_ajax_referer( 'drgc_ajx', 'nonce' );
 		$step_slug = self::get_post_value( 'step' );
 
-		$steps = new DR_Express_Ajx_Importer( $instance_id );
+		$steps = new DRGC_Ajx_Importer( $instance_id );
 
 		if ( method_exists( $steps, $step_slug ) ) {
 			echo json_encode( $steps->$step_slug() );

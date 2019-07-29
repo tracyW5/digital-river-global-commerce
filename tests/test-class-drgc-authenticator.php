@@ -2,16 +2,16 @@
 /**
  * Class Test_WP_Simple_Authenticator
  *
- * @package Dr_Express
+ * @package Digital_River_Global_Commerce
  */
 use GuzzleHttp\Psr7;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Handler\MockHandler;
 
-require_once 'includes/class-dr-express-authenticator.php';
+require_once 'includes/class-drgc-authenticator.php';
 
-class Test_Dr_Express_Authenticator extends WP_UnitTestCase {
+class Test_DRGC_Authenticator extends WP_UnitTestCase {
 	/**
 	 * Test it ganerate session token
 	 */
@@ -26,7 +26,7 @@ class Test_Dr_Express_Authenticator extends WP_UnitTestCase {
             
         $this->assertEquals(
             $payload->result->session_token,
-            (new DR_Express_Authenticator( $handler ))->generate_dr_session_token()
+            (new DRGC_Authenticator( $handler ))->generate_dr_session_token()
         );
     }
 
@@ -42,7 +42,7 @@ class Test_Dr_Express_Authenticator extends WP_UnitTestCase {
             new Response(200, array(), $stream),
         ]));
 
-        $res = (new DR_Express_Authenticator( $handler ))->generate_access_token();
+        $res = (new DRGC_Authenticator( $handler ))->generate_access_token();
 
         $this->assertArrayHasKey('access_token', $res);
         $this->assertArrayHasKey('token_type', $res);
@@ -54,7 +54,7 @@ class Test_Dr_Express_Authenticator extends WP_UnitTestCase {
 	 * Test it schedules refresh of acces token
 	 */
 	public function test_it_schedules_refresh_of_acces_token() {
-        (new DR_Express_Authenticator)->set_schedule_refresher();
+        (new DRGC_Authenticator)->set_schedule_refresher();
 
         $this->assertTrue( has_action( 'dr_refresh_access_token' ) );
         $this->assertTrue( is_int( wp_next_scheduled( 'refresh_access_token_event' ) ) );
@@ -72,7 +72,7 @@ class Test_Dr_Express_Authenticator extends WP_UnitTestCase {
             new Response(200, array(), $stream)
         ]));
 
-        $res = (new DR_Express_Authenticator( $handler ))->do_refresh_access_token();
+        $res = (new DRGC_Authenticator( $handler ))->do_refresh_access_token();
 
         $this->assertArrayHasKey('access_token', $res);
         $this->assertArrayHasKey('token_type', $res);
@@ -92,7 +92,7 @@ class Test_Dr_Express_Authenticator extends WP_UnitTestCase {
             new Response(200, array(), $stream)
         ]));
 
-        $res = (new DR_Express_Authenticator( $handler ))->generate_access_token_by_ref_id(md5(rand(1, 30)));
+        $res = (new DRGC_Authenticator( $handler ))->generate_access_token_by_ref_id(md5(rand(1, 30)));
 
         $this->assertArrayHasKey('access_token', $res);
         $this->assertArrayHasKey('token_type', $res);

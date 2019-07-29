@@ -5,11 +5,11 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  */
 
-class DR_Express_Product {
+class DRGC_Product {
 	/**
 	 * Post ID
 	 *
@@ -50,7 +50,7 @@ class DR_Express_Product {
 	protected $meta_data = array();
 
 	/**
-	 * DR_Express_Product constructor.
+	 * DRGC_Product constructor.
 	 *
 	 * @param int $product
 	 * @param string $post_type

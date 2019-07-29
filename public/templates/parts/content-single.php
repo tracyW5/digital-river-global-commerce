@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/public/templates/parts
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/public/templates/parts
  */
 
 $product_image = get_post_meta( get_the_ID(), 'gc_product_images_url', true );
@@ -119,7 +119,7 @@ $regular_price = isset( $pricing['regular_price'] ) ? $pricing['regular_price'] 
 
                     </div>
                     <div class="dr-pd-qty-wrapper">
-                    <span class="dr-pd-qty-minus" style="background-image: url('<?php echo get_site_url(); ?>/wp-content/plugins/dr-express/assets/images/product-minus.svg');" >
+                    <span class="dr-pd-qty-minus" style="background-image: url('<?php echo get_site_url(); ?>/wp-content/plugins/digital-river-global-commerce/assets/images/product-minus.svg');" >
                     </span>
                         <input type="number" class="dr-pd-qty no-spinners" id="dr-pd-qty" step="1" min="1" max="999" value="1" maxlength="5" size="2" pattern="[0-9]*" inputmode="numeric"/>
                         <span class="dr-pd-qty-plus"  style="background-image: url('<?php echo PLUGIN_URL; ?>assets/images/icons-plus.svg');" >
@@ -127,7 +127,7 @@ $regular_price = isset( $pricing['regular_price'] ) ? $pricing['regular_price'] 
                     </div>
                     <p>
                         <button type="button" class="dr-btn dr-buy-btn" data-product-id="<?php echo $gc_id; ?>" <?php echo 'true' !== $purchasable ? 'disabled' : ''; ?> >
-						    <?php echo __( 'Add to Cart', 'dr-express'); ?>
+						    <?php echo __( 'Add to Cart', 'digital-river-global-commerce'); ?>
                         </button>
                     </p>
                 </form>

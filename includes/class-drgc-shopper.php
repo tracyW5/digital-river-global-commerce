@@ -1,14 +1,14 @@
 <?php
 /**
- * Dr express shopper object, generates session.
+ * Shopper object, generates session.
  * Deals with generation of tokens, and fetching data.
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  * @version 1.0.0
  */
 
-class DR_Express_Shopper extends AbstractHttpService {
+class DRGC_Shopper extends AbstractHttpService {
 	/**
 	 * Cart Id
 	 */
@@ -62,17 +62,17 @@ class DR_Express_Shopper extends AbstractHttpService {
     /**
      * Undocumented variable
      */
-    protected $dr_express_api_key;
+    protected $drgc_api_key;
 
 	/**
-	 * DR_Express_Shopper constructor.
+	 * DRGC_Shopper constructor.
 	 *
 	 * @param $authenticator
 	 */
 	public function __construct( $authenticator, $handler = false ) {
 		parent::__construct($handler);
 		$this->authenticator = $authenticator;
-        $this->dr_express_api_key = get_option( 'dr_express_api_key' );
+		$this->drgc_api_key = get_option( 'drgc_api_key' );
 
 		$this->init();
 	}
@@ -282,7 +282,7 @@ class DR_Express_Shopper extends AbstractHttpService {
 	public function retrieve_shopper_address( $params = array() ) {
 		$default = array(
 			'token'             => $this->token,
-			'client_id'         => $this->dr_express_api_key,
+			'client_id'         => $this->drgc_api_key,
 			'expand'            => 'all'
 		);
 

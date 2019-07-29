@@ -7,20 +7,20 @@ use function GuzzleHttp\json_encode;
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/public
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/public
  */
 
-class DR_Express_Public {
+class DRGC_Public {
 
 	/**
 	 * The ID of this plugin.
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $dr_express    The ID of this plugin.
+	 * @var      string    $drgc    The ID of this plugin.
 	 */
-	private $dr_express;
+	private $drgc;
 
 	/**
 	 * The version of this plugin.
@@ -35,11 +35,11 @@ class DR_Express_Public {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $dr_express       The name of the plugin.
+	 * @param      string    $drgc       The name of the plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $dr_express, $version ) {
-		$this->dr_express = $dr_express;
+	public function __construct( $drgc, $version ) {
+		$this->drgc = $drgc;
 		$this->version = $version;
 	}
 
@@ -54,15 +54,15 @@ class DR_Express_Public {
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
-		 * defined in DR_Express_Loader as all of the hooks are defined
+		 * defined in DRGC_Loader as all of the hooks are defined
 		 * in that particular class.
 		 *
-		 * The DR_Express_Loader will then create the relationship
+		 * The DRGC_Loader will then create the relationship
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->dr_express, plugin_dir_url( __FILE__ ) . '../assets/css/dr-express-public.min.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->drgc, plugin_dir_url( __FILE__ ) . '../assets/css/drgc-public.min.css', array(), $this->version, 'all' );
 
 	}
 
@@ -74,38 +74,38 @@ class DR_Express_Public {
 	public function enqueue_scripts() {
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-		wp_enqueue_script( $this->dr_express, PLUGIN_URL . 'assets/js/dr-express-public' . $suffix . '.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->drgc, PLUGIN_URL . 'assets/js/drgc-public' . $suffix . '.js', array( 'jquery' ), $this->version, false );
 
 		if ( is_page( 'checkout' ) ) {
-			wp_enqueue_script( 'digital-river-js', 'https://js.digitalriver.com/v1/DigitalRiver.js', array( $this->dr_express ), null, true );
-			wp_enqueue_script( 'paypal-checkout-js', 'https://www.paypalobjects.com/api/checkout.js', array( $this->dr_express ), null, true );
+			wp_enqueue_script( 'digital-river-js', 'https://js.digitalriver.com/v1/DigitalRiver.js', array( $this->drgc ), null, true );
+			wp_enqueue_script( 'paypal-checkout-js', 'https://www.paypalobjects.com/api/checkout.js', array( $this->drgc ), null, true );
 		}
 
 		$access_token = '';
-		if ( DR_Express()->authenticator ) {
-			$access_token = DR_Express()->authenticator->get_token();
+		if ( DRGC()->authenticator ) {
+			$access_token = DRGC()->authenticator->get_token();
 		}
 
 		$cart_obj = '';
-		if ( DR_Express()->cart ) {
-			$cart_obj = DR_Express()->cart->retrieve_cart();
+		if ( DRGC()->cart ) {
+			$cart_obj = DRGC()->cart->retrieve_cart();
 		}
 
     //test Order Handler
-    $testOrder_option = get_option( 'dr_express_testOrder_handler' );
+    $testOrder_option = get_option( 'drgc_testOrder_handler' );
 		$testOrder_enable = ( is_array( $testOrder_option ) && '1' == $testOrder_option['checkbox'] )  ? "true" : "false";
 
-		// transfer dr-express options from PHP to JS
+		// transfer drgc options from PHP to JS
 		$options = array(
 			'wpLocale'          =>  get_locale(),
 			'drLocale'          =>  get_dr_locale( get_locale() ),
 			'ajaxUrl'           =>  admin_url( 'admin-ajax.php' ),
 			'cartUrl'           =>  dr_get_page_link( 'cart' ),
 			'checkoutUrl'	      =>  dr_get_page_link( 'checkout' ),
-			'siteID'            =>  get_option( 'dr_express_site_id' ),
-			'apiKey'            =>  get_option( 'dr_express_api_key' ),
-			'domain'            =>  get_option( 'dr_express_domain' ),
-			'digitalRiverKey'   =>  get_option( 'dr_express_digitalRiver_key' ),
+			'siteID'            =>  get_option( 'drgc_site_id' ),
+			'apiKey'            =>  get_option( 'drgc_api_key' ),
+			'domain'            =>  get_option( 'drgc_domain' ),
+			'digitalRiverKey'   =>  get_option( 'drgc_digitalRiver_key' ),
 			'accessToken'       =>  $access_token,
 			'cart'              =>  $cart_obj,
 			'thankYouEndpoint'  =>  esc_url( dr_get_page_link( 'thank-you' ) ),
@@ -117,11 +117,11 @@ class DR_Express_Public {
       'testOrder' => $testOrder_enable,
 		);
 
-		wp_localize_script( $this->dr_express, 'drExpressOptions', $options );
+		wp_localize_script( $this->drgc, 'drgc_params', $options );
 	}
 
 	public function ajax_attempt_auth() {
-		$plugin = DR_Express();
+		$plugin = DRGC();
 
 		$username = isset( $_POST['username'] ) ? trim( $_POST['username'] ) : false;
 		$password = isset( $_POST['password'] ) ? trim( $_POST['password'] ) : false;
@@ -150,7 +150,7 @@ class DR_Express_Public {
 	}
 
 	public function dr_signup_ajax() {
-		$plugin = DR_Express();
+		$plugin = DRGC();
 
 		$email = isset( $_POST['username'] ) ? trim( $_POST['username'] ) : false;
 		$password = isset( $_POST['password'] ) ? trim( $_POST['password'] ) : false;
@@ -226,7 +226,7 @@ class DR_Express_Public {
 	public function dr_logout_ajax() {
 		$cookie = isset( $_POST['cookie'] ) ? trim( $_POST['cookie'] ) : false;
 
-		$plugin = DR_Express();
+		$plugin = DRGC();
 		$plugin->shopper = null;
 		$plugin->session->dirty_set_session( $cookie );
 		$plugin->session->clear_session();
@@ -434,7 +434,7 @@ class DR_Express_Public {
 
 	public function add_legal_link() {
 		if ( is_page( 'cart' ) || is_page( 'checkout' ) || is_page( 'thank-you' ) ) {
-			include_once 'partials/dr-express-legal-footer.php';
+			include_once 'partials/drgc-legal-footer.php';
     }
 	}
 }

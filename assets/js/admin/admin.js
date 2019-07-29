@@ -32,7 +32,7 @@ jQuery(document).ready(($) => {
 		$('.wrapImportControls').append("<h4> <b>Fetching products, locales and currencies...</b> </h4>");
 
 		var data = {
-			action      : 'dr_express_ajx_action',
+			action      : 'drgc_ajx_action',
 			nonce       : ajax_nonce,
 			instance_id : instance_id,
 			step        : 'init',
@@ -80,7 +80,7 @@ jQuery(document).ready(($) => {
 		}
 
 		data = {
-			action              : 'dr_express_ajx_action',
+			action              : 'drgc_ajx_action',
 			step                : 'batchprocess',
 			persist             : persist,
 			nonce               : ajax_nonce,
@@ -137,7 +137,7 @@ jQuery(document).ready(($) => {
 		$('.wrapImportControls').html("<h3><b>Cleaning up...</b></h3>");
 
 		var data = {
-			action      : 'dr_express_ajx_action',
+			action      : 'drgc_ajx_action',
 			step        : 'end',
 			persist     : persist,
 			nonce       : ajax_nonce,

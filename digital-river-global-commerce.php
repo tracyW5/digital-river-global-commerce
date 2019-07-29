@@ -4,7 +4,7 @@
  *
  * @link              https://www.digitalriver.com
  * @since             1.0.0
- * @package           DR_Express
+ * @package           Digital_River_Global_Commerce
  *
  * @wordpress-plugin
  * Plugin Name:       Digital River Global Commerce
@@ -15,7 +15,7 @@
  * Author URI:        https://www.digitalriver.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       dr-express
+ * Text Domain:       digital-river-global-commerce
  * Domain Path:       /languages
  */
 
@@ -27,47 +27,47 @@ if ( !defined( 'WPINC' ) ) {
 /**
  * Current Plugin Version
  */
-define( 'DR_EXPRESS_VERSION', '1.0.0.' . time() );
+define( 'DRGC_VERSION', '1.0.0.' . time() );
 define( 'PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 /**
  * Plugin Activation
  */
-function activate_dr_express() {
-    require_once plugin_dir_path( __FILE__ ) . 'includes/class-dr-express-activator.php';
-    DR_Express_Activator::activate();
+function activate_drgc() {
+    require_once plugin_dir_path( __FILE__ ) . 'includes/class-drgc-activator.php';
+    DRGC_Activator::activate();
 }
 
 /**
  * Plugin Deactivation
  */
-function deactivate_dr_express() {
-    require_once plugin_dir_path( __FILE__ ) . 'includes/class-dr-express-deactivator.php';
-    DR_Express_Deactivator::deactivate();
+function deactivate_drgc() {
+    require_once plugin_dir_path( __FILE__ ) . 'includes/class-drgc-deactivator.php';
+    DRGC_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_dr_express' );
-register_deactivation_hook( __FILE__, 'deactivate_dr_express' );
+register_activation_hook( __FILE__, 'activate_drgc' );
+register_deactivation_hook( __FILE__, 'deactivate_drgc' );
 
 /**
  * Core Plugin Class
  */
-require plugin_dir_path( __FILE__ ) . 'includes/class-dr-express.php';
+require plugin_dir_path( __FILE__ ) . 'includes/class-drgc.php';
 
 /**
- * Returns the main instance of DR_Express
+ * Returns the main instance of DRGC
  */
-function DR_Express() {
-	return DR_Express::instance();
+function DRGC() {
+	return DRGC::instance();
 }
 
 /**
  * Initialization
  */
-function run_dr_express() {
-    $plugin = new DR_Express();
+function run_drgc() {
+    $plugin = new DRGC();
     $plugin->run();
 }
 
-run_dr_express();
+run_drgc();

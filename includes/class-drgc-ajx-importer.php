@@ -4,11 +4,11 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  */
 
-class DR_Express_Ajx_Importer extends AbstractHttpService {
+class DRGC_Ajx_Importer extends AbstractHttpService {
 
 	/**
 	 * @var string $instance_id
@@ -36,7 +36,7 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 	private $dr_products;
 
 	/**
-	 * DR_Express_Ajx_Importer constructor.
+	 * DRGC_Ajx_Importer constructor.
 	 *
 	 * @param string $instance_id
 	 */
@@ -44,9 +44,9 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 		parent::__construct( $handler );
 
 		$this->instance_id      = $instance_id;
-		$this->instance_slug    = DR_Express_Ajx::slugify( $instance_id );
-		$this->site_id          = get_option( 'dr_express_site_id' );
-		$this->api_key          = get_option( 'dr_express_api_key' );
+		$this->instance_slug    = DRGC_Ajx::slugify( $instance_id );
+		$this->site_id          = get_option( 'drgc_site_id' );
+		$this->api_key          = get_option( 'drgc_api_key' );
 
 		$this->dr_products = wp_cache_get( 'dr_products' );
 
@@ -67,7 +67,7 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 		$batch_size     = 1;
 		$index_start    = 0;
 		$entries_count  = count( $this->dr_products['product'] );
-		$local_currencies = DR_Express()->cart->retrieve_currencies();
+		$local_currencies = DRGC()->cart->retrieve_currencies();
 		$_locale_currencies_option = array();
 
 		if ( is_array( $local_currencies ) && isset( $local_currencies['site'] ) ) {
@@ -108,13 +108,13 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 			$currencies          = get_option( 'dr_store_locales' );
 
 			if ( $existing_product_id == 0 ) {
-				$parent_product_new = new DR_Express_Product( $existing_product_id );
+				$parent_product_new = new DRGC_Product( $existing_product_id );
 				$parent_product_new->set_data( $product_data );
 				$parent_product_new->save();
 				$existing_product_id = dr_get_product_by_gcid( $gc_id );
 			}
 
-			$parent_product = new DR_Express_Product( $existing_product_id );
+			$parent_product = new DRGC_Product( $existing_product_id );
 			$parent_product->set_data( $product_data );
 
 			if ( $gc_id ) {
@@ -135,14 +135,14 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 
 				if ( is_array( $categories ) ) {
 					foreach ( $categories as $key => $category ) {
-						$term = new DR_Express_Category( $category['displayName'] );
+						$term = new DRGC_Category( $category['displayName'] );
 						$term->save();
 
 						$imported['terms'][] = $term->term_id;
 					}
 				}
 
-				$default_term = new DR_Express_Category( 'uncategorized' );
+				$default_term = new DRGC_Category( 'uncategorized' );
 				$default_term->save();
 
 				$imported['terms'][] = $default_term->term_id;
@@ -161,7 +161,7 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 					$_gc_id                 = isset( $variation_data['id'] ) ? absint( $variation_data['id'] ) : 0;
 					$existing_variation_id  = dr_get_product_by_gcid( $_gc_id, true );
 
-					$variation_product = new DR_Express_Product( $existing_variation_id, 'dr_product_variation' );
+					$variation_product = new DRGC_Product( $existing_variation_id, 'dr_product_variation' );
 					$variation_product->set_data( $variation_data );
 					$variation_product->set_parent( $parent_product->id );
 
@@ -215,7 +215,7 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 	 */
 	public function batchprocess() {
 		$results = array();
-		$items_being_process = DR_Express_Ajx::get_post_value( 'itemsBeingProcessed' );
+		$items_being_process = DRGC_Ajx::get_post_value( 'itemsBeingProcessed' );
 
 		if ( ! is_array( $items_being_process ) ) {
 			error_log( 'itemsBeingProcessed is NOT an array' );
@@ -227,7 +227,7 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 			);
 		}
 
-		$persist = DR_Express_Ajx::get_post_value( 'persist', array() );
+		$persist = DRGC_Ajx::get_post_value( 'persist', array() );
 
 		foreach ( $items_being_process as $index ) {
 			$index = intval( $index );
@@ -264,7 +264,7 @@ class DR_Express_Ajx_Importer extends AbstractHttpService {
 	public function end() {
 		wp_cache_delete( 'dr_products' );
 
-		$imported_ids = DR_Express_Ajx::get_post_value( 'persist', array() );
+		$imported_ids = DRGC_Ajx::get_post_value( 'persist', array() );
 
 		// Delete terms not included within the current import
 		if ( ! empty( $imported_ids['terms'] ) ) {

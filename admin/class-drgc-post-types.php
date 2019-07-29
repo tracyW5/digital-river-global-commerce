@@ -5,11 +5,11 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/admin
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/admin
  */
 
-class DR_Express_Post_Types {
+class DRGC_Post_Types {
 
 	/**
 	 * Initialize the class and set its properties.
@@ -40,20 +40,20 @@ class DR_Express_Post_Types {
 			'dr_product',
 			array(
 				'labels' => array(
-					'name' => __( 'Products', 'dr-express' ),
-					'singular_name' => __( 'Product', 'dr-express' ),
-					'all_items' => __( 'Products', 'dr-express' ),
-					'menu_name' => __( 'Digital River', 'dr-express' ),
-					'add_new' => __( 'Add New', 'dr-express' ),
-					'add_new_item' => __( 'Add new product', 'dr-express' ),
-					'edit' => __( 'Edit', 'dr-express' ),
-					'edit_item' => __( 'Edit product', 'dr-express' ),
-					'new_item' => __( 'New product', 'dr-express' ),
-					'view_item' => __( 'View product', 'dr-express' ),
-					'view_items' => __( 'View products', 'dr-express' ),
-					'search_items' => __( 'Search products', 'dr-express' ),
-					'not_found' => __( 'No products found', 'dr-express' ),
-					'not_found_in_trash' => __( 'No products found in trash', 'dr-express' )
+					'name' => __( 'Products', 'digital-river-global-commerce' ),
+					'singular_name' => __( 'Product', 'digital-river-global-commerce' ),
+					'all_items' => __( 'Products', 'digital-river-global-commerce' ),
+					'menu_name' => __( 'Digital River', 'digital-river-global-commerce' ),
+					'add_new' => __( 'Add New', 'digital-river-global-commerce' ),
+					'add_new_item' => __( 'Add new product', 'digital-river-global-commerce' ),
+					'edit' => __( 'Edit', 'digital-river-global-commerce' ),
+					'edit_item' => __( 'Edit product', 'digital-river-global-commerce' ),
+					'new_item' => __( 'New product', 'digital-river-global-commerce' ),
+					'view_item' => __( 'View product', 'digital-river-global-commerce' ),
+					'view_items' => __( 'View products', 'digital-river-global-commerce' ),
+					'search_items' => __( 'Search products', 'digital-river-global-commerce' ),
+					'not_found' => __( 'No products found', 'digital-river-global-commerce' ),
+					'not_found_in_trash' => __( 'No products found in trash', 'digital-river-global-commerce' )
 				),
 				'public' => true,
 				'show_ui' => true,
@@ -80,9 +80,9 @@ class DR_Express_Post_Types {
 			'dr_product_variation',
 			array(
 				'labels' => array(
-					'name' => __( 'DR Variations', 'dr-express' ),
-					'singular_name' => __( 'DR Variation', 'dr-express' ),
-					'all_items' => __( 'Variations', 'dr-express' ),
+					'name' => __( 'DR Variations', 'digital-river-global-commerce' ),
+					'singular_name' => __( 'DR Variation', 'digital-river-global-commerce' ),
+					'all_items' => __( 'Variations', 'digital-river-global-commerce' ),
 				),
 				'public' => true,
 				'show_in_menu' => 'edit.php?post_type=dr_product',
@@ -112,18 +112,18 @@ class DR_Express_Post_Types {
 			'dr_product',
 			array(
 				'labels' => array(
-					'name' => __( 'Product Categories', 'dr-express' ),
-					'singular_name' => __( 'Category', 'dr-express' ),
-					'menu_name' => __( 'Categories', 'dr-express' ),
-					'search_items' => __( 'Search categories', 'dr-express' ),
-					'all_items' => __( 'All categories', 'dr-express' ),
-					'parent_item' => __( 'Parent category', 'dr-express' ),
-					'parent_item_colon' => __( 'Parent category:', 'dr-express' ),
-					'edit_item' => __( 'Edit category', 'dr-express' ),
-					'update_item' => __( 'Update category', 'dr-express' ),
-					'add_new_item' => __( 'Add new category', 'dr-express' ),
-					'new_item_name' => __( 'New category name', 'dr-express' ),
-					'not_found' => __( 'No categories found', 'dr-express' ),
+					'name' => __( 'Product Categories', 'digital-river-global-commerce' ),
+					'singular_name' => __( 'Category', 'digital-river-global-commerce' ),
+					'menu_name' => __( 'Categories', 'digital-river-global-commerce' ),
+					'search_items' => __( 'Search categories', 'digital-river-global-commerce' ),
+					'all_items' => __( 'All categories', 'digital-river-global-commerce' ),
+					'parent_item' => __( 'Parent category', 'digital-river-global-commerce' ),
+					'parent_item_colon' => __( 'Parent category:', 'digital-river-global-commerce' ),
+					'edit_item' => __( 'Edit category', 'digital-river-global-commerce' ),
+					'update_item' => __( 'Update category', 'digital-river-global-commerce' ),
+					'add_new_item' => __( 'Add new category', 'digital-river-global-commerce' ),
+					'new_item_name' => __( 'New category name', 'digital-river-global-commerce' ),
+					'not_found' => __( 'No categories found', 'digital-river-global-commerce' ),
 				),
 				'hierarchical' => true,
 				'show_ui' => true,
@@ -159,7 +159,7 @@ class DR_Express_Post_Types {
 
 		add_meta_box(
 			'dr_product_details_box', // Unique ID
-			__( 'Product Details', 'dr-express' ), // Box title
+			__( 'Product Details', 'digital-river-global-commerce' ), // Box title
 			array( $this, 'render_product_details_meta_box' ), // Content callback, must be of type callable
 			$post_types // Post type
 		);
@@ -171,10 +171,10 @@ class DR_Express_Post_Types {
 	 * @since    1.0.0
 	 */
 	public function render_product_details_meta_box( $post ) {
-		echo '<h2 id="drcc-link"><a href="https://gc.digitalriver.com/gc/ent/site/selectSite.do?siteID=' . get_option('dr_express_site_id') . '" target="_blank">Manage Products</a></h2>';
+		echo '<h2 id="drcc-link"><a href="https://gc.digitalriver.com/gc/ent/site/selectSite.do?siteID=' . get_option('drgc_site_id') . '" target="_blank">Manage Products</a></h2>';
 
-		include_once 'partials/dr-express-product-variations.php';
-		include_once 'partials/dr-express-product-details-meta-box.php';
+		include_once 'partials/drgc-product-variations.php';
+		include_once 'partials/drgc-product-details-meta-box.php';
 	}
 
 	/**
@@ -199,7 +199,7 @@ class DR_Express_Post_Types {
 	 * @since    1.0.0
 	 */
 	public function add_manage_categories_link() {
-		echo '<p id="drcc-link"><a href="https://gc.digitalriver.com/gc/ent/site/selectSite.do?siteID=' . get_option( 'dr_express_site_id' ) . '" target="_blank">Manage Categories</a></p>';
+		echo '<p id="drcc-link"><a href="https://gc.digitalriver.com/gc/ent/site/selectSite.do?siteID=' . get_option( 'drgc_site_id' ) . '" target="_blank">Manage Categories</a></p>';
 	}
 
 	/**
@@ -211,8 +211,8 @@ class DR_Express_Post_Types {
 		$new_columns = array();
 		foreach ( $columns as $key => $title ) {
 			if ( $key === 'date' ) {
-				$new_columns[ 'gc_product_id' ] = __( 'Product ID', 'dr-express' );
-				$new_columns[ 'sku' ] = __( 'SKU', 'dr-express' );
+				$new_columns[ 'gc_product_id' ] = __( 'Product ID', 'digital-river-global-commerce' );
+				$new_columns[ 'sku' ] = __( 'SKU', 'digital-river-global-commerce' );
 			}
 			$new_columns[ $key ] = $title;
 		}

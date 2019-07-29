@@ -4,12 +4,12 @@
  * Handle data for the current customers session,
  * which may contain Auth tokens, cart items or other
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  * @version 1.0.0
  */
 
-class DR_Express_Session {
+class DRGC_Session {
 	/**
 	 * ID of the current session
 	 */
@@ -46,8 +46,8 @@ class DR_Express_Session {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->table_name = $GLOBALS['wpdb']->prefix . 'dr_express_sessions';
-		$this->cookie     = 'dr_express_session';
+		$this->table_name = $GLOBALS['wpdb']->prefix . 'drgc_sessions';
+		$this->cookie     = 'drgc_session';
 	}
 
 	/**

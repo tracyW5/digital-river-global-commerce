@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes/shortcodes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes/shortcodes
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -27,16 +27,16 @@ class DR_Shortcode_Checkout {
 	 */
 	public static function output( $atts ) {
 		$locales = get_option( 'dr_store_locales' );
-		$cart = DR_Express()->cart->retrieve_cart();
-		$customer = DR_Express()->shopper->retrieve_shopper();
-		$customer_address = DR_Express()->shopper->retrieve_shopper_address();
+		$cart = DRGC()->cart->retrieve_cart();
+		$customer = DRGC()->shopper->retrieve_shopper();
+		$customer_address = DRGC()->shopper->retrieve_shopper_address();
 		$usa_states = retrieve_usa_states();
-		$steps_titles = apply_filters( 'dr_express_checkout_titles', array(
-			'email'    => __( 'Email', 'dr_express' ),
-			'shipping' => __( 'Shipping', 'information', 'dr_express' ),
-			'billing'  => __( 'Billing', 'information', 'dr_express' ),
-			'delivery' => __( 'Delivery', 'options', 'dr_express' ),
-			'payment'  => __( 'Payment', 'dr_express' ),
+		$steps_titles = apply_filters( 'drgc_checkout_titles', array(
+			'email'    => __( 'Email', 'digital-river-global-commerce' ),
+			'shipping' => __( 'Shipping', 'information', 'digital-river-global-commerce' ),
+			'billing'  => __( 'Billing', 'information', 'digital-river-global-commerce' ),
+			'delivery' => __( 'Delivery', 'options', 'digital-river-global-commerce' ),
+			'payment'  => __( 'Payment', 'digital-river-global-commerce' ),
 		) );
 		
 		dr_get_template(

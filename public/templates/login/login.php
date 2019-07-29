@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/public/templates/parts
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/public/templates/parts
  */
 
 $checkout_URI = dr_get_page_link( 'checkout' );
@@ -20,22 +20,22 @@ $checkout_URI = dr_get_page_link( 'checkout' );
 	    <?php if ( $customer && 'Anonymous' !== $customer['id'] ) : ?>
             <section class="dr-login-sections__section section-returning logged-in">
 
-                <?php echo __( 'Welcome ', 'dr-express' ) . $customer['username']; ?>
+                <?php echo __( 'Welcome ', 'digital-river-global-commerce' ) . $customer['username']; ?>
 
                 <div>
-                    <a class="btn dr-btn" href="<?php echo esc_url( dr_get_page_link( 'cart' ) ); ?>"><?php echo __( 'Cart', 'dr-express' ); ?></a>
-                    <a class="btn dr-btn" href="<?php echo esc_url( $checkout_URI ); ?>"><?php echo __( 'Checkout', 'dr-express' ); ?></a>
+                    <a class="btn dr-btn" href="<?php echo esc_url( dr_get_page_link( 'cart' ) ); ?>"><?php echo __( 'Cart', 'digital-river-global-commerce' ); ?></a>
+                    <a class="btn dr-btn" href="<?php echo esc_url( $checkout_URI ); ?>"><?php echo __( 'Checkout', 'digital-river-global-commerce' ); ?></a>
                 </div>
 
-                <a class="dr-btn dr-logout" href="#"><?php echo __( 'Logout', 'dr-express' ); ?></a>
+                <a class="dr-btn dr-logout" href="#"><?php echo __( 'Logout', 'digital-river-global-commerce' ); ?></a>
             </section>
         <?php else : ?>
 
         <?php if ( ($_GET['action'] ?? '') === 'rp' && isset($_GET['key'])) : ?>
             <section class="dr-login-sections__section reset-password">
                 <div>
-                    <h2><?php echo __( 'New password', 'dr-express' ); ?></h2>
-                    <p><?php echo __( 'Please enter secure password twice to continue', 'dr-express' ); ?></p>
+                    <h2><?php echo __( 'New password', 'digital-river-global-commerce' ); ?></h2>
+                    <p><?php echo __( 'Please enter secure password twice to continue', 'digital-river-global-commerce' ); ?></p>
                 </div>
 
                 <form class="dr-confirm-password-reset-form needs-validation" novalidate>
@@ -56,7 +56,7 @@ $checkout_URI = dr_get_page_link( 'checkout' );
                         </div>
                     </div>
 
-                    <button type="submit" class="dr-btn"><?php echo __( 'Reset Password', 'dr-express' ); ?></button>
+                    <button type="submit" class="dr-btn"><?php echo __( 'Reset Password', 'digital-river-global-commerce' ); ?></button>
 
                     <div class="dr-form-error-msg"></div>
                 </form>
@@ -66,8 +66,8 @@ $checkout_URI = dr_get_page_link( 'checkout' );
             <section class="dr-login-sections__section section-returning">
                 <div>
 
-                    <h2><?php echo __( 'Returning Customer', 'dr-express' ); ?></h2>
-                    <p><?php echo __( 'If you have an existing account, please sign in.', 'dr-express' ); ?></p>
+                    <h2><?php echo __( 'Returning Customer', 'digital-river-global-commerce' ); ?></h2>
+                    <p><?php echo __( 'If you have an existing account, please sign in.', 'digital-river-global-commerce' ); ?></p>
                 </div>
 
                 <form id="dr_login_form" class="dr-login-form needs-validation" novalidate>
@@ -88,19 +88,19 @@ $checkout_URI = dr_get_page_link( 'checkout' );
                         </div>
                     </div>
 
-                    <button type="submit" id="dr-auth-submit" class="dr-btn"><?php echo __( 'Login', 'dr-express' ); ?></button>
+                    <button type="submit" id="dr-auth-submit" class="dr-btn"><?php echo __( 'Login', 'digital-river-global-commerce' ); ?></button>
 
                     <div class="dr-form-error-msg"></div>
                 </form>
 
-                <a class="forgotten-password" href="#" data-toggle="modal" data-target="#drResetPassword"><?php echo __( 'Forgot password?', 'dr-express' ); ?></a>
+                <a class="forgotten-password" href="#" data-toggle="modal" data-target="#drResetPassword"><?php echo __( 'Forgot password?', 'digital-river-global-commerce' ); ?></a>
 
                 <div class="modal fade" id="drResetPassword" tabindex="-1" role="dialog" aria-labelledby="drResetPasswordTitle" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">
-                                    <?php echo __( 'Forgot Password', 'dr-express' ); ?>
+                                    <?php echo __( 'Forgot Password', 'digital-river-global-commerce' ); ?>
                                 </h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
@@ -110,18 +110,18 @@ $checkout_URI = dr_get_page_link( 'checkout' );
                                 <p>
                                     <?php echo __('To reset your password, please enter your email 
                                     address below and an email with instructions on
-                                    resetting your password will be sent to you.', 'dr-express'); ?>
+                                    resetting your password will be sent to you.', 'digital-river-global-commerce'); ?>
                                 </p>
                                 <form id="dr-pass-reset-form" novalidate>
                                     <div class="form-group">
-                                        <label for="email-address" class="col-form-label"><?php echo __( 'Email Address:', 'dr-express' ); ?></label>
+                                        <label for="email-address" class="col-form-label"><?php echo __( 'Email Address:', 'digital-river-global-commerce' ); ?></label>
                                         <input name="email" type="email" class="form-control" id="email-address" required>
                                         <div class="invalid-feedback">
                                             <?php echo __( 'This field is required email.' ); ?>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="email-address-confirm" class="col-form-label"><?php echo __( 'Verify Email Address:', 'dr-express' ); ?></label>
+                                        <label for="email-address-confirm" class="col-form-label"><?php echo __( 'Verify Email Address:', 'digital-river-global-commerce' ); ?></label>
                                         <input name="email-confirm" type="email" class="form-control" id="email-address-confirm" required>
                                         <div class="invalid-feedback">
                                             <?php echo __( 'This field is required email.' ); ?>
@@ -133,7 +133,7 @@ $checkout_URI = dr_get_page_link( 'checkout' );
                             </div>
                             <div class="modal-footer">
                                 <button id="dr-pass-reset-submit" type="button" class="dr-btn w-100">
-                                    <?php echo __( 'Reset Password', 'dr-express' ); ?>
+                                    <?php echo __( 'Reset Password', 'digital-river-global-commerce' ); ?>
                                 </button>
                             </div>
                         </div>
@@ -147,11 +147,11 @@ $checkout_URI = dr_get_page_link( 'checkout' );
             <section class="dr-login-sections__section section-new">
                 <div>
 
-                    <h2><?php echo __( 'NEW CUSTOMER', 'dr-express' ); ?></h2>
+                    <h2><?php echo __( 'NEW CUSTOMER', 'digital-river-global-commerce' ); ?></h2>
 
                     <p>
 		                <?php echo __( 'You can checkout as a guest or become a 
-		                member for faster checkout and great offers.', 'dr-express' ); ?>
+		                member for faster checkout and great offers.', 'digital-river-global-commerce' ); ?>
                     </p>
                 </div>
 
@@ -186,9 +186,9 @@ $checkout_URI = dr_get_page_link( 'checkout' );
 
                 <div>
 
-                    <a class="dr-btn dr-signup" href="#"><?php echo __( 'Sign Up', 'dr-express' ); ?></a>
+                    <a class="dr-btn dr-signup" href="#"><?php echo __( 'Sign Up', 'digital-river-global-commerce' ); ?></a>
 
-                    <a class="dr-btn" href="<?php echo esc_url( dr_get_page_link( 'cart' ) ); ?>" ><?php echo __( 'Continue As Guest', 'dr-express' ); ?></a>
+                    <a class="dr-btn" href="<?php echo esc_url( dr_get_page_link( 'cart' ) ); ?>" ><?php echo __( 'Continue As Guest', 'digital-river-global-commerce' ); ?></a>
 
                 </div>
 
@@ -198,10 +198,10 @@ $checkout_URI = dr_get_page_link( 'checkout' );
 
         <!-- <section class="dr-login-sections__section section-paypal">
             <div>
-                <h2><?php echo __( 'PAYPAL CUSTOMERS', 'dr-express' ); ?></h2>
+                <h2><?php echo __( 'PAYPAL CUSTOMERS', 'digital-river-global-commerce' ); ?></h2>
                 <p>
-		            <?php echo __( 'Make your payment with PayPal\'s secure services.', 'dr-express' ); ?>
-		            <?php echo __( 'You can still add promotion codes before you complete your order.', 'dr-express' ); ?>
+		            <?php echo __( 'Make your payment with PayPal\'s secure services.', 'digital-river-global-commerce' ); ?>
+		            <?php echo __( 'You can still add promotion codes before you complete your order.', 'digital-river-global-commerce' ); ?>
                 </p>
             </div>
 

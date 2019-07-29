@@ -1,16 +1,16 @@
 <?php
 /**
- * Class Test_Dr_Express_Session
+ * Class Test_DRGC_Session
  *
- * @package Dr_Express
+ * @package Digital_River_Global_Commerce
  */
 
 
-require_once 'includes/class-dr-express-session.php';
-require_once 'includes/class-dr-express-tables.php';
+require_once 'includes/class-drgc-session.php';
+require_once 'includes/class-drgc-tables.php';
 
 
-class Test_Dr_Express_Session extends WP_UnitTestCase {
+class Test_DRGC_Session extends WP_UnitTestCase {
 	
 	protected $session;
 	
@@ -18,8 +18,8 @@ class Test_Dr_Express_Session extends WP_UnitTestCase {
 		parent::setUp();
     
         // Create tables
-        new DR_Express_Tables();
-		$this->session = new DR_Express_Session;
+        new DRGC_Tables();
+		$this->session = new DRGC_Session;
     }
 
     /**

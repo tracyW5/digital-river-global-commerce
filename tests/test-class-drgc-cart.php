@@ -1,8 +1,8 @@
 <?php
 /**
- * Class Test_Dr_Express_Cart
+ * Class Test_DRGC_Cart
  *
- * @package Dr_Express
+ * @package Digital_River_Global_Commerce
  */
 
 use GuzzleHttp\Psr7;
@@ -10,17 +10,17 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Handler\MockHandler;
 
-require_once 'includes/class-dr-express-authenticator.php';
-require_once 'includes/class-dr-express-cart.php';
+require_once 'includes/class-drgc-authenticator.php';
+require_once 'includes/class-drgc-cart.php';
 
-class Test_Dr_Express_Cart extends WP_UnitTestCase {
+class Test_DRGC_Cart extends WP_UnitTestCase {
 	
 	protected $authenticator;
 	
 	public function setUp() {
 		parent::setUp();
 
-		$this->authenticator = new DR_Express_Authenticator;
+		$this->authenticator = new DRGC_Authenticator;
     }
 
     /**
@@ -35,7 +35,7 @@ class Test_Dr_Express_Cart extends WP_UnitTestCase {
 			new Response($payload->status, array(), $stream)
         ]));
 
-		$res = (new DR_Express_Cart($this->authenticator, $handler))->retrieve_cart();
+		$res = (new DRGC_Cart($this->authenticator, $handler))->retrieve_cart();
         
         $this->assertArrayHasKey('cart', $res);
         $this->assertFalse(empty($res['cart']));
@@ -57,7 +57,7 @@ class Test_Dr_Express_Cart extends WP_UnitTestCase {
 			new Response($payload->status, array(), $stream)
         ]));
 
-		$res = (new DR_Express_Cart($this->authenticator, $handler))->retrieve_order();
+		$res = (new DRGC_Cart($this->authenticator, $handler))->retrieve_order();
             
         $this->assertArrayHasKey('order', $res);
         $this->assertFalse(empty($res['order']));
@@ -75,7 +75,7 @@ class Test_Dr_Express_Cart extends WP_UnitTestCase {
 			new Response($payload->status, array(), $stream)
         ]));
 
-		$res = (new DR_Express_Cart($this->authenticator, $handler))->retrieve_currencies();
+		$res = (new DRGC_Cart($this->authenticator, $handler))->retrieve_currencies();
         
         $this->assertArrayHasKey('site', $res);
         $this->assertArrayHasKey('localeOptions', $res['site']);
@@ -94,7 +94,7 @@ class Test_Dr_Express_Cart extends WP_UnitTestCase {
 			new Response($payload->status, array(), $stream)
         ]));
 
-		$res = (new DR_Express_Cart($this->authenticator, $handler))->fetch_items();
+		$res = (new DRGC_Cart($this->authenticator, $handler))->fetch_items();
         
         $this->assertArrayHasKey('lineItems', $res);
         $this->assertArrayHasKey('lineItem', $res['lineItems']);
@@ -109,7 +109,7 @@ class Test_Dr_Express_Cart extends WP_UnitTestCase {
         ]));
         
         $this->assertTrue(
-            (new DR_Express_Cart($this->authenticator, $handler))->update_line_items(['productId' => 99999999 ])
+            (new DRGC_Cart($this->authenticator, $handler))->update_line_items(['productId' => 99999999 ])
         );
     }
 
@@ -125,7 +125,7 @@ class Test_Dr_Express_Cart extends WP_UnitTestCase {
 			new Response($payload->status, array(), $stream)
         ]));
 
-		$res = (new DR_Express_Cart($this->authenticator, $handler))->get_billing_address();
+		$res = (new DRGC_Cart($this->authenticator, $handler))->get_billing_address();
         
         $this->assertArrayHasKey('address', $res);
     }

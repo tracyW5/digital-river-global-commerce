@@ -5,20 +5,20 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/admin
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/admin
  */
 
-class DR_Express_Admin {
+class DRGC_Admin {
 
 	/**
 	 * The ID of this plugin.
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $dr_express
+	 * @var      string    $drgc
 	 */
-	private $dr_express;
+	private $drgc;
 
 	/**
 	 * The version of this plugin.
@@ -36,7 +36,7 @@ class DR_Express_Admin {
 	 * @access   private
 	 * @var      string     $plugin_name
 	 */
-	private $plugin_name = 'dr-express';
+	private $plugin_name = 'digital-river-global-commerce';
 
 	/**
 	 * The option name to be used in this plugin
@@ -45,7 +45,7 @@ class DR_Express_Admin {
 	 * @access   private
 	 * @var      string     $option_name
 	 */
-	private $option_name = 'dr_express';
+	private $option_name = 'drgc';
 
 	/**
 	 * site ID
@@ -54,7 +54,7 @@ class DR_Express_Admin {
 	 * @access   private
 	 * @var      string
 	 */
-	private $dr_express_site_id;
+	private $drgc_site_id;
 
 	/**
 	 * API key
@@ -63,21 +63,21 @@ class DR_Express_Admin {
 	 * @access   private
 	 * @var      string
 	 */
-	private $dr_express_api_key;
+	private $drgc_api_key;
 
 	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $dr_express
+	 * @param      string    $drgc
 	 * @param      string    $version
 	 */
-	public function __construct( $dr_express, $version, $dr_ajx ) {
-		$this->dr_express = $dr_express;
+	public function __construct( $drgc, $version, $dr_ajx ) {
+		$this->drgc = $drgc;
 		$this->version = $version;
 		$this->dr_ajx = $dr_ajx;
-		$this->dr_express_site_id = get_option( 'dr_express_site_id' );
-		$this->dr_express_api_key = get_option( 'dr_express_api_key' );
+		$this->drgc_site_id = get_option( 'drgc_site_id' );
+		$this->drgc_api_key = get_option( 'drgc_api_key' );
 	}
 
 	/**
@@ -86,7 +86,7 @@ class DR_Express_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style( $this->dr_express, PLUGIN_URL . 'assets/css/dr-express-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->drgc, PLUGIN_URL . 'assets/css/drgc-admin.css', array(), $this->version, 'all' );
 
 	}
 
@@ -98,16 +98,16 @@ class DR_Express_Admin {
 	public function enqueue_scripts() {
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-		wp_enqueue_script( $this->dr_express, PLUGIN_URL . 'assets/js/dr-express-admin' . $suffix . '.js', array( 'jquery', 'jquery-ui-progressbar' ), $this->version, false );
+		wp_enqueue_script( $this->drgc, PLUGIN_URL . 'assets/js/drgc-admin' . $suffix . '.js', array( 'jquery', 'jquery-ui-progressbar' ), $this->version, false );
 
-		// transfer dr-express options from PHP to JS
-		wp_localize_script( $this->dr_express, 'dr_object',
+		// transfer drgc options from PHP to JS
+		wp_localize_script( $this->drgc, 'dr_object',
 			array(
-				'api_key'               => $this->dr_express_api_key,
-				'site_id'               => $this->dr_express_site_id,
+				'api_key'               => $this->drgc_api_key,
+				'site_id'               => $this->drgc_site_id,
 				'dr_ajx_instance_id'    => $this->dr_ajx->instance_id,
 				'ajax_url'              => admin_url( 'admin-ajax.php' ),
-				'ajax_nonce'            => wp_create_nonce( 'dr_express_ajx' ),
+				'ajax_nonce'            => wp_create_nonce( 'drgc_ajx' ),
 			)
 		);
 	}
@@ -120,10 +120,10 @@ class DR_Express_Admin {
 	public function add_settings_page() {
 		add_submenu_page(
       'edit.php?post_type=dr_product',
-			__( 'Settings', 'dr-express' ),
-			__( 'Settings', 'dr-express' ),
+			__( 'Settings', 'digital-river-global-commerce' ),
+			__( 'Settings', 'digital-river-global-commerce' ),
 			'manage_options',
-			'dr-express',
+			'digital-river-global-commerce',
 			array( $this, 'display_settings_page' ),
 			'dashicons-screenoptions',
 			100
@@ -140,7 +140,7 @@ class DR_Express_Admin {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		include_once 'partials/dr-express-admin-display.php';
+		include_once 'partials/drgc-admin-display.php';
 	}
 
 	/**
@@ -159,7 +159,7 @@ class DR_Express_Admin {
 
 		add_settings_field(
 			$this->option_name . '_site_id',
-			__( 'Site ID', 'dr-express' ),
+			__( 'Site ID', 'digital-river-global-commerce' ),
 			array( $this, $this->option_name . '_site_id_cb' ),
 			$this->plugin_name,
 			$this->option_name . '_general',
@@ -168,7 +168,7 @@ class DR_Express_Admin {
 
 		add_settings_field(
 			$this->option_name . '_api_key',
-			__( 'API Key', 'dr-express' ),
+			__( 'API Key', 'digital-river-global-commerce' ),
 			array( $this, $this->option_name . '_api_key_cb' ),
 			$this->plugin_name,
 			$this->option_name . '_general',
@@ -177,7 +177,7 @@ class DR_Express_Admin {
 
 		add_settings_field(
 			$this->option_name . '_domain',
-			__( 'Domain', 'dr-express' ),
+			__( 'Domain', 'digital-river-global-commerce' ),
 			array( $this, $this->option_name . '_domain_cb' ),
 			$this->plugin_name,
 			$this->option_name . '_general',
@@ -186,7 +186,7 @@ class DR_Express_Admin {
 
 		add_settings_field(
 			$this->option_name . '_digitalRiver_key',
-			__( 'Digital River Plugin Key', 'dr-express' ),
+			__( 'Digital River Plugin Key', 'digital-river-global-commerce' ),
 			array( $this, $this->option_name . '_digitalRiver_key_cb' ),
 			$this->plugin_name,
 			$this->option_name . '_general',
@@ -195,7 +195,7 @@ class DR_Express_Admin {
 
 		add_settings_field(
 			$this->option_name . '_cron_handler',
-			__( 'Scheduled Products Import', 'dr-express' ),
+			__( 'Scheduled Products Import', 'digital-river-global-commerce' ),
 			array( $this, $this->option_name . '_cron_handler_cb' ),
 			$this->plugin_name,
 			$this->option_name . '_general',
@@ -204,7 +204,7 @@ class DR_Express_Admin {
 
 		add_settings_field(
 			$this->option_name . '_testOrder_handler',
-			__( 'Test Order', 'dr-express' ),
+			__( 'Test Order', 'digital-river-global-commerce' ),
 			array( $this, $this->option_name . '_testOrder_handler_cb' ),
 			$this->plugin_name,
 			$this->option_name . '_general',
@@ -231,7 +231,7 @@ class DR_Express_Admin {
 	 *
 	 * @since  1.0.0
 	 */
-	public function dr_express_general_cb() {
+	public function drgc_general_cb() {
 		return; // No need to print section message
 	}
 
@@ -240,8 +240,8 @@ class DR_Express_Admin {
 	 *
 	 * @since  1.0.0
 	 */
-	public function dr_express_extra_cb() {
-		echo '<p class="description">' . __( 'Please contact your account representative for assistance with these settings.', 'dr-express' ) . '</p>';
+	public function drgc_extra_cb() {
+		echo '<p class="description">' . __( 'Please contact your account representative for assistance with these settings.', 'digital-river-global-commerce' ) . '</p>';
 	}
 
 	/**
@@ -249,7 +249,7 @@ class DR_Express_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function dr_express_site_id_cb() {
+	public function drgc_site_id_cb() {
 		$site_id = get_option( $this->option_name . '_site_id' );
 		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_site_id' . '" id="' . $this->option_name . '_site_id' . '" value="' . $site_id . '"> ';
 	}
@@ -259,7 +259,7 @@ class DR_Express_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function dr_express_api_key_cb() {
+	public function drgc_api_key_cb() {
 		$api_key = get_option( $this->option_name . '_api_key' );
 		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_api_key' . '" id="' . $this->option_name . '_api_key' . '" value="' . $api_key . '"> ';
 	}
@@ -269,7 +269,7 @@ class DR_Express_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function dr_express_domain_cb() {
+	public function drgc_domain_cb() {
 		$domain = get_option( $this->option_name . '_domain' );
 		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_domain' . '" id="' . $this->option_name . '_domain' . '" value="' . $domain . '"> ';
 	}
@@ -279,7 +279,7 @@ class DR_Express_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function dr_express_digitalRiver_key_cb() {
+	public function drgc_digitalRiver_key_cb() {
 		$digitalRiver_key = get_option( $this->option_name . '_digitalRiver_key' );
 		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_digitalRiver_key' . '" id="' . $this->option_name . '_digitalRiver_key' . '" value="' . $digitalRiver_key . '"> ';
 	}
@@ -290,7 +290,7 @@ class DR_Express_Admin {
 	 * @since    1.0.0
 	 */
 
-	public function dr_express_testOrder_handler_cb() {
+	public function drgc_testOrder_handler_cb() {
 		$option = get_option( $this->option_name . '_testOrder_handler' );
 		$checked = '';
 
@@ -299,9 +299,9 @@ class DR_Express_Admin {
 		}
 
 		echo '<input type="checkbox" class="regular-text" name="' . $this->option_name . '_testOrder_handler[checkbox]" id="' . $this->option_name . '_testOrder_handler" value="1" ' . $checked . ' />';
-		echo '<span class="description" id="cron-description">' . __( 'Enable Test Order.', 'dr-express' ) . '</span>';
+		echo '<span class="description" id="cron-description">' . __( 'Enable Test Order.', 'digital-river-global-commerce' ) . '</span>';
 	}
-	public function dr_express_cron_handler_cb() {
+	public function drgc_cron_handler_cb() {
 		$option = get_option( $this->option_name . '_cron_handler' );
 		$checked = '';
 
@@ -310,7 +310,7 @@ class DR_Express_Admin {
 		}
 
 		echo '<input type="checkbox" class="regular-text" name="' . $this->option_name . '_cron_handler[checkbox]" id="' . $this->option_name . '_cron_handler" value="1" ' . $checked . ' />';
-		echo '<span class="description" id="cron-description">' . __( 'Twice daily product synchronization with GC.', 'dr-express' ) . '</span>';
+		echo '<span class="description" id="cron-description">' . __( 'Twice daily product synchronization with GC.', 'digital-river-global-commerce' ) . '</span>';
 	}
 
 	public function dr_sanitize_checkbox( $input ) {
@@ -324,7 +324,7 @@ class DR_Express_Admin {
 	 * @since    1.0.0
 	 */
 	public function render_products_import_button( $views ) {
-		include_once PLUGIN_DIR . 'admin/partials/dr-express-products-import-btn.php';
+		include_once PLUGIN_DIR . 'admin/partials/drgc-products-import-btn.php';
 		return $views;
 	}
 

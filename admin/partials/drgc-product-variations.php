@@ -7,20 +7,20 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/admin/partials
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/admin/partials
  */
 $variations = dr_get_product_variations( get_the_ID() );
 ?>
 <?php if ( $variations ) : ?>
     <fieldset>
-        <legend><span><?php echo __( 'Variations', 'dr-express' ); ?></span></legend>
+        <legend><span><?php echo __( 'Variations', 'digital-river-global-commerce' ); ?></span></legend>
         <table class="data-table">
             <thead>
                 <tr>
-                    <th><?php echo __( 'ID', 'dr-express' ); ?></th>
-                    <th><?php echo __( 'Internal Variation Name', 'dr-express' ); ?></th>
-                    <th><?php echo __( 'Variation Attributes', 'dr-express' ); ?></th>
+                    <th><?php echo __( 'ID', 'digital-river-global-commerce' ); ?></th>
+                    <th><?php echo __( 'Internal Variation Name', 'digital-river-global-commerce' ); ?></th>
+                    <th><?php echo __( 'Variation Attributes', 'digital-river-global-commerce' ); ?></th>
                 </tr>
             </thead>
             <tbody>

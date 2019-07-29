@@ -2,14 +2,14 @@
 /**
  * Create DB Tables for the needs of the plugin
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  * @version 1.0.0
  */
-class DR_Express_Tables {
+class DRGC_Tables {
 
 	/**
-	 * DR_Express_Tables constructor.
+	 * DRGC_Tables constructor.
 	 */
 	public function __construct() {
 		$this->sessions_table();
@@ -21,7 +21,7 @@ class DR_Express_Tables {
 	public function sessions_table() {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . 'dr_express_sessions';
+		$table_name = $wpdb->prefix . 'drgc_sessions';
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$sql = "CREATE TABLE $table_name (
@@ -39,6 +39,6 @@ class DR_Express_Tables {
 		dbDelta( $sql );
 
 		// Add version for the table. Useful when updating
-		add_option( 'dr_express_db_version', '1.0.0' );
+		add_option( 'drgc_db_version', '1.0.0' );
 	}
 }

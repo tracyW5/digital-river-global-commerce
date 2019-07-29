@@ -1,19 +1,19 @@
 <?php
 /**
- * Class Test_Dr_Express_Tables
+ * Class Test_DRGC_Tables
  *
- * @package Dr_Express
+ * @package Digital_River_Global_Commerce
  */
 
-require_once 'includes/class-dr-express-tables.php';
+require_once 'includes/class-drgc-tables.php';
 
-class Test_Dr_Express_Tables extends WP_UnitTestCase {
+class Test_DRGC_Tables extends WP_UnitTestCase {
     
     /**
      * Test it creates session table
      */
     public function test_it_creates_session_table() {
-        new DR_Express_Tables();
+        new DRGC_Tables();
 
         global $wpdb;
 
@@ -22,7 +22,7 @@ class Test_Dr_Express_Tables extends WP_UnitTestCase {
                 "SELECT count(*)
                 FROM information_schema.TABLES
                 WHERE (TABLE_SCHEMA = %s) AND (TABLE_NAME = %s)",
-                $wpdb->prefix . 'dr_express_sessions',
+                $wpdb->prefix . 'drgc_sessions',
                 $wpdb->dbname
             )
         );

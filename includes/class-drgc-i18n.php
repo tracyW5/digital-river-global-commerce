@@ -8,11 +8,11 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  */
 
-class DR_Express_i18n {
+class DRGC_i18n {
 
     /**
      * Load the plugin text domain for translation.
@@ -21,7 +21,7 @@ class DR_Express_i18n {
      */
     public function load_plugin_textdomain() {
         load_plugin_textdomain(
-            'dr-express',
+            'digital-river-global-commerce',
             false,
             dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
         );

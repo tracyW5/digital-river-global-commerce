@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/public/partials
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/public/partials
  */
 ?>
 
@@ -16,7 +16,7 @@
     <span class="dr-minicart-count">0</span><span>&nbsp;ITEM(S)</span></a>
     <div class="dr-minicart-display" style="display: none;">
         <div class="dr-minicart-header">
-            <h4 class="dr-minicart-title"><?php echo __( 'Shopping Cart', 'dr-express'); ?></h4>
+            <h4 class="dr-minicart-title"><?php echo __( 'Shopping Cart', 'digital-river-global-commerce'); ?></h4>
             <button type="button" class="dr-minicart-close-btn">×</button>
         </div>
     </div>

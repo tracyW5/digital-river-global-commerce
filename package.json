@@ -1,11 +1,11 @@
 {
-  "name": "dr-express",
+  "name": "digital-river-global-commerce",
   "description": "A WordPress plugin of Digital River BWC project.",
   "version": "1.0.0",
   "author": "GCTemplates (gcTemplates@digitalriver.com)",
   "repository": {
     "type": "git",
-    "url": "https://github.digitalriverws.net/gc-templates/BWC"
+    "url": "https://github.digitalriverws.net/gc-templates/digital-river-global-commerce"
   },
   "license": "MIT",
   "devDependencies": {

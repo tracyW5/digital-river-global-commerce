@@ -2,7 +2,7 @@
 /**
  * PHPUnit bootstrap file
  *
- * @package Dr_Express
+ * @package Digital_River_Global_Commerce
  */
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
@@ -30,7 +30,7 @@ function _manually_load_environment() {
 	
 	// Update array with plugins to include ...
 	$plugins_to_active = array(
-		'dr-express/dr-express.php'
+		'digital-river-global-commerce/digital-river-global-commerce.php'
 	);
 
 	update_option( 'active_plugins', $plugins_to_active );

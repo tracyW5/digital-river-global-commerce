@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/admin/partials
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/admin/partials
  */
 ?>
 
@@ -17,7 +17,7 @@
 <?php endif; ?>
 
 <div class="wrapImport">
-    <noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'dr-express' ) ?></em></p></noscript>
+    <noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'digital-river-global-commerce' ) ?></em></p></noscript>
     <div id="dr-data-process-progressbar"></div>
 </div>
 <div class="wrapImportControls">
@@ -25,5 +25,5 @@
         Processing <span id="dr-data-process-counter">0</span> out of <span id="dr-data-process-total">many</span>
     </p>
 
-    <button type="button" id="products-import-btn" class="button"><?php echo __( 'Import Products', 'dr-express' ); ?></button>
+    <button type="button" id="products-import-btn" class="button"><?php echo __( 'Import Products', 'digital-river-global-commerce' ); ?></button>
 </div>

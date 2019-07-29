@@ -5,11 +5,11 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  */
 
-class DR_Express_Deactivator {
+class DRGC_Deactivator {
 
 	/**
 	 * Short Description. (use period)
@@ -28,11 +28,11 @@ class DR_Express_Deactivator {
         wp_clear_scheduled_hook( 'dr_clean_expired_sessions' );
 
         //Drop session table
-        $table_name = $wpdb->prefix . 'dr_express_sessions';
+        $table_name = $wpdb->prefix . 'drgc_sessions';
         $wpdb->query(
             "DROP TABLE IF EXISTS $table_name"
         );
-        delete_option("dr_express_db_version");
+        delete_option("drgc_db_version");
 
         //delete cache
 		wp_cache_delete( 'dr_products' );

@@ -1,8 +1,8 @@
 <?php
 /**
- * Class Test_Dr_Express_Shopper
+ * Class Test_DRGC_Shopper
  *
- * @package Dr_Express
+ * @package Digital_River_Global_Commerce
  */
 
 use GuzzleHttp\Psr7;
@@ -10,17 +10,17 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Handler\MockHandler;
 
-require_once 'includes/class-dr-express-authenticator.php';
-require_once 'includes/class-dr-express-shopper.php';
+require_once 'includes/class-drgc-authenticator.php';
+require_once 'includes/class-drgc-shopper.php';
 
-class Test_Dr_Express_Shopper extends WP_UnitTestCase {
+class Test_DRGC_Shopper extends WP_UnitTestCase {
 	
 	protected $authenticator;
 	
 	public function setUp() {
 		parent::setUp();
 
-		$this->authenticator = new DR_Express_Authenticator;
+		$this->authenticator = new DRGC_Authenticator;
 	}
 
 	/**
@@ -32,7 +32,7 @@ class Test_Dr_Express_Shopper extends WP_UnitTestCase {
 			new Response(201, array(), null)
         ]));
 
-        $res = (new DR_Express_Shopper($this->authenticator, $handler))->create_shopper('UniqueName', 'secret', 'First', 'Last', 'AnyEmail@any.com', md5(rand(1,30)));
+        $res = (new DRGC_Shopper($this->authenticator, $handler))->create_shopper('UniqueName', 'secret', 'First', 'Last', 'AnyEmail@any.com', md5(rand(1,30)));
 		
         $this->assertTrue($res);
 	}
@@ -49,7 +49,7 @@ class Test_Dr_Express_Shopper extends WP_UnitTestCase {
 			new Response($payload->status, array(), $stream)
         ]));
 
-		$res = (new DR_Express_Shopper($this->authenticator, $handler))->retrieve_shopper();
+		$res = (new DRGC_Shopper($this->authenticator, $handler))->retrieve_shopper();
 		
         $this->assertArrayHasKey('id', $res);
         $this->assertArrayHasKey('username', $res);
@@ -69,7 +69,7 @@ class Test_Dr_Express_Shopper extends WP_UnitTestCase {
 			new Response($payload->status, array(), $stream)
 		]));
 		
-		$res = (new DR_Express_Shopper($this->authenticator, $handler))->get_access_token_information();
+		$res = (new DRGC_Shopper($this->authenticator, $handler))->get_access_token_information();
 
         $this->assertArrayHasKey('sessionId', $res);
         $this->assertArrayHasKey('userId', $res);
@@ -87,7 +87,7 @@ class Test_Dr_Express_Shopper extends WP_UnitTestCase {
 		]));
 		
 		$this->assertTrue(
-			(new DR_Express_Shopper($this->authenticator, $handler))->update_shopper_fields()
+			(new DRGC_Shopper($this->authenticator, $handler))->update_shopper_fields()
 		);
 	}
 }

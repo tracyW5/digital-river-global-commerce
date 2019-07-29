@@ -5,11 +5,11 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes
  */
 
-class DR_Express_Activator {
+class DRGC_Activator {
 
 	/**
 	 * On plugin activated.
@@ -18,7 +18,7 @@ class DR_Express_Activator {
 	 */
 	public static function activate() {
 		self::create_pages();
-		new DR_Express_Tables();
+		new DRGC_Tables();
 	}
 
 	/**
@@ -27,32 +27,32 @@ class DR_Express_Activator {
 	public static function create_pages() {
 		$pages = array(
 			'cart' => array(
-				'post_name'     => __( 'cart', 'dr-express' ),
-				'post_title'    => __( 'Cart', 'dr-express' ),
+				'post_name'     => __( 'cart', 'digital-river-global-commerce' ),
+				'post_title'    => __( 'Cart', 'digital-river-global-commerce' ),
 				'post_content'  => '<!-- wp:shortcode -->[dr-cart]<!-- /wp:shortcode -->',
 				'post_type'      => 'page',
 				'post_status'    => 'publish',
 				'post_author'    => 1,
 			),
             'checkout' => array(
-		    	'post_name'     => __( 'checkout', 'dr-express' ),
-			    'post_title'    => __( 'Checkout', 'dr-express' ),
+		    	'post_name'     => __( 'checkout', 'digital-river-global-commerce' ),
+			    'post_title'    => __( 'Checkout', 'digital-river-global-commerce' ),
 			    'post_content'  => '<!-- wp:shortcode -->[dr-checkout]<!-- /wp:shortcode -->',
 			    'post_type'      => 'page',
 			    'post_status'    => 'publish',
 			    'post_author'    => 1,
 		    ),
 			'login' => array(
-				'post_name'     => __( 'login', 'dr-express' ),
-				'post_title'    => __( 'Login', 'dr-express' ),
+				'post_name'     => __( 'login', 'digital-river-global-commerce' ),
+				'post_title'    => __( 'Login', 'digital-river-global-commerce' ),
 				'post_content'  => '<!-- wp:shortcode -->[dr-login]<!-- /wp:shortcode -->',
 				'post_type'      => 'page',
 				'post_status'    => 'publish',
 				'post_author'    => 1,
             ),
             'thank-you' => array(
-				'post_name'     => __( 'thank-you', 'dr-express' ),
-				'post_title'    => __( 'Thank You', 'dr-express' ),
+				'post_name'     => __( 'thank-you', 'digital-river-global-commerce' ),
+				'post_title'    => __( 'Thank You', 'digital-river-global-commerce' ),
 				'post_content'  => '<!-- wp:shortcode -->[dr-thank-you]<!-- /wp:shortcode -->',
 				'post_type'      => 'page',
 				'post_status'    => 'publish',
@@ -61,7 +61,7 @@ class DR_Express_Activator {
 		);
 
 		foreach ( $pages as $key => $page ) {
-			dr_create_page_and_reference( $page, 'dr_express_page_id_' . $key );
+			dr_create_page_and_reference( $page, 'drgc_page_id_' . $key );
 		}
 	}
 }

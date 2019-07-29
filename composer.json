@@ -1,8 +1,8 @@
 {
-    "name": "hr/dr-express",
+    "name": "hr/digital-river-global-commerce",
     "authors": [
         {
-            "name": "Dr Express"
+            "name": "Digital River"
         }
     ],
     "require": {
