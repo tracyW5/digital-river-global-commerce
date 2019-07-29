@@ -46,6 +46,7 @@ module.exports = {
   textDomain: 'digital-river-global-commerce', // Your textdomain here.
   translationFile: 'digital-river-global-commerce.pot', // Name of the translation file.
   translationDestination: './languages', // Where to save the translation files.
+  pluginShortName: 'drgc', // For CSS filename prefix.
   packageName: 'Digital_River_Global_Commerce', // Package name.
   bugReport: 'https://github.digitalriverws.net/gc-templates/digital-river-global-commerce', // Where can users report bugs.
   lastTranslator: 'GCTemplates <gcTemplates@digitalriver.com>', // Last translator Email ID.

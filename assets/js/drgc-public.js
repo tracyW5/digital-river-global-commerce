@@ -258,11 +258,11 @@ jQuery(document).ready(function ($) {
 });
 "use strict";
 
-/* global drExpressOptions, iFrameResize */
+/* global drgc_params, iFrameResize */
 
 /* eslint-disable no-alert, no-console */
 jQuery(document).ready(function ($) {
-  var apiBaseUrl = 'https://' + drExpressOptions.domain + '/v1/shoppers'; // Very basic throttle function,
+  var apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers'; // Very basic throttle function,
   // does not store calls white in limit period
 
   var throttle = function throttle(func, limit) {
@@ -292,7 +292,7 @@ jQuery(document).ready(function ($) {
       },
       url: function () {
         var url = "".concat(apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemId, "?");
-        url += "&token=".concat(drExpressOptions.accessToken);
+        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(data, textStatus, xhr) {
@@ -340,7 +340,7 @@ jQuery(document).ready(function ($) {
     }
 
     var params = {
-      'token': drExpressOptions.accessToken,
+      'token': drgc_params.accessToken,
       'action': 'update',
       'quantity': $qty.val(),
       'expand': 'all',
@@ -402,7 +402,7 @@ jQuery(document).ready(function ($) {
       url: function () {
         var url = "".concat(apiBaseUrl, "/me/carts/active?");
         url += "&expand=all";
-        url += "&token=".concat(drExpressOptions.accessToken);
+        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(data) {
@@ -435,7 +435,7 @@ jQuery(document).ready(function ($) {
         var url = "".concat(apiBaseUrl, "/me/point-of-promotions/Banner_ShoppingCartLocal/offers?");
         url += "format=json";
         url += "&expand=all";
-        url += "&token=".concat(drExpressOptions.accessToken);
+        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(shoppingCartOfferData, textStatus, xhr) {
@@ -457,7 +457,7 @@ jQuery(document).ready(function ($) {
         var url = "".concat(apiBaseUrl, "/me/products/").concat(productID, "/offers?");
         url += "format=json";
         url += "&expand=all";
-        url += "&token=".concat(drExpressOptions.accessToken);
+        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(tightData, textStatus, xhr) {
@@ -483,7 +483,7 @@ jQuery(document).ready(function ($) {
         var url = "".concat(apiBaseUrl, "/me/products/").concat(productID, "/point-of-promotions/CandyRack_ShoppingCart/offers?");
         url += "format=json";
         url += "&expand=all";
-        url += "&token=".concat(drExpressOptions.accessToken);
+        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(candyRackData, textStatus, xhr) {
@@ -513,8 +513,8 @@ jQuery(document).ready(function ($) {
       },
       url: function () {
         var url = buyUri;
-        if (drExpressOptions.testOrder == "true") url += '&testOrder=true';
-        url += "&token=".concat(drExpressOptions.accessToken);
+        if (drgc_params.testOrder == "true") url += '&testOrder=true';
+        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(data, textStatus, xhr) {
@@ -536,11 +536,11 @@ jQuery(document).ready(function ($) {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+          Authorization: "Bearer ".concat(drgc_params.accessToken)
         },
         url: function () {
           var url = "".concat(apiBaseUrl, "/me/carts/active?");
-          url += "&token=".concat(drExpressOptions.accessToken, "&").concat(queryStr);
+          url += "&token=".concat(drgc_params.accessToken, "&").concat(queryStr);
           return url;
         }(),
         data: JSON.stringify({
@@ -567,7 +567,7 @@ jQuery(document).ready(function ($) {
       $.ajax({
         type: 'POST',
         async: false,
-        url: drExpressOptions.ajaxUrl,
+        url: drgc_params.ajaxUrl,
         data: {
           action: 'get_permalink',
           productID: permalinkProductId
@@ -616,7 +616,7 @@ jQuery(document).ready(function ($) {
       url: function () {
         var url = "".concat(apiBaseUrl, "/me?");
         url += "format=json";
-        url += "&token=".concat(drExpressOptions.accessToken);
+        url += "&token=".concat(drgc_params.accessToken);
         url += "&currency=".concat(data.currency);
         url += "&locale=".concat(data.locale);
         return url;
@@ -651,8 +651,8 @@ jQuery(document).ready(function ($) {
     } else {
       var miniCartLineItems = '<ul class="dr-minicart-list">';
       var miniCartSubtotal = "<p class=\"dr-minicart-subtotal\"><label>Sub-Total</label><span>".concat(cart.pricing.formattedSubtotal, "</span></p>");
-      var miniCartViewCartBtn = "<a class=\"dr-btn\" id=\"dr-minicart-view-cart-btn\" href=\"".concat(drExpressOptions.cartUrl, "\">View Cart</a>");
-      var miniCartCheckoutBtn = "<a class=\"dr-btn\" id=\"dr-minicart-checkout-btn\" href=\"".concat(drExpressOptions.checkoutUrl, "\">Checkout</a>");
+      var miniCartViewCartBtn = "<a class=\"dr-btn\" id=\"dr-minicart-view-cart-btn\" href=\"".concat(drgc_params.cartUrl, "\">View Cart</a>");
+      var miniCartCheckoutBtn = "<a class=\"dr-btn\" id=\"dr-minicart-checkout-btn\" href=\"".concat(drgc_params.checkoutUrl, "\">Checkout</a>");
       lineItems.forEach(function (li) {
         var productId = li.product.uri.replace("".concat(apiBaseUrl, "/me/products/"), '');
         var listPrice = Number(li.pricing.listPriceWithQuantity.value);
@@ -759,7 +759,7 @@ jQuery(document).ready(function ($) {
         type: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+          Authorization: "Bearer ".concat(drgc_params.accessToken)
         },
         data: address,
         url: "".concat(apiBaseUrl, "/me/addresses?client_id=").concat(apiKey, "&format=json"),
@@ -810,7 +810,7 @@ jQuery(document).ready(function ($) {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+            Authorization: "Bearer ".concat(drgc_params.accessToken)
           },
           url: "".concat(apiBaseUrl, "/me/carts/active?").concat(queryStr),
           data: JSON.stringify({
@@ -935,7 +935,7 @@ jQuery(document).ready(function ($) {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+          Authorization: "Bearer ".concat(drgc_params.accessToken)
         },
         url: "".concat(apiBaseUrl, "/me/carts/active/apply-shipping-option?").concat($.param(data)),
         success: function success(data) {
@@ -960,7 +960,7 @@ jQuery(document).ready(function ($) {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+          Authorization: "Bearer ".concat(drgc_params.accessToken)
         },
         url: "".concat(apiBaseUrl, "/me/carts/active/apply-payment-method?expand=all"),
         data: JSON.stringify(data),
@@ -993,7 +993,7 @@ jQuery(document).ready(function ($) {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+            Authorization: "Bearer ".concat(drgc_params.accessToken)
           },
           url: "".concat(apiBaseUrl, "/me/carts/active"),
           data: JSON.stringify({
@@ -1017,11 +1017,11 @@ jQuery(document).ready(function ($) {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+          Authorization: "Bearer ".concat(drgc_params.accessToken)
         },
         url: "".concat(apiBaseUrl, "/me/carts/active/submit-cart?expand=all"),
         success: function success(data) {
-          window.location.replace("".concat(drExpressOptions.thankYouEndpoint, "?order=").concat(data.submitCart.order.id));
+          window.location.replace("".concat(drgc_params.thankYouEndpoint, "?order=").concat(data.submitCart.order.id));
         },
         error: function error(jqXHR) {
           $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
@@ -1035,14 +1035,14 @@ jQuery(document).ready(function ($) {
     }; // check billing info
 
 
-    var siteID = drExpressOptions.siteID;
-    var apiKey = drExpressOptions.apiKey;
-    var domain = drExpressOptions.domain;
+    var siteID = drgc_params.siteID;
+    var apiKey = drgc_params.apiKey;
+    var domain = drgc_params.domain;
     var apiBaseUrl = 'https://' + domain + '/v1/shoppers';
-    var drLocale = drExpressOptions.drLocale || 'en_US';
+    var drLocale = drgc_params.drLocale || 'en_US';
     FloatLabel.init(); // Globals
 
-    var digitalriverjs = new DigitalRiver(drExpressOptions.digitalRiverKey);
+    var digitalriverjs = new DigitalRiver(drgc_params.digitalRiverKey);
     var payload = {
       shipping: {},
       billing: {}
@@ -1123,7 +1123,7 @@ jQuery(document).ready(function ($) {
     $('#checkout-email-form').on('submit', function (e) {
       e.preventDefault(); // If no items are in cart, do not even continue, maybe give feedback
 
-      if (!drExpressOptions.cart.cart.lineItems.hasOwnProperty('lineItem')) return;
+      if (!drgc_params.cart.cart.lineItems.hasOwnProperty('lineItem')) return;
       var $form = $('#checkout-email-form');
       var email = $form.find('input[name=email]').val().trim();
       $form.addClass('was-validated');
@@ -1206,7 +1206,7 @@ jQuery(document).ready(function ($) {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+          Authorization: "Bearer ".concat(drgc_params.accessToken)
         },
         url: "".concat(apiBaseUrl, "/me/carts/active/apply-shipping-option?").concat($.param(data)),
         success: function success(data) {
@@ -1245,7 +1245,7 @@ jQuery(document).ready(function ($) {
       var $section = $('.dr-checkout__payment');
 
       if (paymentPayload.selector === 'credit-card') {
-        var cart = drExpressOptions.cart.cart;
+        var cart = drgc_params.cart.cart;
         var creditCardPayload = {
           type: 'creditCard',
           owner: {
@@ -1292,16 +1292,16 @@ jQuery(document).ready(function ($) {
       applyPaymentToCart(paymentSourceId);
     });
 
-    if (drExpressOptions.payPal.sourceId) {
+    if (drgc_params.payPal.sourceId) {
       $('.dr-checkout').children().addClass('closed');
       $('.dr-checkout').children().removeClass('active');
       $('.dr-checkout__payment').removeClass('closed').addClass('active');
 
-      if (drExpressOptions.payPal.failure == 'true') {// TODO: Display Error on paypal form maybe
+      if (drgc_params.payPal.failure == 'true') {// TODO: Display Error on paypal form maybe
       }
 
-      if (drExpressOptions.payPal.success == 'true') {
-        applyPaymentToCart(drExpressOptions.payPal.sourceId);
+      if (drgc_params.payPal.success == 'true') {
+        applyPaymentToCart(drgc_params.payPal.sourceId);
       }
     }
 
@@ -1399,7 +1399,7 @@ jQuery(document).ready(function ($) {
           $('#dr-paypal-button').hide();
         },
         payment: function payment() {
-          var cart = drExpressOptions.cart.cart;
+          var cart = drgc_params.cart.cart;
           var requestShipping = $('.dr-checkout__shipping').length ? true : false;
           var payPalItems = [];
           $.each(cart.lineItems.lineItem, function (index, item) {
@@ -1460,12 +1460,12 @@ jQuery(document).ready(function ($) {
 });
 "use strict";
 
-/* global drExpressOptions, iFrameResize */
+/* global drgc_params, iFrameResize */
 
 /* eslint-disable no-alert, no-console */
 jQuery(document).ready(function ($) {
-  var ajaxUrl = drExpressOptions.ajaxUrl;
-  var apiBaseUrl = 'https://' + drExpressOptions.domain + '/v1/shoppers';
+  var ajaxUrl = drgc_params.ajaxUrl;
+  var apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers';
   $('#dr_login_form').on('submit', function (e) {
     e.preventDefault();
     var $form = $('#dr_login_form');
@@ -1483,10 +1483,10 @@ jQuery(document).ready(function ($) {
     $form.data('processing', true);
     $('.dr-form-error-msg').text('');
     var data = {
-      'action': 'dr_express_login',
+      'action': 'drgc_login',
       'username': $(".dr-login-form input[name='username']").val(),
       'password': $(".dr-login-form input[name='password']").val(),
-      'cookie': readCookie('dr_express_session')
+      'cookie': readCookie('drgc_session')
     };
     $.post(ajaxUrl, data, function (response) {
       if (response.success) {
@@ -1507,7 +1507,7 @@ jQuery(document).ready(function ($) {
       }
     });
   });
-  $('.dr-express-wrapper').on('click', '.dr-logout', function (e) {
+  $('.drgc-wrapper').on('click', '.dr-logout', function (e) {
     e.preventDefault();
 
     if ($(this).data('processing')) {
@@ -1517,8 +1517,8 @@ jQuery(document).ready(function ($) {
     var but = $(this).toggleClass('sending').blur();
     $(this).data('processing', true);
     var data = {
-      'action': 'dr_express_logout',
-      'cookie': readCookie('dr_express_session')
+      'action': 'drgc_logout',
+      'cookie': readCookie('drgc_session')
     };
     $.post(ajaxUrl, data, function (response) {
       location.reload();
@@ -1541,10 +1541,10 @@ jQuery(document).ready(function ($) {
     $form.data('processing', true);
     $('.dr-signin-form-error').text('');
     var data = {
-      'action': 'dr_express_signup',
+      'action': 'drgc_signup',
       'username': $(".dr-signup-form input[name='uemail']").val(),
       'password': $(".dr-signup-form input[name='upw']").val(),
-      'cookie': readCookie('dr_express_session')
+      'cookie': readCookie('drgc_session')
     };
     $.post(ajaxUrl, data, function (response) {
       if (response.success) {
@@ -1576,7 +1576,7 @@ jQuery(document).ready(function ($) {
 
     var $button = $(this).toggleClass('sending').blur().removeClass('btn');
     var data = {
-      'action': 'dr_express_pass_reset_request'
+      'action': 'drgc_pass_reset_request'
     };
     $.each($form.serializeArray(), function (index, obj) {
       data[obj.name] = obj.value;
@@ -1617,7 +1617,7 @@ jQuery(document).ready(function ($) {
     }
 
     var data = {
-      'action': 'dr_express_reset_password',
+      'action': 'drgc_reset_password',
       'key': searchParams.get('key'),
       'login': searchParams.get('login')
     };
@@ -1658,7 +1658,7 @@ jQuery(document).ready(function ($) {
       url: function () {
         var url = "".concat(apiBaseUrl, "/me/carts/active?");
         url += "&expand=all";
-        url += "&token=".concat(drExpressOptions.accessToken);
+        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(data) {
@@ -1714,7 +1714,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-/* global drExpressOptions, iFrameResize */
+/* global drgc_params, iFrameResize */
 
 /* eslint-disable no-alert, no-console */
 jQuery(document).ready(function ($) {
@@ -1724,12 +1724,12 @@ jQuery(document).ready(function ($) {
     function DRService() {
       _classCallCheck(this, DRService);
 
-      this.siteID = drExpressOptions.siteID;
-      this.apiKey = drExpressOptions.apiKey;
-      this.domain = drExpressOptions.domain;
+      this.siteID = drgc_params.siteID;
+      this.apiKey = drgc_params.apiKey;
+      this.domain = drgc_params.domain;
       this.sessionToken = null;
       this.apiBaseUrl = 'https://' + this.domain + '/v1/shoppers';
-      this.drLocale = drExpressOptions.drLocale || 'en_US';
+      this.drLocale = drgc_params.drLocale || 'en_US';
     }
 
     _createClass(DRService, [{
@@ -1763,12 +1763,12 @@ jQuery(document).ready(function ($) {
             type: 'GET',
             headers: {
               Accept: 'application/json',
-              Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+              Authorization: "Bearer ".concat(drgc_params.accessToken)
             },
             url: function () {
               var url = "".concat(_this2.apiBaseUrl, "/me/carts/active?");
               url += 'format=json';
-              url += "&token=".concat(drExpressOptions.accessToken);
+              url += "&token=".concat(drgc_params.accessToken);
               return url;
             }(),
             success: function success(data) {
@@ -1790,15 +1790,15 @@ jQuery(document).ready(function ($) {
             type: 'POST',
             headers: {
               Accept: 'application/json',
-              Authorization: "Bearer ".concat(drExpressOptions.accessToken)
+              Authorization: "Bearer ".concat(drgc_params.accessToken)
             },
             url: function () {
               var url = "".concat(_this3.apiBaseUrl, "/me/carts/active?");
               url += 'format=json';
               url += "&productId=".concat(productID);
               if (quantity) url += "&quantity=".concat(quantity);
-              if (drExpressOptions.testOrder == "true") url += '&testOrder=true';
-              url += "&token=".concat(drExpressOptions.accessToken);
+              if (drgc_params.testOrder == "true") url += '&testOrder=true';
+              url += "&token=".concat(drgc_params.accessToken);
               return url;
             }(),
             success: function success(data) {
@@ -1825,7 +1825,7 @@ jQuery(document).ready(function ($) {
             url: function () {
               var url = "".concat(_this4.apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemID, "?");
               url += 'format=json';
-              url += "&token=".concat(drExpressOptions.accessToken);
+              url += "&token=".concat(drgc_params.accessToken);
               return url;
             }(),
             success: function success() {
@@ -1947,8 +1947,8 @@ jQuery(document).ready(function ($) {
     } else {
       var miniCartLineItems = '<ul class="dr-minicart-list">';
       var miniCartSubtotal = "<p class=\"dr-minicart-subtotal\"><label>Sub-Total</label><span>".concat(cart.pricing.formattedSubtotal, "</span></p>");
-      var miniCartViewCartBtn = "<a class=\"dr-btn\" id=\"dr-minicart-view-cart-btn\" href=\"".concat(drExpressOptions.cartUrl, "\">View Cart</a>");
-      var miniCartCheckoutBtn = "<a class=\"dr-btn\" id=\"dr-minicart-checkout-btn\" href=\"".concat(drExpressOptions.checkoutUrl, "\">Checkout</a>");
+      var miniCartViewCartBtn = "<a class=\"dr-btn\" id=\"dr-minicart-view-cart-btn\" href=\"".concat(drgc_params.cartUrl, "\">View Cart</a>");
+      var miniCartCheckoutBtn = "<a class=\"dr-btn\" id=\"dr-minicart-checkout-btn\" href=\"".concat(drgc_params.checkoutUrl, "\">Checkout</a>");
       lineItems.forEach(function (li) {
         var productId = li.product.uri.replace("".concat(drService.apiBaseUrl, "/me/products/"), '');
         var listPrice = Number(li.pricing.listPriceWithQuantity.value);
