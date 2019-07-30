@@ -63,18 +63,14 @@ abstract class AbstractHttpService {
      * 
      * @var array
      */
-    protected $test_basic_auth = array(
-        'paylive' => 'MzhmNTRlZmNjZjkzNGIyOGFkMzcyZGYyYTI5NGUzY2Y6ZTE1NDY4ZTYyMDdiNDUwNmFhOGI3YmExOTVhMzAwMzg='
-    );
+    protected $test_basic_auth = array();
 
     /**
      * Basic Auth for production env
      * 
      * @var array
      */
-    protected $production_basic_auth = array(
-        'sotw2'   => 'NmEwYmIwNDkxMDljNGEwZjhkOGRmZjdkYjg5NjI1NGI6NDdkOGVhMjBmZmVmNDU5MGI1YjU5ZjA2YWM4MzM0NTk='
-    );
+    protected $production_basic_auth = array();
 
     /**
      * Services constructor.
