@@ -30,11 +30,12 @@ jQuery(document).ready(($) => {
         $.ajax({
             type: 'DELETE',
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/json",
+                "Content-Type":"application/json",
+                "Authorization": `Bearer ${drgc_params.accessToken}`
             },
             url: (() => {
-                let url = `${apiBaseUrl}/me/carts/active/line-items/${lineItemId}?`;
-                url += `&token=${drgc_params.accessToken}`
+                let url = `${apiBaseUrl}/me/carts/active/line-items/${lineItemId}`;
                 return url;
             })(),
             success: (data, textStatus, xhr) => {
@@ -84,7 +85,6 @@ jQuery(document).ready(($) => {
         }
 
         let params = {
-            'token'               : drgc_params.accessToken,
             'action'              : 'update',
             'quantity'            : $qty.val(),
             'expand'              : 'all',
@@ -94,7 +94,9 @@ jQuery(document).ready(($) => {
         $.ajax({
             type: 'POST',
             headers: {
-                "Accept": "application/json"
+              "Accept": "application/json",
+              "Content-Type":"application/json",
+              "Authorization": `Bearer ${drgc_params.accessToken}`
             },
             url: (() => {
                 let url = `${apiBaseUrl}/me/carts/active/line-items/${lineItemId}?${$.param(params)}`;
@@ -137,12 +139,12 @@ jQuery(document).ready(($) => {
         $.ajax({
             type: 'GET',
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/json",
+                "Authorization": `Bearer ${drgc_params.accessToken}`
             },
             url: (() => {
                 let url = `${apiBaseUrl}/me/carts/active?`;
                 url += `&expand=all`
-                url += `&token=${drgc_params.accessToken}`
                 return url;
             })(),
             success: (data) => {
@@ -168,11 +170,14 @@ jQuery(document).ready(($) => {
     function shoppingCartBanner(){
       $.ajax({
         type: 'GET',
+        headers: {
+          "Content-Type": 'application/json',
+          "Authorization": `Bearer ${drgc_params.accessToken}`
+        },
         url: (() => {
             let url = `${apiBaseUrl}/me/point-of-promotions/Banner_ShoppingCartLocal/offers?`;
             url += `format=json`
             url += `&expand=all`
-            url += `&token=${drgc_params.accessToken}`
             return url;
         })(),
         success: (shoppingCartOfferData, textStatus, xhr) => {
@@ -192,11 +197,14 @@ jQuery(document).ready(($) => {
     function tightBundleRemoveElements(productID){
       $.ajax({
         type: 'GET',
+        headers: {
+          "Content-Type": 'application/json',
+          "Authorization": `Bearer ${drgc_params.accessToken}`
+        },
         url: (() => {
             let url = `${apiBaseUrl}/me/products/${productID}/offers?`;
             url += `format=json`
             url += `&expand=all`
-            url += `&token=${drgc_params.accessToken}`
             return url;
         })(),
         success: (tightData, textStatus, xhr) => {
@@ -220,11 +228,14 @@ jQuery(document).ready(($) => {
     function candyRackCheckAndRender(productID){
       $.ajax({
         type: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${drgc_params.accessToken}`
+        },
         url: (() => {
             let url = `${apiBaseUrl}/me/products/${productID}/point-of-promotions/CandyRack_ShoppingCart/offers?`;
             url += `format=json`
             url += `&expand=all`
-            url += `&token=${drgc_params.accessToken}`
             return url;
         })(),
         success: (candyRackData, textStatus, xhr) => {
@@ -272,12 +283,13 @@ jQuery(document).ready(($) => {
       $.ajax({
           type: 'POST',
           headers: {
-              "Accept": "application/json"
+              "Accept": "application/json",
+              "Content-Type":"application/json",
+              "Authorization": `Bearer ${drgc_params.accessToken}`
           },
           url: (() => {
               let url = buyUri;
               if(drgc_params.testOrder == "true")url += '&testOrder=true';
-              url += `&token=${drgc_params.accessToken}`
               return url;
           })(),
           success: (data, textStatus, xhr) => {
@@ -296,13 +308,13 @@ jQuery(document).ready(($) => {
             $.ajax({
                 type: 'POST',
                 headers: {
-                    Accept: 'application/json',
-                    'Content-Type':'application/json',
-                    Authorization: `Bearer ${drgc_params.accessToken}`,
+                    "Accept": "application/json",
+                    "Content-Type":"application/json",
+                    "Authorization": `Bearer ${drgc_params.accessToken}`,
                 },
                 url: (() => {
                     let url = `${apiBaseUrl}/me/carts/active?`;
-                    url += `&token=${drgc_params.accessToken}&${queryStr}`;
+                    url += `&${queryStr}`;
                     return url;
                 })(),
                 data: JSON.stringify({
@@ -398,10 +410,14 @@ jQuery(document).ready(($) => {
 
         $.ajax({
             type: 'POST',
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${drgc_params.accessToken}`
+            },
             url: (() => {
                 let url = `${apiBaseUrl}/me?`;
                 url += `format=json`
-                url += `&token=${drgc_params.accessToken}`
                 url += `&currency=${data.currency}`
                 url += `&locale=${data.locale}`
                 return url;

@@ -288,11 +288,12 @@ jQuery(document).ready(function ($) {
     $.ajax({
       type: 'DELETE',
       headers: {
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
       url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemId, "?");
-        url += "&token=".concat(drgc_params.accessToken);
+        var url = "".concat(apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemId);
         return url;
       }(),
       success: function success(data, textStatus, xhr) {
@@ -340,7 +341,6 @@ jQuery(document).ready(function ($) {
     }
 
     var params = {
-      'token': drgc_params.accessToken,
       'action': 'update',
       'quantity': $qty.val(),
       'expand': 'all',
@@ -349,7 +349,9 @@ jQuery(document).ready(function ($) {
     $.ajax({
       type: 'POST',
       headers: {
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
       url: function () {
         var url = "".concat(apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemId, "?").concat($.param(params));
@@ -397,12 +399,12 @@ jQuery(document).ready(function ($) {
     $.ajax({
       type: 'GET',
       headers: {
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
       url: function () {
         var url = "".concat(apiBaseUrl, "/me/carts/active?");
         url += "&expand=all";
-        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(data) {
@@ -431,11 +433,14 @@ jQuery(document).ready(function ($) {
   function shoppingCartBanner() {
     $.ajax({
       type: 'GET',
+      headers: {
+        "Content-Type": 'application/json',
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
+      },
       url: function () {
         var url = "".concat(apiBaseUrl, "/me/point-of-promotions/Banner_ShoppingCartLocal/offers?");
         url += "format=json";
         url += "&expand=all";
-        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(shoppingCartOfferData, textStatus, xhr) {
@@ -453,11 +458,14 @@ jQuery(document).ready(function ($) {
   function tightBundleRemoveElements(productID) {
     $.ajax({
       type: 'GET',
+      headers: {
+        "Content-Type": 'application/json',
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
+      },
       url: function () {
         var url = "".concat(apiBaseUrl, "/me/products/").concat(productID, "/offers?");
         url += "format=json";
         url += "&expand=all";
-        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(tightData, textStatus, xhr) {
@@ -479,11 +487,14 @@ jQuery(document).ready(function ($) {
   function candyRackCheckAndRender(productID) {
     $.ajax({
       type: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
+      },
       url: function () {
         var url = "".concat(apiBaseUrl, "/me/products/").concat(productID, "/point-of-promotions/CandyRack_ShoppingCart/offers?");
         url += "format=json";
         url += "&expand=all";
-        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(candyRackData, textStatus, xhr) {
@@ -509,12 +520,13 @@ jQuery(document).ready(function ($) {
     $.ajax({
       type: 'POST',
       headers: {
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
       url: function () {
         var url = buyUri;
         if (drgc_params.testOrder == "true") url += '&testOrder=true';
-        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(data, textStatus, xhr) {
@@ -534,13 +546,13 @@ jQuery(document).ready(function ($) {
       $.ajax({
         type: 'POST',
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: "Bearer ".concat(drgc_params.accessToken)
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": "Bearer ".concat(drgc_params.accessToken)
         },
         url: function () {
           var url = "".concat(apiBaseUrl, "/me/carts/active?");
-          url += "&token=".concat(drgc_params.accessToken, "&").concat(queryStr);
+          url += "&".concat(queryStr);
           return url;
         }(),
         data: JSON.stringify({
@@ -613,10 +625,14 @@ jQuery(document).ready(function ($) {
     };
     $.ajax({
       type: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
+      },
       url: function () {
         var url = "".concat(apiBaseUrl, "/me?");
         url += "format=json";
-        url += "&token=".concat(drgc_params.accessToken);
         url += "&currency=".concat(data.currency);
         url += "&locale=".concat(data.locale);
         return url;
