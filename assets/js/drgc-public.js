@@ -1038,6 +1038,7 @@ jQuery(document).ready(function ($) {
     var siteID = drgc_params.siteID;
     var apiKey = drgc_params.apiKey;
     var domain = drgc_params.domain;
+    var isLogin = drgc_params.isLogin;
     var apiBaseUrl = 'https://' + domain + '/v1/shoppers';
     var drLocale = drgc_params.drLocale || 'en_US';
     FloatLabel.init(); // Globals
@@ -1155,7 +1156,7 @@ jQuery(document).ready(function ($) {
       }, {
         shippingAddress: payload.shipping
       }).then(function (data) {
-        saveShippingAddress();
+        if (isLogin == 'true') saveShippingAddress();
         $button.removeClass('sending').blur();
         setShippingOptions(data.cart);
         var $section = $('.dr-checkout__shipping');
@@ -1181,7 +1182,7 @@ jQuery(document).ready(function ($) {
       }, {
         billingAddress: payload.billing
       }).then(function (data) {
-        saveBillingAddress();
+        if (isLogin == 'true') saveBillingAddress();
         $button.removeClass('sending').blur();
         var $section = $('.dr-checkout__billing');
         displaySavedAddress(data.cart.billingAddress, $section.find('.dr-panel-result__text'));
