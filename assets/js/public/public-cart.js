@@ -3,6 +3,7 @@
 
 jQuery(document).ready(($) => {
     const apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers';
+    const productLabel = $("#dr-cart-page-wrapper div.product-sku span:first-child").html();
 
     // Very basic throttle function,
     // does not store calls white in limit period
@@ -254,7 +255,7 @@ jQuery(document).ready(($) => {
                       </div>
                       ${productOffer.product.displayName}
                       <div class="product-sku">
-                        <span>Product </span>
+                        <span>${productLabel}  </span>
                         <span>#${productOffer.product.id}</span>
                       </div>
                     </div>
@@ -355,7 +356,7 @@ jQuery(document).ready(($) => {
                   <div class="dr-product__info">
                       <a class="product-name" href="${permalink}">${lineitem.product.displayName}</a>
                       <div class="product-sku">
-                          <span>Product </span>
+                          <span>${productLabel} </span>
                           <span>#${lineitem.product.id}</span>
                       </div>
                       <div class="product-qty">
