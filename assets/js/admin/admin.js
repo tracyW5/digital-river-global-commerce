@@ -8,11 +8,11 @@ jQuery(document).ready(($) => {
 		itemsCompleted = [],
 		itemsFailed = [],
 		$domStatusCounter,
-		ajaxUrl = dr_object.ajax_url,
-		ajax_nonce = dr_object.ajax_nonce,
-		instance_id = dr_object.dr_ajx_instance_id,
-		siteID = dr_object.site_id,
-		apiKey = dr_object.api_key,
+		ajaxUrl = drgc_admin_params.ajax_url,
+		ajax_nonce = drgc_admin_params.ajax_nonce,
+		instance_id = drgc_admin_params.drgc_ajx_instance_id,
+		siteID = drgc_admin_params.site_id,
+		apiKey = drgc_admin_params.api_key,
 		$progressBar = $('#dr-data-process-progressbar'),
 		$fecounter = $('.wrapImportControls p'),
 		$importButton = $('#products-import-btn');
@@ -32,7 +32,7 @@ jQuery(document).ready(($) => {
 		$('.wrapImportControls').append("<h4> <b>Fetching products, locales and currencies...</b> </h4>");
 
 		var data = {
-			action      : 'dr_express_ajx_action',
+			action      : 'drgc_ajx_action',
 			nonce       : ajax_nonce,
 			instance_id : instance_id,
 			step        : 'init',
@@ -80,7 +80,7 @@ jQuery(document).ready(($) => {
 		}
 
 		data = {
-			action              : 'dr_express_ajx_action',
+			action              : 'drgc_ajx_action',
 			step                : 'batchprocess',
 			persist             : persist,
 			nonce               : ajax_nonce,
@@ -137,7 +137,7 @@ jQuery(document).ready(($) => {
 		$('.wrapImportControls').html("<h3><b>Cleaning up...</b></h3>");
 
 		var data = {
-			action      : 'dr_express_ajx_action',
+			action      : 'drgc_ajx_action',
 			step        : 'end',
 			persist     : persist,
 			nonce       : ajax_nonce,

@@ -1,9 +1,9 @@
-/* global drExpressOptions, iFrameResize */
+/* global drgc_params, iFrameResize */
 /* eslint-disable no-alert, no-console */
 
 jQuery(document).ready(($) => {
-    const ajaxUrl = drExpressOptions.ajaxUrl;
-    const apiBaseUrl = 'https://' + drExpressOptions.domain + '/v1/shoppers';
+    const ajaxUrl = drgc_params.ajaxUrl;
+    const apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers';
 
     $('#dr_login_form').on('submit', (e) => {
         e.preventDefault();
@@ -25,10 +25,10 @@ jQuery(document).ready(($) => {
         $('.dr-form-error-msg').text('');
 
         const data = {
-            'action'    : 'dr_express_login',
+            'action'    : 'drgc_login',
             'username'  : $(".dr-login-form input[name='username']").val(),
             'password'  : $(".dr-login-form input[name='password']").val(),
-            'cookie'    : readCookie('dr_express_session')
+            'cookie'    : readCookie('drgc_session')
         };
 
         $.post(ajaxUrl, data, function(response) {
@@ -52,7 +52,7 @@ jQuery(document).ready(($) => {
 
     });
 
-    $('.dr-express-wrapper').on('click', '.dr-logout', function(e) {
+    $('.drgc-wrapper').on('click', '.dr-logout', function(e) {
         e.preventDefault();
 
         if ($(this).data('processing')) {
@@ -64,8 +64,8 @@ jQuery(document).ready(($) => {
         $(this).data('processing', true);
 
         const data = {
-            'action'    : 'dr_express_logout',
-            'cookie'    : readCookie('dr_express_session')
+            'action'    : 'drgc_logout',
+            'cookie'    : readCookie('drgc_session')
         };
 
         $.post(ajaxUrl, data, function(response) {
@@ -94,10 +94,10 @@ jQuery(document).ready(($) => {
         $('.dr-signin-form-error').text('');
 
         const data = {
-            'action'    : 'dr_express_signup',
+            'action'    : 'drgc_signup',
             'username'  : $(".dr-signup-form input[name='uemail']").val(),
             'password'  : $(".dr-signup-form input[name='upw']").val(),
-            'cookie'    : readCookie('dr_express_session')
+            'cookie'    : readCookie('drgc_session')
         };
 
         $.post(ajaxUrl, data, function(response) {
@@ -133,7 +133,7 @@ jQuery(document).ready(($) => {
         let $button = $(this).toggleClass('sending').blur().removeClass('btn');
 
         let data = {
-            'action': 'dr_express_pass_reset_request'
+            'action': 'drgc_pass_reset_request'
         };
 
         $.each($form.serializeArray(), function( index, obj ) {
@@ -183,7 +183,7 @@ jQuery(document).ready(($) => {
         }
 
         let data = {
-            'action': 'dr_express_reset_password',
+            'action': 'drgc_reset_password',
             'key': searchParams.get('key'),
             'login': searchParams.get('login')
         };
@@ -227,7 +227,7 @@ jQuery(document).ready(($) => {
             url: (() => {
                 let url = `${apiBaseUrl}/me/carts/active?`;
                 url += `&expand=all`
-                url += `&token=${drExpressOptions.accessToken}`
+                url += `&token=${drgc_params.accessToken}`
                 return url;
             })(),
             success: (data) => {

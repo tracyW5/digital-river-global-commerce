@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/public/templates
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/public/templates
  */
 ?>
 
@@ -22,7 +22,7 @@
 
 			<div class="col">
 				<div class=float-right>
-					<?php dr_express_currency_toggler(); ?>
+					<?php drgc_currency_toggler(); ?>
 				</div>
 			</div>
 
@@ -51,14 +51,14 @@
 				<?php while ( have_posts() ): ?>
 					<div class="col-md-4">
 						<?php the_post(); ?>
-						<?php dr_express_get_template_part( 'content', 'archive' );  ?>
+						<?php drgc_get_template_part( 'content', 'archive' );  ?>
 					</div>
 				<?php endwhile; ?>
 				<div class="col-md-12">
-					<?php dr_express_the_posts_pagination( $wp_query ); ?>
+					<?php drgc_the_posts_pagination( $wp_query ); ?>
 				</div>
 			<?php else: ?>
-				<?php dr_express_get_template_part( 'content', 'none' ); ?>
+				<?php drgc_get_template_part( 'content', 'none' ); ?>
 			<?php endif; ?>
 
 		</div><!-- .row -->

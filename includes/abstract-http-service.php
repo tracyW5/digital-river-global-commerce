@@ -63,18 +63,14 @@ abstract class AbstractHttpService {
      * 
      * @var array
      */
-    protected $test_basic_auth = array(
-        'paylive' => 'MzhmNTRlZmNjZjkzNGIyOGFkMzcyZGYyYTI5NGUzY2Y6ZTE1NDY4ZTYyMDdiNDUwNmFhOGI3YmExOTVhMzAwMzg='
-    );
+    protected $test_basic_auth = array();
 
     /**
      * Basic Auth for production env
      * 
      * @var array
      */
-    protected $production_basic_auth = array(
-        'sotw2'   => 'NmEwYmIwNDkxMDljNGEwZjhkOGRmZjdkYjg5NjI1NGI6NDdkOGVhMjBmZmVmNDU5MGI1YjU5ZjA2YWM4MzM0NTk='
-    );
+    protected $production_basic_auth = array();
 
     /**
      * Services constructor.
@@ -94,7 +90,7 @@ abstract class AbstractHttpService {
         $this->setFormContentType();
         $this->setJsonContentType();
         $this->setEnv();
-        $this->site_id = get_option( 'dr_express_site_id' );
+        $this->site_id = get_option( 'drgc_site_id' );
     }
 
     /**
@@ -190,7 +186,7 @@ abstract class AbstractHttpService {
      * @return string
      */
     protected function normalizeUri($uri): string {
-        $domain = get_option( 'dr_express_domain' ) ?: 'api.digitalriver.com';
+        $domain = get_option( 'drgc_domain' ) ?: 'api.digitalriver.com';
         preg_match( '/^(http|https):\/\//', $domain, $matches );
         if ( empty( $matches ) ) {
             $domain = "https://{$domain}";
@@ -237,7 +233,7 @@ abstract class AbstractHttpService {
      * @return void
      */
     protected function setEnv() {
-        $this->env = ( ( strpos( get_option( 'dr_express_domain' ), 'test' ) !== false ) ? 'test' : 'production' );
+        $this->env = ( ( strpos( get_option( 'drgc_domain' ), 'test' ) !== false ) ? 'test' : 'production' );
     }
 
     /**

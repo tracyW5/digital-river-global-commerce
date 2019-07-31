@@ -7,8 +7,8 @@
  * @link       https://www.digitalriver.com
  * @since      1.0.0
  *
- * @package    DR_Express
- * @subpackage DR_Express/includes/shortcodes
+ * @package    Digital_River_Global_Commerce
+ * @subpackage Digital_River_Global_Commerce/includes/shortcodes
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -26,10 +26,10 @@ class DR_Shortcode_Cart {
 	 * @param array $atts Shortcode attributes.
 	 */
 	public static function output( $atts ) {
-		$cart = DR_Express()->cart->retrieve_cart();
-		$locales = get_option( 'dr_store_locales' );
+		$cart = DRGC()->cart->retrieve_cart();
+		$locales = get_option( 'drgc_store_locales' );
 
-		dr_get_template(
+		drgc_get_template(
 			'cart/cart.php',
 			compact('cart', 'locales')
 		);

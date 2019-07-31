@@ -131,7 +131,7 @@ gulp.task('styles', () => {
     .pipe(autoprefixer(config.BROWSERS_LIST))
     // .pipe(sourcemaps.write('./'))
     .pipe(lineec()) // Consistent Line Endings for non UNIX systems.
-    .pipe(rename({ prefix: config.textDomain + '-' }))
+    .pipe(rename({ prefix: config.pluginShortName + '-' }))
     .pipe(gulp.dest(config.styleDestination))
     .pipe(filter('**/*.css')) // Filtering stream to only css files.
     .pipe(mmq({ log: true })) // Merge Media Queries only for .min.css version.
@@ -177,7 +177,7 @@ gulp.task('stylesRTL', () => {
     // .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(autoprefixer(config.BROWSERS_LIST))
     .pipe(lineec()) // Consistent Line Endings for non UNIX systems.
-    .pipe(rename({ prefix: config.textDomain + '-', suffix: '-rtl' })) // Append "-rtl" to the filename.
+    .pipe(rename({ prefix: config.pluginShortName + '-', suffix: '-rtl' })) // Append "-rtl" to the filename.
     .pipe(rtlcss()) // Convert to RTL.
     // .pipe(sourcemaps.write('./')) // Output sourcemap for style-rtl.css.
     .pipe(gulp.dest(config.styleDestination))
