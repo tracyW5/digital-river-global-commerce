@@ -109,6 +109,7 @@ class DRGC_Public {
 			'accessToken'       =>  $access_token,
 			'cart'              =>  $cart_obj,
 			'thankYouEndpoint'  =>  esc_url( drgc_get_page_link( 'thank-you' ) ),
+			'isLogin'              =>  drgc_get_user_status(),
 			'payPal'            =>  array (
 				'sourceId' => isset( $_GET['sourceId'] ) ? $_GET['sourceId'] : false,
 				'failure' => isset( $_GET['ppcancel'] ) ? $_GET['ppcancel'] : false,

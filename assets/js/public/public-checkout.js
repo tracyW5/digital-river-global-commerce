@@ -3,6 +3,7 @@ jQuery(document).ready(($) => {
         const siteID = drgc_params.siteID;
         const apiKey = drgc_params.apiKey;
         const domain = drgc_params.domain;
+        const isLogin = drgc_params.isLogin;
         const apiBaseUrl = 'https://' + domain + '/v1/shoppers';
         const drLocale = drgc_params.drLocale || 'en_US';
 
@@ -318,7 +319,7 @@ jQuery(document).ready(($) => {
 
             $button.addClass('sending').blur();
             updateCart({ expand: 'all' }, { shippingAddress: payload.shipping }).then((data) => {
-                saveShippingAddress();
+                if ( isLogin == 'true') saveShippingAddress();
                 $button.removeClass('sending').blur();
 
                 setShippingOptions(data.cart);
@@ -346,7 +347,7 @@ jQuery(document).ready(($) => {
 
             $button.addClass('sending').blur();
             updateCart({ expand: 'all' }, { billingAddress: payload.billing }).then((data) => {
-                saveBillingAddress();
+                if ( isLogin == 'true') saveBillingAddress();
                 $button.removeClass('sending').blur();
 
                 const $section = $('.dr-checkout__billing');
