@@ -430,7 +430,7 @@ jQuery(document).ready(function ($) {
       }(),
       success: function success(shoppingCartOfferData, textStatus, xhr) {
         $.each(shoppingCartOfferData.offers.offer, function (index, offer) {
-          var shoppingCartHTML = "\n            <div class=\"dr-product dr-shoppingcart-banner\"><div class=\"dr-product-content\">".concat(offer.salesPitch[0], "</div><img src=\"").concat(offer.image, "\"></div>\n            ");
+          var shoppingCartHTML = "\n            <div class=\"dr-product\"><div class=\"dr-product-content\">".concat(offer.salesPitch[0], "</div><img src=\"").concat(offer.image, "\"></div>\n            ");
           $(".dr-cart__products").append(shoppingCartHTML);
         });
       },
