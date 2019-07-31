@@ -144,14 +144,12 @@ jQuery(document).ready(($) => {
                 "Authorization": `Bearer ${drgc_params.accessToken}`
             },
             url: (() => {
-                let url = `${apiBaseUrl}/me/carts/active?`;
-                url += `&expand=all`
+                let url = `${apiBaseUrl}/me/carts/active?expand=all`;
                 return url;
             })(),
             success: (data) => {
                 renderCartProduct(data);
                 displayMiniCart(data.cart);
-                merchandisingInit(data);
             },
             error: (jqXHR) => {
                 console.log(jqXHR);
@@ -159,14 +157,6 @@ jQuery(document).ready(($) => {
         });
     }
 
-    function merchandisingInit(data){
-      $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
-        candyRackCheckAndRender(lineitem.product.id);
-        tightBundleRemoveElements(lineitem.product.id);
-      });
-      shoppingCartBanner();
-      $('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
-    }
 
     function shoppingCartBanner(){
       $.ajax({
@@ -176,15 +166,13 @@ jQuery(document).ready(($) => {
           "Authorization": `Bearer ${drgc_params.accessToken}`
         },
         url: (() => {
-            let url = `${apiBaseUrl}/me/point-of-promotions/Banner_ShoppingCartLocal/offers?`;
-            url += `format=json`
-            url += `&expand=all`
+            let url = `${apiBaseUrl}/me/point-of-promotions/Banner_ShoppingCartLocal/offers?format=json&expand=all`;
             return url;
         })(),
         success: (shoppingCartOfferData, textStatus, xhr) => {
           $.each(shoppingCartOfferData.offers.offer, function( index, offer ) {
             let shoppingCartHTML = `
-            <div class="dr-product"><div class="dr-product-content">${offer.salesPitch[0]}</div><img src="${offer.image}"></div>
+            <div class="dr-product dr-shoppingcart-banner"><div class="dr-product-content">${offer.salesPitch[0]}</div><img src="${offer.image}"></div>
             `;
             $(".dr-cart__products").append(shoppingCartHTML);
           });
@@ -203,9 +191,7 @@ jQuery(document).ready(($) => {
           "Authorization": `Bearer ${drgc_params.accessToken}`
         },
         url: (() => {
-            let url = `${apiBaseUrl}/me/products/${productID}/offers?`;
-            url += `format=json`
-            url += `&expand=all`
+            let url = `${apiBaseUrl}/me/products/${productID}/offers?format=json&expand=all`;
             return url;
         })(),
         success: (tightData, textStatus, xhr) => {
@@ -213,7 +199,10 @@ jQuery(document).ready(($) => {
             if(offer.type =="Bundling" && offer.policyName == "Tight Bundle Policy"){
              $.each(offer.productOffers.productOffer, function( index, productOffer ) {
                /*if product have  tight policy and it is not tight itself, remove the action button*/
-               if(productOffer.product.id != productID)$('div.dr-product[data-product-id="'+productOffer.product.id+'"]').find('.remove-icon,.value-button-increase,.value-button-decrease').remove();
+               if(productOffer.product.id != productID){
+                 $('div.dr-product[data-product-id="'+productOffer.product.id+'"]').find('.remove-icon,.value-button-increase,.value-button-decrease').remove();
+                 $('div.dr-product[data-product-id="'+productOffer.product.id+'"]').insertAfter($('div.dr-product[data-product-id="'+productID+'"]'));
+               }
              });
             }
           });
@@ -234,9 +223,7 @@ jQuery(document).ready(($) => {
           "Authorization": `Bearer ${drgc_params.accessToken}`
         },
         url: (() => {
-            let url = `${apiBaseUrl}/me/products/${productID}/point-of-promotions/CandyRack_ShoppingCart/offers?`;
-            url += `format=json`
-            url += `&expand=all`
+            let url = `${apiBaseUrl}/me/products/${productID}/point-of-promotions/CandyRack_ShoppingCart/offers?format=json&expand=all`;
             return url;
         })(),
         success: (candyRackData, textStatus, xhr) => {
@@ -245,10 +232,9 @@ jQuery(document).ready(($) => {
             let buyButtonText = (offer.type == "Up-sell") ? "Upgrade" : "Add";
             $.each(offer.productOffers.productOffer, function( index, productOffer ) {
               let candyRackProductHTML = `
-              <div  class="dr-product dr-candyRackProduct" data-product-id="${productOffer.product.id}">
+              <div  class="dr-product dr-candyRackProduct" data-product-id="${productOffer.product.id}" data-parent-product-id="${productID}">
                 <div class="dr-product-content">
                     <img src="${productOffer.product.thumbnailImage}" height="40px"/>
-                    <!-- <div class="dr-product__img" style="background-image: url(${productOffer.product.thumbnailImage});background-size:50%;background-repeat: no-repeat;background-position: right; height:40px;"></div> -->
                     <div class="dr-product__info">
                       <div class="product-color">
                         <span style="background-color: yellow;">${promoText}</span>
@@ -314,8 +300,7 @@ jQuery(document).ready(($) => {
                     "Authorization": `Bearer ${drgc_params.accessToken}`,
                 },
                 url: (() => {
-                    let url = `${apiBaseUrl}/me/carts/active?`;
-                    url += `&${queryStr}`;
+                    let url = `${apiBaseUrl}/me/carts/active?&${queryStr}`;
                     return url;
                 })(),
                 data: JSON.stringify({
@@ -331,72 +316,120 @@ jQuery(document).ready(($) => {
         });
     }
 
-    function renderCartProduct(data){
-      $('.dr-cart__products').html("");
-      let hasPhysicalProduct = false;
-      $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
-        let permalink = '';
-        let permalinkProductId = lineitem.product.id;
-        if(lineitem.product.parentProduct)permalinkProductId = lineitem.product.parentProduct.id;
-        if(lineitem.product.productType == "PHYSICAL")hasPhysicalProduct = true;
+    function getpermalink(permalinkProductId){
+      return new Promise((resolve, reject) => {
         $.ajax({
           type: 'POST',
-          async: false,
           url: drgc_params.ajaxUrl,
           data: {
             action: 'get_permalink',
             productID: permalinkProductId
           },
-          success: (response) => {
-            permalink = response;
-            let lineItemHTML = `
-            <div data-line-item-id="${lineitem.id}" class="dr-product" data-product-id="${lineitem.product.id}">
-              <div class="dr-product-content">
-                  <div class="dr-product__img" style="background-image: url(${lineitem.product.thumbnailImage})"></div>
-                  <div class="dr-product__info">
-                      <a class="product-name" href="${permalink}">${lineitem.product.displayName}</a>
-                      <div class="product-sku">
-                          <span>${productLabel} </span>
-                          <span>#${lineitem.product.id}</span>
-                      </div>
-                      <div class="product-qty">
-                          <span class="qty-text">Qty ${lineitem.quantity}</span>
-                          <span class="dr-pd-cart-qty-minus value-button-decrease"></span>
-                          <input type="number" class="product-qty-number" step="1" min="1" max="999" value="${lineitem.quantity}" maxlength="5" size="2" pattern="[0-9]*" inputmode="numeric" readonly="true">
-                          <span class="dr-pd-cart-qty-plus value-button-increase"></span>
-                      </div>
-                  </div>
-              </div>
-              <div class="dr-product__price">
-                  <button class="dr-prd-del remove-icon"></button>
-                  <span class="sale-price">${lineitem.pricing.formattedSalePriceWithQuantity}</span>
-                  <span class="regular-price">${lineitem.pricing.formattedListPriceWithQuantity}</span>
-              </div>
+          success: (data) => {
+            resolve(data);
+          },
+          error: (jqXHR) => {
+            reject(jqXHR);
+          }
+        });
+    });
+    }
+
+    function renderLineItem(data,hasPhysicalProduct){
+      let lineItemIndex =0;
+      $.each(data.cart.lineItems.lineItem, function( index, lineitem ){
+        let permalinkProductId = lineitem.product.id;
+        if(lineitem.product.parentProduct)permalinkProductId = lineitem.product.parentProduct.id;
+        getpermalink(permalinkProductId).then((response) => {
+          let permalink = '';
+          permalink = response;
+          let lineItemHTML = `
+          <div   data-line-item-id="${lineitem.id}" class="dr-product dr-product-lineitem" data-product-id="${lineitem.product.id}" data-sort="${index}">
+            <div class="dr-product-content">
+                <div class="dr-product__img" style="background-image: url(${lineitem.product.thumbnailImage})"></div>
+                <div class="dr-product__info">
+                    <a class="product-name" href="${permalink}">${lineitem.product.displayName}</a>
+                    <div class="product-sku">
+                        <span>${productLabel} </span>
+                        <span>#${lineitem.product.id}</span>
+                    </div>
+                    <div class="product-qty">
+                        <span class="qty-text">Qty ${lineitem.quantity}</span>
+                        <span class="dr-pd-cart-qty-minus value-button-decrease"></span>
+                        <input type="number" class="product-qty-number" step="1" min="1" max="999" value="${lineitem.quantity}" maxlength="5" size="2" pattern="[0-9]*" inputmode="numeric" readonly="true">
+                        <span class="dr-pd-cart-qty-plus value-button-increase"></span>
+                    </div>
+                </div>
             </div>
-            `;
-            $('.dr-cart__products').append(lineItemHTML);
+            <div class="dr-product__price">
+                <button class="dr-prd-del remove-icon"></button>
+                <span class="sale-price">${lineitem.pricing.formattedSalePriceWithQuantity}</span>
+                <span class="regular-price">${lineitem.pricing.formattedListPriceWithQuantity}</span>
+            </div>
+          </div>
+          `;
+          $('.dr-cart__products').append(lineItemHTML);
+
+        }).then(() => {
+          lineItemIndex++;
+          candyRackCheckAndRender(lineitem.product.id);
+          if(lineItemIndex === data.cart.lineItems.lineItem.length){
+            const pricing = data.cart.pricing;
+            if(hasPhysicalProduct){
+              $('.dr-summary__shipping').show();
+            }else{
+              $('.dr-summary__shipping').hide();
+            }
+            $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling);
+            //overwrite $0.00 to FREE
+            if(pricing.shippingAndHandling.value === 0 )$('div.dr-summary__shipping .shipping-value').text("FREE");
+            $('div.dr-summary__discount .discount-value').text(`-${pricing.formattedDiscount}`);
+            $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
+
+            if (pricing.discount.value) {
+              $('.dr-summary__discount').show();
+            } else {
+              $('.dr-summary__discount').hide();
+            }
+
+            $('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
+
+            $.each(data.cart.lineItems.lineItem, function( index, lineitemTight ) {
+              tightBundleRemoveElements(lineitemTight.product.id);
+            });
+            reOrderCart();
+          }
+        }).catch((jqXHR) => {
+          if (jqXHR.responseJSON.errors) {
+            const errMsgs = jqXHR.responseJSON.errors.error.map((err) => {
+              return err.description;
+            });
           }
         });
       });
-      const pricing = data.cart.pricing;
-      if(hasPhysicalProduct){
-        $('.dr-summary__shipping').show();
-      }else{
-        $('.dr-summary__shipping').hide();
-      }
-      $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling);
-      //overwrite $0.00 to FREE
-      if(pricing.shippingAndHandling.value === 0 )$('div.dr-summary__shipping .shipping-value').text("FREE");
-      $('div.dr-summary__discount .discount-value').text(`-${pricing.formattedDiscount}`);
-      $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
+    }
 
-      if (pricing.discount.value) {
-        $('.dr-summary__discount').show();
-      } else {
-        $('.dr-summary__discount').hide();
-      }
-      if ($('.dr-cart__products').children().length <= 0) {
-        $('.dr-cart__products').text('Your cart is empty!');
+    function reOrderCart(){
+      //1.order dr-product-lineitem
+      let $wrapper = $('.dr-cart__products');
+      $wrapper.find('.dr-product-lineitem').sort(function (a, b) {
+          return +a.dataset.sort - +b.dataset.sort;
+      }).appendTo( $wrapper );
+
+      //2.add banner at last
+      shoppingCartBanner();
+    }
+
+    function renderCartProduct(data){
+      $('.dr-cart__products').html("");
+      let hasPhysicalProduct = false;
+      if(data.cart.lineItems.lineItem){
+        $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
+          if(lineitem.product.productType == "PHYSICAL")hasPhysicalProduct = true;
+        });
+        renderLineItem(data,hasPhysicalProduct);
+      }else{
+        $('.dr-cart__products').text('Your cart is empty.');
         $('#cart-estimate').hide();
       }
     }
