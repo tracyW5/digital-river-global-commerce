@@ -106,7 +106,7 @@ class DRGC_Ajx {
 		if ( ! isset( $_POST[ $key ] ) ) {
 			return $default;
 		}
-		return $_POST[ $key ];
+		return sanitize_text_field( $_POST[ $key ] );
 	}
 
 }

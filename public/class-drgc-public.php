@@ -123,19 +123,17 @@ class DRGC_Public {
 	public function ajax_attempt_auth() {
 		$plugin = DRGC();
 
-		$username = isset( $_POST['username'] ) ? trim( $_POST['username'] ) : false;
-		$password = isset( $_POST['password'] ) ? trim( $_POST['password'] ) : false;
-		$cookie = isset( $_POST['cookie'] ) ? trim( $_POST['cookie'] ) : false;
+		if ( (isset( $_POST['username'] ) && isset( $_POST['password'] )) ) {
+			$username = trim( sanitize_text_field( $_POST['username'] ) );
+			$password = trim( sanitize_text_field( $_POST['password'] ) );
 
-		if ( $username && $password ) {
 			$user = wp_authenticate( $username, $password );
 
 			if ( is_wp_error( $user ) ) {
 				wp_send_json_error( __( 'Authorization failed for specified credentials' ) );
 			}
 
-			$attempt = $plugin->shopper->generate_access_token_by_login_id($username, $password);
-
+			$attempt = $plugin->shopper->generate_access_token_by_login_id( $username, $password );
 		}
 
 		if ( array_key_exists( 'error', $attempt ) ) {
@@ -143,6 +141,7 @@ class DRGC_Public {
 		}
 
 		if ( array_key_exists( 'access_token', $attempt ) ) {
+			$cookie = isset( $_POST['cookie'] ) ? trim( $_POST['cookie'] ) : false;
 			$plugin->session->dirty_set_session( $cookie );
 
 			wp_send_json_success( $attempt );
@@ -152,11 +151,11 @@ class DRGC_Public {
 	public function dr_signup_ajax() {
 		$plugin = DRGC();
 
-		$email = isset( $_POST['username'] ) ? trim( $_POST['username'] ) : false;
-		$password = isset( $_POST['password'] ) ? trim( $_POST['password'] ) : false;
-		$cookie = isset( $_POST['cookie'] ) ? trim( $_POST['cookie'] ) : false;
+		if ( (isset( $_POST['username'] ) && isset( $_POST['password'] )) ) {
+			$email = trim( sanitize_text_field( $_POST['username'] ) );
+			$password = trim( sanitize_text_field( $_POST['password'] ) );
+			$cookie = isset( $_POST['cookie'] ) ? trim( $_POST['cookie'] ) : false;
 
-		if ( $email && $password ) {
 			$plugin->session->dirty_set_session( $cookie );
 
 			$parts_name = '';
@@ -238,16 +237,17 @@ class DRGC_Public {
 	 */
 	function dr_send_email_reset_pass_ajax() {
 		$errors = new WP_Error();
-		if ( empty( $_POST['email'] ) || ! is_string( $_POST['email'] ) ) {
+
+		$email = trim( sanitize_text_field( $_POST['email'] ) );
+		if ( empty( $email ) || ! is_string( $email ) ) {
 			$errors->add( 'empty_username', __( 'Enter a username or email address.' ) );
-		} elseif ( strpos( $_POST['email'], '@' ) ) {
-			$user_data = get_user_by( 'email', trim( wp_unslash( $_POST['email'] ) ) );
+		} elseif ( strpos( $email, '@' ) ) {
+			$user_data = get_user_by( 'email', wp_unslash( $email ) );
 			if ( empty( $user_data ) ) {
 				$errors->add( 'invalid_email', __( 'There is no account with that username or email address.' ) );
 			}
 		} else {
-			$login     = trim( $_POST['email'] );
-			$user_data = get_user_by( 'login', $login );
+			$user_data = get_user_by( 'login', $email );
 		}
 
 		/**
@@ -313,10 +313,10 @@ class DRGC_Public {
 	 * Reset user password AJAX
 	 */
 	public function dr_reset_password_ajax() {
-		$password = trim($_POST['password'] );
-		$confirm = trim($_POST['confirm-password']);
-		$key = trim($_POST['key'] );
-		$login = urldecode( urldecode( trim($_POST['login'] ) ) );
+		$password = trim( sanitize_text_field( $_POST['password'] ) );
+		$confirm = trim( sanitize_text_field( $_POST['confirm-password'] ) );
+		$key = trim( sanitize_text_field( $_POST['key'] ) );
+		$login = urldecode( trim( sanitize_text_field( $_POST['login'] ) ) );
 
 		if (
 			empty( $password ) || ! is_string( $password ) ||
