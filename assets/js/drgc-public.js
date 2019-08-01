@@ -605,7 +605,7 @@ jQuery(document).ready(function ($) {
     }
   }
 
-  $('.dr-currency-select').on('change', function (e) {
+  $('body').on('change', '.dr-currency-select', function (e) {
     e.preventDefault();
     var data = {
       currency: e.target.value,

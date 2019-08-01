@@ -334,23 +334,21 @@ function drgc_code_to_counry( $code, $abriviated = false ) {
  * @return array|bool
  */
 function drgc_get_product_pricing( $post_id = 0 ) {
+	if ( ! $post_id ) return false;
+	
+	$store_currencies = get_option( 'drgc_store_locales' );
+	$product_pricing = get_post_meta( absint( $post_id ), 'loc_pricing', true );
+	$current_locale = DRGC()->shopper->get_locale();
+	$current_currency = $store_currencies['locales'][ $current_locale ];
 	$cart = DRGC()->cart->cart;
 
-	if ( ! $post_id || ! $cart ) return false;
+	if ( $cart ) {
+		$current_currency = isset( $cart['pricing']['orderTotal']['currency'] ) ? $cart['pricing']['orderTotal']['currency'] : '';
+	}
 
-	$store_currencies = get_option( 'drgc_store_locales' );
-	$product_pricing  = get_post_meta( absint( $post_id ), 'loc_pricing', true );
-	$default_locale   = isset( $store_currencies['default_locale'] ) ? $store_currencies['default_locale'] : '';
-	$current_currency = isset( $cart['pricing']['orderTotal']['currency'] ) ? $cart['pricing']['orderTotal']['currency'] : '';
-
-	if ( isset( $store_currencies['locales'][ $default_locale ] )
-	     && $current_currency != $store_currencies['locales'][ $default_locale ]
-		 && isset( $product_pricing[ $current_currency ] )
-	) {
-
+	if ( isset( $product_pricing[ $current_currency ] ) ) {
 		return $product_pricing[ $current_currency ];
-
-	}  else {
+	} else {
 		return array(
 			'currency'          => get_post_meta( absint( $post_id ), 'currency', true ),
 			'list_price_value'  => get_post_meta( absint( $post_id ), 'list_price_value', true ),
