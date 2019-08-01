@@ -1333,14 +1333,6 @@ jQuery(document).ready(function ($) {
       $section.removeClass('closed').addClass('active');
       adjustColumns();
       updateTaxLabel();
-    }); // print thank you page
-
-    $('#print-button').on('click', function (ev) {
-      var printContents = $('.dr-thank-you-wrapper').html();
-      var originalContents = document.body.innerHTML;
-      document.body.innerHTML = printContents;
-      window.print();
-      document.body.innerHTML = originalContents;
     });
 
     if ($('#radio-credit-card').is(':checked')) {
@@ -2105,4 +2097,17 @@ jQuery(document).ready(function ($) {
     $prodPrice.html(prodPriceHtml);
   });
   $("iframe[name^='controller-']").css('display', 'none');
+});
+"use strict";
+
+jQuery(document).ready(function ($) {
+  if ($('.dr-thank-you-wrapper').length) {
+    $(document).on('click', '#print-button', function () {
+      var printContents = $('.dr-thank-you-wrapper').html();
+      var originalContents = document.body.innerHTML;
+      document.body.innerHTML = printContents;
+      window.print();
+      document.body.innerHTML = originalContents;
+    });
+  }
 });
