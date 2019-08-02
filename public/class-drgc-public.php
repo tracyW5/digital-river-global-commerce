@@ -124,8 +124,8 @@ class DRGC_Public {
 		$plugin = DRGC();
 
 		if ( (isset( $_POST['username'] ) && isset( $_POST['password'] )) ) {
-			$username = trim( sanitize_text_field( $_POST['username'] ) );
-			$password = trim( sanitize_text_field( $_POST['password'] ) );
+			$username = sanitize_text_field( $_POST['username'] );
+			$password = sanitize_text_field( $_POST['password'] );
 
 			$user = wp_authenticate( $username, $password );
 
@@ -152,8 +152,8 @@ class DRGC_Public {
 		$plugin = DRGC();
 
 		if ( (isset( $_POST['username'] ) && isset( $_POST['password'] )) ) {
-			$email = trim( sanitize_text_field( $_POST['username'] ) );
-			$password = trim( sanitize_text_field( $_POST['password'] ) );
+			$email = sanitize_text_field( $_POST['username'] );
+			$password = sanitize_text_field( $_POST['password'] );
 			$cookie = isset( $_POST['cookie'] ) ? trim( $_POST['cookie'] ) : false;
 
 			$plugin->session->dirty_set_session( $cookie );
@@ -238,7 +238,7 @@ class DRGC_Public {
 	function dr_send_email_reset_pass_ajax() {
 		$errors = new WP_Error();
 
-		$email = trim( sanitize_text_field( $_POST['email'] ) );
+		$email = sanitize_text_field( $_POST['email'] );
 		if ( empty( $email ) || ! is_string( $email ) ) {
 			$errors->add( 'empty_username', __( 'Enter a username or email address.' ) );
 		} elseif ( strpos( $email, '@' ) ) {
@@ -313,10 +313,10 @@ class DRGC_Public {
 	 * Reset user password AJAX
 	 */
 	public function dr_reset_password_ajax() {
-		$password = trim( sanitize_text_field( $_POST['password'] ) );
-		$confirm = trim( sanitize_text_field( $_POST['confirm-password'] ) );
-		$key = trim( sanitize_text_field( $_POST['key'] ) );
-		$login = urldecode( trim( sanitize_text_field( $_POST['login'] ) ) );
+		$password = sanitize_text_field( $_POST['password'] );
+		$confirm = sanitize_text_field( $_POST['confirm-password'] );
+		$key = sanitize_text_field( $_POST['key'] );
+		$login = urldecode( sanitize_text_field( $_POST['login'] ) );
 
 		if (
 			empty( $password ) || ! is_string( $password ) ||
