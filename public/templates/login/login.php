@@ -41,7 +41,7 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                 <form class="dr-confirm-password-reset-form needs-validation" novalidate>
 
                     <div class="form-group">
-                        <input class="form-control" name="password" type="password" placeholder="New Password" required>
+                        <input class="form-control" name="password" type="password" placeholder="New Password" required autocomplete="off">
 
                         <div class="invalid-feedback">
                             <?php echo __( 'This field is required.' ); ?>
@@ -49,7 +49,7 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                     </div>
 
                     <div class="form-group">
-                        <input class="form-control" name="confirm-password" type="password" placeholder="Confirm New Password" required>
+                        <input class="form-control" name="confirm-password" type="password" placeholder="Confirm New Password" required autocomplete="off">
 
                         <div class="invalid-feedback">
                             <?php echo __( 'This field is required.' ); ?>
@@ -81,7 +81,7 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                     </div>
 
                     <div class="form-group">
-                        <input class="form-control" name="password" type="password" placeholder="Password" required>
+                        <input class="form-control" name="password" type="password" placeholder="Password" required autocomplete="off">
 
                         <div class="invalid-feedback">
 		                    <?php echo __( 'This field is required.' ); ?>
@@ -166,7 +166,7 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                     </div>
 
                     <div class="form-group">
-                        <input class="form-control" name="upw" type="password" placeholder="Password" required>
+                        <input class="form-control" name="upw" type="password" placeholder="Password" required autocomplete="off">
 
                         <div class="invalid-feedback">
 			                <?php echo __( 'This field is required.' ); ?>
@@ -174,7 +174,7 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                     </div>
 
                     <div class="form-group">
-                        <input class="form-control" name="upw2" type="password" placeholder="Confirm Password" required>
+                        <input class="form-control" name="upw2" type="password" placeholder="Confirm Password" required autocomplete="off">
 
                         <div class="invalid-feedback">
 			                <?php echo __( 'Passwords do not match.' ); ?>
