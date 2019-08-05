@@ -263,8 +263,7 @@ jQuery(document).ready(function ($) {
 /* eslint-disable no-alert, no-console */
 jQuery(document).ready(function ($) {
   var apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers';
-  var productLabel = $("#dr-cart-page-wrapper div.product-sku span:first-child").html();
-  var hasPhysicalProduct = false; // Very basic throttle function,
+  var productLabel = $("#dr-cart-page-wrapper div.product-sku span:first-child").html(); // Very basic throttle function,
   // does not store calls white in limit period
 
   var throttle = function throttle(func, limit) {
@@ -550,7 +549,7 @@ jQuery(document).ready(function ($) {
     });
   }
 
-  function updateSummary(data) {
+  function updateSummary(data, hasPhysicalProduct) {
     var pricing = data.cart.pricing;
 
     if (hasPhysicalProduct) {
@@ -572,10 +571,12 @@ jQuery(document).ready(function ($) {
     }
   }
 
-  function renderLineItemAndSummary(data) {
+  function renderLineItemsAndSummary(data, hasPhysicalProduct) {
     var lineItemCount = 0;
+    var hasPhysicalProductinLineItem = hasPhysicalProduct; //reassing for easy identifying
+
     $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
-      if (lineitem.product.productType == "PHYSICAL") hasPhysicalProduct = true;
+      if (lineitem.product.productType == "PHYSICAL") hasPhysicalProductinLineItem = true;
       var permalinkProductId = lineitem.product.id;
       if (lineitem.product.parentProduct) permalinkProductId = lineitem.product.parentProduct.id;
       getpermalink(permalinkProductId).then(function (response) {
@@ -586,7 +587,7 @@ jQuery(document).ready(function ($) {
         lineItemCount++;
 
         if (lineItemCount === data.cart.lineItems.lineItem.length) {
-          updateSummary(data);
+          updateSummary(data, hasPhysicalProductinLineItem);
           reOrderCartAndMerchandising(data);
         }
       }).catch(function (jqXHR) {
@@ -621,11 +622,12 @@ jQuery(document).ready(function ($) {
   }
 
   function renderCartProduct(data) {
+    var hasPhysicalProduct = false;
     $("#tempCartProducts").remove();
     $("<div id='tempCartProducts' style='display:none;'></div>").appendTo('body');
 
     if (data.cart.lineItems.lineItem) {
-      renderLineItemAndSummary(data);
+      renderLineItemsAndSummary(data, hasPhysicalProduct);
     } else {
       $('.dr-cart__products').text('Your cart is empty.');
       $('#cart-estimate').hide();

@@ -4,7 +4,6 @@
 jQuery(document).ready(($) => {
     const apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers';
     const productLabel = $("#dr-cart-page-wrapper div.product-sku span:first-child").html();
-    let hasPhysicalProduct = false;
     // Very basic throttle function,
     // does not store calls white in limit period
     const throttle = (func, limit) => {
@@ -314,7 +313,7 @@ jQuery(document).ready(($) => {
     });
     }
 
-    function updateSummary(data){
+    function updateSummary(data,hasPhysicalProduct){
       const pricing = data.cart.pricing;
       if(hasPhysicalProduct){
         $('.dr-summary__shipping').show();
@@ -335,15 +334,16 @@ jQuery(document).ready(($) => {
 
     }
 
-    function renderLineItemAndSummary(data){
+    function renderLineItemsAndSummary(data,hasPhysicalProduct){
       let lineItemCount =0;
+      let hasPhysicalProductinLineItem = hasPhysicalProduct; //reassing for easy identifying
       $.each(data.cart.lineItems.lineItem, function( index, lineitem ){
-        if(lineitem.product.productType == "PHYSICAL")hasPhysicalProduct = true;
+        if(lineitem.product.productType == "PHYSICAL")hasPhysicalProductinLineItem = true;
         let permalinkProductId = lineitem.product.id;
         if(lineitem.product.parentProduct)permalinkProductId = lineitem.product.parentProduct.id;
         getpermalink(permalinkProductId).then((response) => {
           const permalink = response;
-          let lineItemHTML = `
+          const lineItemHTML = `
           <div   data-line-item-id="${lineitem.id}" class="dr-product dr-product-lineitem" data-product-id="${lineitem.product.id}" data-sort="${index}">
             <div class="dr-product-content">
                 <div class="dr-product__img" style="background-image: url(${lineitem.product.thumbnailImage})"></div>
@@ -372,7 +372,7 @@ jQuery(document).ready(($) => {
         }).then(() => {
           lineItemCount++;
           if(lineItemCount === data.cart.lineItems.lineItem.length){
-            updateSummary(data);
+            updateSummary(data,hasPhysicalProductinLineItem);
             reOrderCartAndMerchandising(data);
           }
         }).catch((jqXHR) => {
@@ -404,11 +404,12 @@ jQuery(document).ready(($) => {
     }
 
     function renderCartProduct(data){
+      let hasPhysicalProduct = false;
       $("#tempCartProducts").remove();
       $("<div id='tempCartProducts' style='display:none;'></div>").appendTo('body');
 
       if(data.cart.lineItems.lineItem){
-        renderLineItemAndSummary(data);
+        renderLineItemsAndSummary(data,hasPhysicalProduct);
       }else{
         $('.dr-cart__products').text('Your cart is empty.');
         $('#cart-estimate').hide();
