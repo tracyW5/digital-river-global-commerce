@@ -142,8 +142,7 @@ class DRGC_Public {
 		}
 
 		if ( array_key_exists( 'access_token', $attempt ) ) {
-			$cookie = isset( $_POST['cookie'] ) ? trim( $_POST['cookie'] ) : false;
-			$plugin->session->dirty_set_session( $cookie );
+			$plugin->session->dirty_set_session( $_COOKIE['drgc_session'] );
 
 			wp_send_json_success( $attempt );
 		}
@@ -155,9 +154,8 @@ class DRGC_Public {
 		if ( (isset( $_POST['username'] ) && isset( $_POST['password'] )) ) {
 			$email = sanitize_text_field( $_POST['username'] );
 			$password = sanitize_text_field( $_POST['password'] );
-			$cookie = isset( $_POST['cookie'] ) ? trim( $_POST['cookie'] ) : false;
 
-			$plugin->session->dirty_set_session( $cookie );
+			$plugin->session->dirty_set_session( $_COOKIE['drgc_session'] );
 
 			$parts_name = '';
 			$parts = explode( "@",$email );
@@ -224,11 +222,9 @@ class DRGC_Public {
 	}
 
 	public function dr_logout_ajax() {
-		$cookie = isset( $_POST['cookie'] ) ? trim( $_POST['cookie'] ) : false;
-
 		$plugin = DRGC();
 		$plugin->shopper = null;
-		$plugin->session->dirty_set_session( $cookie );
+		$plugin->session->dirty_set_session( $_COOKIE['drgc_session'] );
 		$plugin->session->clear_session();
 		wp_send_json_success();
 	}
