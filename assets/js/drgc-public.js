@@ -263,7 +263,8 @@ jQuery(document).ready(function ($) {
 /* eslint-disable no-alert, no-console */
 jQuery(document).ready(function ($) {
   var apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers';
-  var productLabel = $("#dr-cart-page-wrapper div.product-sku span:first-child").html(); // Very basic throttle function,
+  var productLabel = $("#dr-cart-page-wrapper div.product-sku span:first-child").html();
+  var hasPhysicalProduct = false; // Very basic throttle function,
   // does not store calls white in limit period
 
   var throttle = function throttle(func, limit) {
@@ -293,10 +294,7 @@ jQuery(document).ready(function ($) {
         "Content-Type": "application/json",
         "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemId);
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemId),
       success: function success(data, textStatus, xhr) {
         if (xhr.status === 204) {
           $(".dr-product[data-line-item-id=\"".concat(lineItemId, "\"]")).remove();
@@ -354,10 +352,7 @@ jQuery(document).ready(function ($) {
         "Content-Type": "application/json",
         "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemId, "?").concat($.param(params));
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemId, "?").concat($.param(params)),
       success: function success(data, textStatus, xhr) {
         if (xhr.status === 200) {
           var _data$lineItem$pricin = data.lineItem.pricing,
@@ -403,10 +398,7 @@ jQuery(document).ready(function ($) {
         "Accept": "application/json",
         "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active?expand=all");
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/carts/active?expand=all"),
       success: function success(data) {
         renderCartProduct(data);
         displayMiniCart(data.cart);
@@ -417,21 +409,19 @@ jQuery(document).ready(function ($) {
     });
   }
 
-  function shoppingCartBanner() {
+  function shoppingCartBannerAndOutputLineItems() {
     $.ajax({
       type: 'GET',
       headers: {
         "Content-Type": 'application/json',
         "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/point-of-promotions/Banner_ShoppingCartLocal/offers?format=json&expand=all");
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/point-of-promotions/Banner_ShoppingCartLocal/offers?format=json&expand=all"),
       success: function success(shoppingCartOfferData, textStatus, xhr) {
         $.each(shoppingCartOfferData.offers.offer, function (index, offer) {
           var shoppingCartHTML = "\n            <div class=\"dr-product\"><div class=\"dr-product-content\">".concat(offer.salesPitch[0], "</div><img src=\"").concat(offer.image, "\"></div>\n            ");
-          $(".dr-cart__products").append(shoppingCartHTML);
+          $("#tempCartProducts").append(shoppingCartHTML);
+          $(".dr-cart__products").html($("#tempCartProducts").html());
         });
       },
       error: function error(jqXHR) {
@@ -447,10 +437,7 @@ jQuery(document).ready(function ($) {
         "Content-Type": 'application/json',
         "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/products/").concat(productID, "/offers?format=json&expand=all");
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/products/").concat(productID, "/offers?format=json&expand=all"),
       success: function success(tightData, textStatus, xhr) {
         $.each(tightData.offers.offer, function (index, offer) {
           if (offer.type == "Bundling" && offer.policyName == "Tight Bundle Policy") {
@@ -458,7 +445,6 @@ jQuery(document).ready(function ($) {
               /*if product have  tight policy and it is not tight itself, remove the action button*/
               if (productOffer.product.id != productID) {
                 $('div.dr-product[data-product-id="' + productOffer.product.id + '"]').find('.remove-icon,.value-button-increase,.value-button-decrease').remove();
-                $('div.dr-product[data-product-id="' + productOffer.product.id + '"]').insertAfter($('div.dr-product[data-product-id="' + productID + '"]'));
               }
             });
           }
@@ -477,16 +463,13 @@ jQuery(document).ready(function ($) {
         "Content-Type": "application/json",
         "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/products/").concat(productID, "/point-of-promotions/CandyRack_ShoppingCart/offers?format=json&expand=all");
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/products/").concat(productID, "/point-of-promotions/CandyRack_ShoppingCart/offers?format=json&expand=all"),
       success: function success(candyRackData, textStatus, xhr) {
         $.each(candyRackData.offers.offer, function (index, offer) {
           var promoText = offer.salesPitch[0].length > 0 ? offer.salesPitch[0] : "";
           var buyButtonText = offer.type == "Up-sell" ? "Upgrade" : "Add";
           $.each(offer.productOffers.productOffer, function (index, productOffer) {
-            var candyRackProductHTML = "\n              <div  class=\"dr-product dr-candyRackProduct\" data-product-id=\"".concat(productOffer.product.id, "\" data-parent-product-id=\"").concat(productID, "\">\n                <div class=\"dr-product-content\">\n                    <img src=\"").concat(productOffer.product.thumbnailImage, "\" height=\"40px\"/>\n                    <div class=\"dr-product__info\">\n                      <div class=\"product-color\">\n                        <span style=\"background-color: yellow;\">").concat(promoText, "</span>\n                      </div>\n                      ").concat(productOffer.product.displayName, "\n                      <div class=\"product-sku\">\n                        <span>").concat(productLabel, "  </span>\n                        <span>#").concat(productOffer.product.id, "</span>\n                      </div>\n                    </div>\n                </div>\n                <div class=\"dr-product__price\">\n                    <button type=\"button\" class=\"dr-btn dr-buy-candyRack\" data-buy-uri=\"").concat(productOffer.addProductToCart.uri, "\">").concat(buyButtonText, "</button>\n                    <span class=\"sale-price\">").concat(productOffer.pricing.formattedSalePriceWithQuantity, "</span>\n                    <span class=\"regular-price dr-strike-price\">").concat(productOffer.pricing.formattedListPriceWithQuantity, "</span>\n                </div>\n              </div>\n              ");
+            var candyRackProductHTML = "\n              <div  class=\"dr-product dr-candyRackProduct\" data-product-id=\"".concat(productOffer.product.id, "\" data-parent-product-id=\"").concat(productID, "\">\n                <div class=\"dr-product-content\">\n                    <img src=\"").concat(productOffer.product.thumbnailImage, "\" class=\"dr-candyRackProduct__img\"/>\n                    <div class=\"dr-product__info\">\n                      <div class=\"product-color\">\n                        <span style=\"background-color: yellow;\">").concat(promoText, "</span>\n                      </div>\n                      ").concat(productOffer.product.displayName, "\n                      <div class=\"product-sku\">\n                        <span>").concat(productLabel, "  </span>\n                        <span>#").concat(productOffer.product.id, "</span>\n                      </div>\n                    </div>\n                </div>\n                <div class=\"dr-product__price\">\n                    <button type=\"button\" class=\"dr-btn dr-buy-candyRack\" data-buy-uri=\"").concat(productOffer.addProductToCart.uri, "\">").concat(buyButtonText, "</button>\n                    <span class=\"sale-price\">").concat(productOffer.pricing.formattedSalePriceWithQuantity, "</span>\n                    <span class=\"regular-price dr-strike-price\">").concat(productOffer.pricing.formattedListPriceWithQuantity, "</span>\n                </div>\n              </div>\n              ");
             if ($('div.dr-product[data-product-id="' + productOffer.product.id + '"]:not(.dr-candyRackProduct)').length == 0) $('div[data-product-id="' + productID + '"]').after(candyRackProductHTML);
           });
         });
@@ -534,10 +517,7 @@ jQuery(document).ready(function ($) {
           "Content-Type": "application/json",
           "Authorization": "Bearer ".concat(drgc_params.accessToken)
         },
-        url: function () {
-          var url = "".concat(apiBaseUrl, "/me/carts/active?&").concat(queryStr);
-          return url;
-        }(),
+        url: "".concat(apiBaseUrl, "/me/carts/active?&").concat(queryStr),
         data: JSON.stringify({
           cart: cartRequest
         }),
@@ -570,79 +550,82 @@ jQuery(document).ready(function ($) {
     });
   }
 
-  function renderLineItem(data, hasPhysicalProduct) {
-    var lineItemIndex = 0;
+  function updateSummary(data) {
+    var pricing = data.cart.pricing;
+
+    if (hasPhysicalProduct) {
+      $('.dr-summary__shipping').show();
+    } else {
+      $('.dr-summary__shipping').hide();
+    }
+
+    $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling); //overwrite $0.00 to FREE
+
+    if (pricing.shippingAndHandling.value === 0) $('div.dr-summary__shipping .shipping-value').text("FREE");
+    $('div.dr-summary__discount .discount-value').text("-".concat(pricing.formattedDiscount));
+    $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
+
+    if (pricing.discount.value) {
+      $('.dr-summary__discount').show();
+    } else {
+      $('.dr-summary__discount').hide();
+    }
+  }
+
+  function renderLineItemAndSummary(data) {
+    var lineItemCount = 0;
     $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
+      if (lineitem.product.productType == "PHYSICAL") hasPhysicalProduct = true;
       var permalinkProductId = lineitem.product.id;
       if (lineitem.product.parentProduct) permalinkProductId = lineitem.product.parentProduct.id;
       getpermalink(permalinkProductId).then(function (response) {
-        var permalink = '';
-        permalink = response;
+        var permalink = response;
         var lineItemHTML = "\n          <div   data-line-item-id=\"".concat(lineitem.id, "\" class=\"dr-product dr-product-lineitem\" data-product-id=\"").concat(lineitem.product.id, "\" data-sort=\"").concat(index, "\">\n            <div class=\"dr-product-content\">\n                <div class=\"dr-product__img\" style=\"background-image: url(").concat(lineitem.product.thumbnailImage, ")\"></div>\n                <div class=\"dr-product__info\">\n                    <a class=\"product-name\" href=\"").concat(permalink, "\">").concat(lineitem.product.displayName, "</a>\n                    <div class=\"product-sku\">\n                        <span>").concat(productLabel, " </span>\n                        <span>#").concat(lineitem.product.id, "</span>\n                    </div>\n                    <div class=\"product-qty\">\n                        <span class=\"qty-text\">Qty ").concat(lineitem.quantity, "</span>\n                        <span class=\"dr-pd-cart-qty-minus value-button-decrease\"></span>\n                        <input type=\"number\" class=\"product-qty-number\" step=\"1\" min=\"1\" max=\"999\" value=\"").concat(lineitem.quantity, "\" maxlength=\"5\" size=\"2\" pattern=\"[0-9]*\" inputmode=\"numeric\" readonly=\"true\">\n                        <span class=\"dr-pd-cart-qty-plus value-button-increase\"></span>\n                    </div>\n                </div>\n            </div>\n            <div class=\"dr-product__price\">\n                <button class=\"dr-prd-del remove-icon\"></button>\n                <span class=\"sale-price\">").concat(lineitem.pricing.formattedSalePriceWithQuantity, "</span>\n                <span class=\"regular-price\">").concat(lineitem.pricing.formattedListPriceWithQuantity, "</span>\n            </div>\n          </div>\n          ");
-        $('.dr-cart__products').append(lineItemHTML);
+        $('#tempCartProducts').append(lineItemHTML);
       }).then(function () {
-        lineItemIndex++;
-        candyRackCheckAndRender(lineitem.product.id);
+        lineItemCount++;
 
-        if (lineItemIndex === data.cart.lineItems.lineItem.length) {
-          var pricing = data.cart.pricing;
-
-          if (hasPhysicalProduct) {
-            $('.dr-summary__shipping').show();
-          } else {
-            $('.dr-summary__shipping').hide();
-          }
-
-          $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling); //overwrite $0.00 to FREE
-
-          if (pricing.shippingAndHandling.value === 0) $('div.dr-summary__shipping .shipping-value').text("FREE");
-          $('div.dr-summary__discount .discount-value').text("-".concat(pricing.formattedDiscount));
-          $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
-
-          if (pricing.discount.value) {
-            $('.dr-summary__discount').show();
-          } else {
-            $('.dr-summary__discount').hide();
-          }
-
-          $('body').css({
-            'pointer-events': 'auto',
-            'opacity': 1
-          });
-          $.each(data.cart.lineItems.lineItem, function (index, lineitemTight) {
-            tightBundleRemoveElements(lineitemTight.product.id);
-          });
-          reOrderCart();
+        if (lineItemCount === data.cart.lineItems.lineItem.length) {
+          updateSummary(data);
+          reOrderCartAndMerchandising(data);
         }
       }).catch(function (jqXHR) {
         if (jqXHR.responseJSON.errors) {
           var errMsgs = jqXHR.responseJSON.errors.error.map(function (err) {
             return err.description;
           });
+          console.log(errMsgs);
         }
       });
     });
   }
 
-  function reOrderCart() {
-    //1.order dr-product-lineitem
-    var $wrapper = $('.dr-cart__products');
+  function reOrderCartAndMerchandising(data) {
+    //1.Order dr-product-lineitem in temp area
+    var $wrapper = $('#tempCartProducts');
     $wrapper.find('.dr-product-lineitem').sort(function (a, b) {
       return +a.dataset.sort - +b.dataset.sort;
-    }).appendTo($wrapper); //2.add banner at last
+    }).appendTo($wrapper); //2. Add banner at last and output lineitems
 
-    shoppingCartBanner();
+    shoppingCartBannerAndOutputLineItems(); //3. Main cart item displayed, Finish loading icon
+
+    $('body').css({
+      'pointer-events': 'auto',
+      'opacity': 1
+    }); //4. Execute candyRackCheckAndRender and tightBundleRemoveElements
+
+    $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
+      candyRackCheckAndRender(lineitem.product.id);
+      tightBundleRemoveElements(lineitem.product.id);
+    });
   }
 
   function renderCartProduct(data) {
-    $('.dr-cart__products').html("");
-    var hasPhysicalProduct = false;
+    $("#tempCartProducts").remove();
+    $("<div id='tempCartProducts' style='display:none;'></div>").appendTo('body');
 
     if (data.cart.lineItems.lineItem) {
-      $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
-        if (lineitem.product.productType == "PHYSICAL") hasPhysicalProduct = true;
-      });
-      renderLineItem(data, hasPhysicalProduct);
+      renderLineItemAndSummary(data);
     } else {
       $('.dr-cart__products').text('Your cart is empty.');
       $('#cart-estimate').hide();
