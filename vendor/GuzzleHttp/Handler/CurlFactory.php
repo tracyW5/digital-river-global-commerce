@@ -185,7 +185,7 @@ class CurlFactory implements CurlFactoryInterface
             ? new ConnectException($message, $easy->request, null, $ctx)
             : new RequestException($message, $easy->request, $easy->response, null, $ctx);
 
-       return \GuzzleHttp\Promise\rejection_for($error);
+        return \GuzzleHttp\Promise\rejection_for($error);
     }
 
     private function getDefaultConf(EasyHandle $easy)
