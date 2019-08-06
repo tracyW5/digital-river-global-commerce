@@ -244,7 +244,7 @@ function drgc_get_product_meta_filters( $term = null ) {
 			$query->the_post();
 
 			if ( ! empty( get_post_meta( get_the_ID(), 'variation_types', true ) ) ) {
-				if ( ! empty( $attributes['variation_types'] ) ) {
+				if ( ! empty( $attributes['variation_types'] ) && is_array($attributes['variation_types'])) {
 					$attributes['variation_types'] = array_unique( array_merge( $attributes['variation_types'], get_post_meta( get_the_ID(), 'variation_types', true ) ) );
 				} else {
 					$attributes['variation_types'] = get_post_meta( get_the_ID(), 'variation_types', true );
@@ -252,7 +252,7 @@ function drgc_get_product_meta_filters( $term = null ) {
 			}
 
 			if ( ! empty( get_post_meta( get_the_ID(), 'color', true ) ) ) {
-				if ( ! empty( $attributes['color'] ) ) {
+				if ( ! empty( $attributes['color'] ) && is_array($attributes['color'])) {
 					$attributes['color'] = array_unique( array_merge( $attributes['color'], get_post_meta( get_the_ID(), 'color', true ) ) );
 				} else {
 					$attributes['color'] = get_post_meta( get_the_ID(), 'color', true );
@@ -260,7 +260,7 @@ function drgc_get_product_meta_filters( $term = null ) {
 			}
 
 			if ( ! empty( get_post_meta( get_the_ID(), 'sizes', true ) ) ) {
-				if ( ! empty( $attributes['sizes'] ) ) {
+				if ( ! empty( $attributes['sizes'] ) && is_array($attributes['sizes'])) {
 					$attributes['sizes'] = array_unique( array_merge( $attributes['sizes'], get_post_meta( get_the_ID(), 'sizes', true ) ) );
 				} else {
 					$attributes['sizes'] = get_post_meta( get_the_ID(), 'sizes', true );
@@ -268,7 +268,7 @@ function drgc_get_product_meta_filters( $term = null ) {
 			}
 
 			if ( ! empty( get_post_meta( get_the_ID(), 'duration', true ) ) ) {
-				if ( ! empty( $attributes['duration'] ) ) {
+				if ( ! empty( $attributes['duration'] ) && is_array($attributes['duration'])) {
 					$attributes['duration'] = array_unique( array_merge( $attributes['duration'], get_post_meta( get_the_ID(), 'duration', true ) ) );
 				} else {
 					$attributes['duration'] = get_post_meta( get_the_ID(), 'duration', true );
