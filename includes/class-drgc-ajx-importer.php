@@ -125,9 +125,13 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 						if ( $currencies['default_locale'] === $locale || in_array( $currency, $imported_currencies ) ) {
 							continue;
 						}
+
 						$imported_currencies[] = $currency;
-						$loc_price = $this->get_product_pricing_for_currency( $gc_id, $currency );
-						$parent_product->set_pricing_for_currency( $loc_price );
+
+						if ( $this->update_locale_and_currency( $locale, $currency ) ) {
+							$loc_price = $this->get_product_pricing( $gc_id );
+							$parent_product->set_pricing_for_currency( $loc_price );
+						}
 					}
 				}
 
@@ -171,9 +175,13 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 							if ( $currencies['default_locale'] === $locale || in_array( $currency, $imported_currencies ) ) {
 								continue;
 							}
+
 							$imported_currencies[] = $currency;
-							$loc_price = $this->get_product_pricing_for_currency( $_gc_id, $currency );
-							$variation_product->set_pricing_for_currency( $loc_price );
+
+							if ( $this->update_locale_and_currency( $locale, $currency ) ) {
+								$loc_price = $this->get_product_pricing( $_gc_id );
+								$variation_product->set_pricing_for_currency( $loc_price );
+							}
 						}
 					}
 
@@ -417,16 +425,11 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 	 * Retrieve API data
 	 *
 	 * @param integer $id dr product id
-	 * @param string $currency currency code
+	 *
 	 * @return array|bool
 	 */
-	public function get_product_pricing_for_currency( $id, $currency ) {
-		$params = array(
-			'apiKey'         => $this->api_key,
-			'currency'       => $currency,
-		);
-
-		$url = '/v1/shoppers/me/products/' . $id . '/pricing?' . http_build_query( $params );
+	public function get_product_pricing( $id ) {
+		$url = '/v1/shoppers/me/products/' . $id . '/pricing';
 
 		try {
 			$res = $this->get( $url );
@@ -437,4 +440,28 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 		}
 	}
 
+	/**
+	 * Update locale and currency for the current shopper
+	 *
+	 * @param string $locale locale
+	 * @param string $currency currency code
+	 * 
+	 * @return bool
+	 */
+	public function update_locale_and_currency( $locale, $currency ) {
+		$params = array(
+			'locale'         => $locale,
+			'currency'       => $currency
+		);
+
+		$url = '/v1/shoppers/me?' . http_build_query( $params );
+
+		try {
+			$this->post( $url );
+
+			return true;
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
 }
