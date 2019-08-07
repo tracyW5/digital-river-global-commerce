@@ -73,6 +73,15 @@ jQuery(document).ready(($) => {
         });
     });
 
+    $('input[name=uemail]').on('change', (e) => {
+        const elem = e.target;
+        if (elem.validity.valueMissing) {
+            $(elem).next('.invalid-feedback').text('This field is required.');
+        } else if (elem.validity.typeMismatch) {
+            $(elem).next('.invalid-feedback').text('Please enter a valid email address.');
+        }
+    });
+
     $('.dr-signup').on('click', '', function(e) {
         e.preventDefault();
 

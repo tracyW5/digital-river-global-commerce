@@ -1517,6 +1517,15 @@ jQuery(document).ready(function ($) {
       location.reload();
     });
   });
+  $('input[name=uemail]').on('change', function (e) {
+    var elem = e.target;
+
+    if (elem.validity.valueMissing) {
+      $(elem).next('.invalid-feedback').text('This field is required.');
+    } else if (elem.validity.typeMismatch) {
+      $(elem).next('.invalid-feedback').text('Please enter a valid email address.');
+    }
+  });
   $('.dr-signup').on('click', '', function (e) {
     e.preventDefault();
     var $form = $('.dr-signup-form');

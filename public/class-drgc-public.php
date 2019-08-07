@@ -163,6 +163,7 @@ class DRGC_Public {
 			$parts = explode( "@",$email );
 			$username = $parts[0];
 			$delimiters = array( '.', '-', '_' );
+			$error_msgs = array();
 
 			foreach ( $delimiters as $delimiter ) {
 				if ( strpos( $username, $delimiter ) ) {
@@ -178,8 +179,21 @@ class DRGC_Public {
 				$last_name = ucfirst( strtolower( $username ) );
 			}
 
-			if ( 6 > strlen( $password )) {
-				wp_send_json_error( __( 'Password is too short, at least 6 symbols required' ) );
+			if ( !filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+				array_push( $error_msgs, __( 'Please enter a valid email address.' ) );
+			}
+
+			if ( 6 > strlen( $password ) ) {
+				array_push( $error_msgs, __( 'Password is too short, at least 6 symbols required.' ) );
+			}
+
+			preg_match( '/^[a-zA-Z0-9!_@]+$/', $password, $result );
+			if ( empty( $result ) ) {
+				array_push( $error_msgs, __( 'Do not contain non-allowable special characters (only ! _ @ are allowed).' ) );
+			}
+
+			if ( !empty( $error_msgs ) ) {
+				wp_send_json_error( join( ' ', $error_msgs) );
 				return;
 			}
 
