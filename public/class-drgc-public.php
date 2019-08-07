@@ -194,7 +194,7 @@ class DRGC_Public {
 			);
 
 			$user_id = wp_insert_user( $userdata ) ;
-			$externalReferenceId = md5(uniqid( $user_id, true ));
+			$externalReferenceId = sha1( uniqid( $user_id, true ) );
 
 			add_user_meta( $user_id, '_external_reference_id', $externalReferenceId);
 
