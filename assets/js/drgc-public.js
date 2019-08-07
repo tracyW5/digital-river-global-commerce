@@ -571,10 +571,8 @@ jQuery(document).ready(function ($) {
     }
   }
 
-  function renderLineItemsAndSummary(data, hasPhysicalProduct) {
+  function renderLineItemsAndSummary(data, hasPhysicalProductinLineItem) {
     var lineItemCount = 0;
-    var hasPhysicalProductinLineItem = hasPhysicalProduct; //reassing for easy identifying
-
     $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
       if (lineitem.product.productType == "PHYSICAL") hasPhysicalProductinLineItem = true;
       var permalinkProductId = lineitem.product.id;
