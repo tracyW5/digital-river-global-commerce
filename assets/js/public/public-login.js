@@ -3,7 +3,6 @@
 
 jQuery(document).ready(($) => {
     const ajaxUrl = drgc_params.ajaxUrl;
-    const apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers';
 
     $('#dr_login_form').on('submit', (e) => {
         e.preventDefault();

@@ -1,12 +1,9 @@
 jQuery(document).ready(($) => {
     if ($('#checkout-payment-form').length) {
-        const siteID = drgc_params.siteID;
-        const apiKey = drgc_params.apiKey;
         const domain = drgc_params.domain;
         const isLogin = drgc_params.isLogin;
         const apiBaseUrl = 'https://' + domain + '/v1/shoppers';
         const drLocale = drgc_params.drLocale || 'en_US';
-
 
         function getAddress(addressType) {
             const address = {
