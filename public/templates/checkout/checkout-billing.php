@@ -1,7 +1,10 @@
 <?php
 $billingAddress = $cart['cart']['billingAddress'];
-if ($customer_address) {
+if ( $customer_address ) {
     $billingAddress = $customer_address[0];
+} elseif ( $customer ) {
+    $billingAddress['firstName'] = $billingAddress['firstName'] ?: $customer['firstName'];
+    $billingAddress['lastName'] = $billingAddress['lastName'] ?: $customer['lastName'];
 }
 if ( $cart['cart']['billingAddress']['line1'] != '') {
     $billingAddress = $cart['cart']['billingAddress'];

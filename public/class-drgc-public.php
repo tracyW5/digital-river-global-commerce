@@ -151,31 +151,15 @@ class DRGC_Public {
 	public function dr_signup_ajax() {
 		$plugin = DRGC();
 
-		if ( (isset( $_POST['username'] ) && isset( $_POST['password'] )) ) {
+		if ( isset( $_POST['first_name'] ) && isset( $_POST['last_name'] ) &&
+			   isset( $_POST['username'] ) && isset( $_POST['password'] ) ) {
+			$first_name = sanitize_text_field( $_POST['first_name'] );
+			$last_name = sanitize_text_field( $_POST['last_name'] );
 			$email = sanitize_text_field( $_POST['username'] );
 			$password = sanitize_text_field( $_POST['password'] );
 
 			$plugin->session->dirty_set_session( $_COOKIE['drgc_session'] );
-
-			$parts_name = '';
-			$parts = explode( "@",$email );
-			$username = $parts[0];
-			$delimiters = array( '.', '-', '_' );
 			$error_msgs = array();
-
-			foreach ( $delimiters as $delimiter ) {
-				if ( strpos( $username, $delimiter ) ) {
-					$parts_name = explode( $delimiter, $username );
-					break;
-				}
-			}
-			if ( ! empty( $parts_name ) ) {
-				$first_name = ucfirst( strtolower( $parts_name[0] ) );
-				$last_name = ucfirst( strtolower( $parts_name[1] ) );
-			} else {
-				$first_name = ucfirst( strtolower( $username ) );
-				$last_name = ucfirst( strtolower( $username ) );
-			}
 
 			if ( !filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
 				array_push( $error_msgs, __( 'Please enter a valid email address.' ) );
