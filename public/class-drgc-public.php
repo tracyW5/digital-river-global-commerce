@@ -134,7 +134,7 @@ class DRGC_Public {
 				wp_send_json_error( __( 'Authorization failed for specified credentials' ) );
 			}
 
-			$attempt = $plugin->shopper->generate_access_token_by_ref_id( $externalReferenceId );
+			$attempt = $plugin->shopper->generate_access_token_by_login_id( $username, $password );
 		}
 
 		if ( array_key_exists( 'error', $attempt ) ) {
@@ -227,7 +227,7 @@ class DRGC_Public {
 					wp_send_json_error( $user );
 				}
 
-				$attempt = $plugin->shopper->generate_access_token_by_login_id($email, $password);
+				$attempt = $plugin->shopper->generate_access_token_by_ref_id( $externalReferenceId );
 				wp_send_json_success( $attempt );
 			}
 		} else {
