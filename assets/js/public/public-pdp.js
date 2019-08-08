@@ -261,7 +261,7 @@ jQuery(document).ready(($) => {
         this.find('.dr-loader-container').remove();
     };
 
-    (function () {
+    (function() {
         if ( $('#dr-minicart'.length)) {
             displayMiniCart(drgc_params.cart.cart);
         }
