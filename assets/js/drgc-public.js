@@ -645,13 +645,7 @@ jQuery(document).ready(function ($) {
         "Content-Type": "application/json",
         "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me?");
-        url += "format=json";
-        url += "&currency=".concat(data.currency);
-        url += "&locale=".concat(data.locale);
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me?currency=").concat(data.currency, "&locale=").concat(data.locale),
       success: function success(data, textStatus, xhr) {
         if (xhr.status === 204) {
           location.reload();
