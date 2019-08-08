@@ -262,7 +262,8 @@ jQuery(document).ready(function ($) {
 
 /* eslint-disable no-alert, no-console */
 jQuery(document).ready(function ($) {
-  var apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers'; // Very basic throttle function,
+  var apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers';
+  var productLabel = $("#dr-cart-page-wrapper div.product-sku span:first-child").html(); // Very basic throttle function,
   // does not store calls white in limit period
 
   var throttle = function throttle(func, limit) {
@@ -288,13 +289,11 @@ jQuery(document).ready(function ($) {
     $.ajax({
       type: 'DELETE',
       headers: {
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemId, "?");
-        url += "&token=".concat(drgc_params.accessToken);
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemId),
       success: function success(data, textStatus, xhr) {
         if (xhr.status === 204) {
           $(".dr-product[data-line-item-id=\"".concat(lineItemId, "\"]")).remove();
@@ -340,7 +339,6 @@ jQuery(document).ready(function ($) {
     }
 
     var params = {
-      'token': drgc_params.accessToken,
       'action': 'update',
       'quantity': $qty.val(),
       'expand': 'all',
@@ -349,12 +347,11 @@ jQuery(document).ready(function ($) {
     $.ajax({
       type: 'POST',
       headers: {
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemId, "?").concat($.param(params));
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemId, "?").concat($.param(params)),
       success: function success(data, textStatus, xhr) {
         if (xhr.status === 200) {
           var _data$lineItem$pricin = data.lineItem.pricing,
@@ -397,18 +394,13 @@ jQuery(document).ready(function ($) {
     $.ajax({
       type: 'GET',
       headers: {
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active?");
-        url += "&expand=all";
-        url += "&token=".concat(drgc_params.accessToken);
-        return url;
-      }(),
+      url: "".concat(apiBaseUrl, "/me/carts/active?expand=all"),
       success: function success(data) {
         renderCartProduct(data);
         displayMiniCart(data.cart);
-        merchandisingInit(data);
       },
       error: function error(jqXHR) {
         console.log(jqXHR);
@@ -416,32 +408,19 @@ jQuery(document).ready(function ($) {
     });
   }
 
-  function merchandisingInit(data) {
-    $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
-      candyRackCheckAndRender(lineitem.product.id);
-      tightBundleRemoveElements(lineitem.product.id);
-    });
-    shoppingCartBanner();
-    $('body').css({
-      'pointer-events': 'auto',
-      'opacity': 1
-    });
-  }
-
-  function shoppingCartBanner() {
+  function shoppingCartBannerAndOutputLineItems() {
     $.ajax({
       type: 'GET',
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/point-of-promotions/Banner_ShoppingCartLocal/offers?");
-        url += "format=json";
-        url += "&expand=all";
-        url += "&token=".concat(drgc_params.accessToken);
-        return url;
-      }(),
+      headers: {
+        "Content-Type": 'application/json',
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
+      },
+      url: "".concat(apiBaseUrl, "/me/point-of-promotions/Banner_ShoppingCartLocal/offers?format=json&expand=all"),
       success: function success(shoppingCartOfferData, textStatus, xhr) {
         $.each(shoppingCartOfferData.offers.offer, function (index, offer) {
           var shoppingCartHTML = "\n            <div class=\"dr-product\"><div class=\"dr-product-content\">".concat(offer.salesPitch[0], "</div><img src=\"").concat(offer.image, "\"></div>\n            ");
-          $(".dr-cart__products").append(shoppingCartHTML);
+          $("#tempCartProducts").append(shoppingCartHTML);
+          $(".dr-cart__products").html($("#tempCartProducts").html());
         });
       },
       error: function error(jqXHR) {
@@ -453,19 +432,19 @@ jQuery(document).ready(function ($) {
   function tightBundleRemoveElements(productID) {
     $.ajax({
       type: 'GET',
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/products/").concat(productID, "/offers?");
-        url += "format=json";
-        url += "&expand=all";
-        url += "&token=".concat(drgc_params.accessToken);
-        return url;
-      }(),
+      headers: {
+        "Content-Type": 'application/json',
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
+      },
+      url: "".concat(apiBaseUrl, "/me/products/").concat(productID, "/offers?format=json&expand=all"),
       success: function success(tightData, textStatus, xhr) {
         $.each(tightData.offers.offer, function (index, offer) {
           if (offer.type == "Bundling" && offer.policyName == "Tight Bundle Policy") {
             $.each(offer.productOffers.productOffer, function (index, productOffer) {
               /*if product have  tight policy and it is not tight itself, remove the action button*/
-              if (productOffer.product.id != productID) $('div.dr-product[data-product-id="' + productOffer.product.id + '"]').find('.remove-icon,.value-button-increase,.value-button-decrease').remove();
+              if (productOffer.product.id != productID) {
+                $('div.dr-product[data-product-id="' + productOffer.product.id + '"]').find('.remove-icon,.value-button-increase,.value-button-decrease').remove();
+              }
             });
           }
         });
@@ -479,19 +458,17 @@ jQuery(document).ready(function ($) {
   function candyRackCheckAndRender(productID) {
     $.ajax({
       type: 'GET',
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/products/").concat(productID, "/point-of-promotions/CandyRack_ShoppingCart/offers?");
-        url += "format=json";
-        url += "&expand=all";
-        url += "&token=".concat(drgc_params.accessToken);
-        return url;
-      }(),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
+      },
+      url: "".concat(apiBaseUrl, "/me/products/").concat(productID, "/point-of-promotions/CandyRack_ShoppingCart/offers?format=json&expand=all"),
       success: function success(candyRackData, textStatus, xhr) {
         $.each(candyRackData.offers.offer, function (index, offer) {
           var promoText = offer.salesPitch[0].length > 0 ? offer.salesPitch[0] : "";
           var buyButtonText = offer.type == "Up-sell" ? "Upgrade" : "Add";
           $.each(offer.productOffers.productOffer, function (index, productOffer) {
-            var candyRackProductHTML = "\n              <div  class=\"dr-product dr-candyRackProduct\" data-product-id=\"".concat(productOffer.product.id, "\">\n                <div class=\"dr-product-content\">\n                    <img src=\"").concat(productOffer.product.thumbnailImage, "\" height=\"40px\"/>\n                    <!-- <div class=\"dr-product__img\" style=\"background-image: url(").concat(productOffer.product.thumbnailImage, ");background-size:50%;background-repeat: no-repeat;background-position: right; height:40px;\"></div> -->\n                    <div class=\"dr-product__info\">\n                      <div class=\"product-color\">\n                        <span style=\"background-color: yellow;\">").concat(promoText, "</span>\n                      </div>\n                      ").concat(productOffer.product.displayName, "\n                      <div class=\"product-sku\">\n                        <span>Product </span>\n                        <span>#").concat(productOffer.product.id, "</span>\n                      </div>\n                    </div>\n                </div>\n                <div class=\"dr-product__price\">\n                    <button type=\"button\" class=\"dr-btn dr-buy-candyRack\" data-buy-uri=\"").concat(productOffer.addProductToCart.uri, "\">").concat(buyButtonText, "</button>\n                    <span class=\"sale-price\">").concat(productOffer.pricing.formattedSalePriceWithQuantity, "</span>\n                    <span class=\"regular-price dr-strike-price\">").concat(productOffer.pricing.formattedListPriceWithQuantity, "</span>\n                </div>\n              </div>\n              ");
+            var candyRackProductHTML = "\n              <div  class=\"dr-product dr-candyRackProduct\" data-product-id=\"".concat(productOffer.product.id, "\" data-parent-product-id=\"").concat(productID, "\">\n                <div class=\"dr-product-content\">\n                    <img src=\"").concat(productOffer.product.thumbnailImage, "\" class=\"dr-candyRackProduct__img\"/>\n                    <div class=\"dr-product__info\">\n                      <div class=\"product-color\">\n                        <span style=\"background-color: yellow;\">").concat(promoText, "</span>\n                      </div>\n                      ").concat(productOffer.product.displayName, "\n                      <div class=\"product-sku\">\n                        <span>").concat(productLabel, "  </span>\n                        <span>#").concat(productOffer.product.id, "</span>\n                      </div>\n                    </div>\n                </div>\n                <div class=\"dr-product__price\">\n                    <button type=\"button\" class=\"dr-btn dr-buy-candyRack\" data-buy-uri=\"").concat(productOffer.addProductToCart.uri, "\">").concat(buyButtonText, "</button>\n                    <span class=\"sale-price\">").concat(productOffer.pricing.formattedSalePriceWithQuantity, "</span>\n                    <span class=\"regular-price dr-strike-price\">").concat(productOffer.pricing.formattedListPriceWithQuantity, "</span>\n                </div>\n              </div>\n              ");
             if ($('div.dr-product[data-product-id="' + productOffer.product.id + '"]:not(.dr-candyRackProduct)').length == 0) $('div[data-product-id="' + productID + '"]').after(candyRackProductHTML);
           });
         });
@@ -509,12 +486,13 @@ jQuery(document).ready(function ($) {
     $.ajax({
       type: 'POST',
       headers: {
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
       },
       url: function () {
         var url = buyUri;
         if (drgc_params.testOrder == "true") url += '&testOrder=true';
-        url += "&token=".concat(drgc_params.accessToken);
         return url;
       }(),
       success: function success(data, textStatus, xhr) {
@@ -534,15 +512,11 @@ jQuery(document).ready(function ($) {
       $.ajax({
         type: 'POST',
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: "Bearer ".concat(drgc_params.accessToken)
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Authorization": "Bearer ".concat(drgc_params.accessToken)
         },
-        url: function () {
-          var url = "".concat(apiBaseUrl, "/me/carts/active?");
-          url += "&token=".concat(drgc_params.accessToken, "&").concat(queryStr);
-          return url;
-        }(),
+        url: "".concat(apiBaseUrl, "/me/carts/active?&").concat(queryStr),
         data: JSON.stringify({
           cart: cartRequest
         }),
@@ -556,29 +530,26 @@ jQuery(document).ready(function ($) {
     });
   }
 
-  function renderCartProduct(data) {
-    $('.dr-cart__products').html("");
-    var hasPhysicalProduct = false;
-    $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
-      var permalink = '';
-      var permalinkProductId = lineitem.product.id;
-      if (lineitem.product.parentProduct) permalinkProductId = lineitem.product.parentProduct.id;
-      if (lineitem.product.productType == "PHYSICAL") hasPhysicalProduct = true;
+  function getpermalink(permalinkProductId) {
+    return new Promise(function (resolve, reject) {
       $.ajax({
         type: 'POST',
-        async: false,
         url: drgc_params.ajaxUrl,
         data: {
           action: 'get_permalink',
           productID: permalinkProductId
         },
-        success: function success(response) {
-          permalink = response;
-          var lineItemHTML = "\n            <div data-line-item-id=\"".concat(lineitem.id, "\" class=\"dr-product\" data-product-id=\"").concat(lineitem.product.id, "\">\n              <div class=\"dr-product-content\">\n                  <div class=\"dr-product__img\" style=\"background-image: url(").concat(lineitem.product.thumbnailImage, ")\"></div>\n                  <div class=\"dr-product__info\">\n                      <a class=\"product-name\" href=\"").concat(permalink, "\">").concat(lineitem.product.displayName, "</a>\n                      <div class=\"product-sku\">\n                          <span>Product </span>\n                          <span>#").concat(lineitem.product.id, "</span>\n                      </div>\n                      <div class=\"product-qty\">\n                          <span class=\"qty-text\">Qty ").concat(lineitem.quantity, "</span>\n                          <span class=\"dr-pd-cart-qty-minus value-button-decrease\"></span>\n                          <input type=\"number\" class=\"product-qty-number\" step=\"1\" min=\"1\" max=\"999\" value=\"").concat(lineitem.quantity, "\" maxlength=\"5\" size=\"2\" pattern=\"[0-9]*\" inputmode=\"numeric\" readonly=\"true\">\n                          <span class=\"dr-pd-cart-qty-plus value-button-increase\"></span>\n                      </div>\n                  </div>\n              </div>\n              <div class=\"dr-product__price\">\n                  <button class=\"dr-prd-del remove-icon\"></button>\n                  <span class=\"sale-price\">").concat(lineitem.pricing.formattedSalePriceWithQuantity, "</span>\n                  <span class=\"regular-price\">").concat(lineitem.pricing.formattedListPriceWithQuantity, "</span>\n              </div>\n            </div>\n            ");
-          $('.dr-cart__products').append(lineItemHTML);
+        success: function success(data) {
+          resolve(data);
+        },
+        error: function error(jqXHR) {
+          reject(jqXHR);
         }
       });
     });
+  }
+
+  function updateSummary(data, hasPhysicalProduct) {
     var pricing = data.cart.pricing;
 
     if (hasPhysicalProduct) {
@@ -598,9 +569,65 @@ jQuery(document).ready(function ($) {
     } else {
       $('.dr-summary__discount').hide();
     }
+  }
 
-    if ($('.dr-cart__products').children().length <= 0) {
-      $('.dr-cart__products').text('Your cart is empty!');
+  function renderLineItemsAndSummary(data, hasPhysicalProductinLineItem) {
+    var lineItemCount = 0;
+    $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
+      if (lineitem.product.productType == "PHYSICAL") hasPhysicalProductinLineItem = true;
+      var permalinkProductId = lineitem.product.id;
+      if (lineitem.product.parentProduct) permalinkProductId = lineitem.product.parentProduct.id;
+      getpermalink(permalinkProductId).then(function (response) {
+        var permalink = response;
+        var lineItemHTML = "\n          <div   data-line-item-id=\"".concat(lineitem.id, "\" class=\"dr-product dr-product-lineitem\" data-product-id=\"").concat(lineitem.product.id, "\" data-sort=\"").concat(index, "\">\n            <div class=\"dr-product-content\">\n                <div class=\"dr-product__img\" style=\"background-image: url(").concat(lineitem.product.thumbnailImage, ")\"></div>\n                <div class=\"dr-product__info\">\n                    <a class=\"product-name\" href=\"").concat(permalink, "\">").concat(lineitem.product.displayName, "</a>\n                    <div class=\"product-sku\">\n                        <span>").concat(productLabel, " </span>\n                        <span>#").concat(lineitem.product.id, "</span>\n                    </div>\n                    <div class=\"product-qty\">\n                        <span class=\"qty-text\">Qty ").concat(lineitem.quantity, "</span>\n                        <span class=\"dr-pd-cart-qty-minus value-button-decrease\"></span>\n                        <input type=\"number\" class=\"product-qty-number\" step=\"1\" min=\"1\" max=\"999\" value=\"").concat(lineitem.quantity, "\" maxlength=\"5\" size=\"2\" pattern=\"[0-9]*\" inputmode=\"numeric\" readonly=\"true\">\n                        <span class=\"dr-pd-cart-qty-plus value-button-increase\"></span>\n                    </div>\n                </div>\n            </div>\n            <div class=\"dr-product__price\">\n                <button class=\"dr-prd-del remove-icon\"></button>\n                <span class=\"sale-price\">").concat(lineitem.pricing.formattedSalePriceWithQuantity, "</span>\n                <span class=\"regular-price\">").concat(lineitem.pricing.formattedListPriceWithQuantity, "</span>\n            </div>\n          </div>\n          ");
+        $('#tempCartProducts').append(lineItemHTML);
+      }).then(function () {
+        lineItemCount++;
+
+        if (lineItemCount === data.cart.lineItems.lineItem.length) {
+          updateSummary(data, hasPhysicalProductinLineItem);
+          reOrderCartAndMerchandising(data);
+        }
+      }).catch(function (jqXHR) {
+        if (jqXHR.responseJSON.errors) {
+          var errMsgs = jqXHR.responseJSON.errors.error.map(function (err) {
+            return err.description;
+          });
+          console.log(errMsgs);
+        }
+      });
+    });
+  }
+
+  function reOrderCartAndMerchandising(data) {
+    //1.Order dr-product-lineitem in temp area
+    var $wrapper = $('#tempCartProducts');
+    $wrapper.find('.dr-product-lineitem').sort(function (a, b) {
+      return +a.dataset.sort - +b.dataset.sort;
+    }).appendTo($wrapper); //2. Add banner at last and output lineitems
+
+    shoppingCartBannerAndOutputLineItems(); //3. Main cart item displayed, Finish loading icon
+
+    $('body').css({
+      'pointer-events': 'auto',
+      'opacity': 1
+    }); //4. Execute candyRackCheckAndRender and tightBundleRemoveElements
+
+    $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
+      candyRackCheckAndRender(lineitem.product.id);
+      tightBundleRemoveElements(lineitem.product.id);
+    });
+  }
+
+  function renderCartProduct(data) {
+    var hasPhysicalProduct = false;
+    $("#tempCartProducts").remove();
+    $("<div id='tempCartProducts' style='display:none;'></div>").appendTo('body');
+
+    if (data.cart.lineItems.lineItem) {
+      renderLineItemsAndSummary(data, hasPhysicalProduct);
+    } else {
+      $('.dr-cart__products').text('Your cart is empty.');
       $('#cart-estimate').hide();
     }
   }
@@ -613,10 +640,14 @@ jQuery(document).ready(function ($) {
     };
     $.ajax({
       type: 'POST',
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ".concat(drgc_params.accessToken)
+      },
       url: function () {
         var url = "".concat(apiBaseUrl, "/me?");
         url += "format=json";
-        url += "&token=".concat(drgc_params.accessToken);
         url += "&currency=".concat(data.currency);
         url += "&locale=".concat(data.locale);
         return url;
@@ -1482,8 +1513,7 @@ jQuery(document).ready(function ($) {
     var data = {
       'action': 'drgc_login',
       'username': $(".dr-login-form input[name='username']").val(),
-      'password': $(".dr-login-form input[name='password']").val(),
-      'cookie': readCookie('drgc_session')
+      'password': $(".dr-login-form input[name='password']").val()
     };
     $.post(ajaxUrl, data, function (response) {
       if (response.success) {
@@ -1514,12 +1544,20 @@ jQuery(document).ready(function ($) {
     var but = $(this).toggleClass('sending').blur();
     $(this).data('processing', true);
     var data = {
-      'action': 'drgc_logout',
-      'cookie': readCookie('drgc_session')
+      'action': 'drgc_logout'
     };
     $.post(ajaxUrl, data, function (response) {
       location.reload();
     });
+  });
+  $('#dr_login_form, #dr-signup-form, #dr-pass-reset-form, #checkout-email-form').find('input[type=email]').on('change', function (e) {
+    var elem = e.target;
+
+    if (elem.validity.valueMissing) {
+      $(elem).next('.invalid-feedback').text('This field is required.');
+    } else if (elem.validity.typeMismatch) {
+      $(elem).next('.invalid-feedback').text('Please enter a valid email address.');
+    }
   });
   $('.dr-signup').on('click', '', function (e) {
     e.preventDefault();
@@ -1540,8 +1578,7 @@ jQuery(document).ready(function ($) {
     var data = {
       'action': 'drgc_signup',
       'username': $(".dr-signup-form input[name='uemail']").val(),
-      'password': $(".dr-signup-form input[name='upw']").val(),
-      'cookie': readCookie('drgc_session')
+      'password': $(".dr-signup-form input[name='upw']").val()
     };
     $.post(ajaxUrl, data, function (response) {
       if (response.success) {
@@ -1652,23 +1689,6 @@ jQuery(document).ready(function ($) {
     }
   }
 });
-
-function readCookie(name) {
-  var nameEQ = name + "=";
-  var ca = document.cookie.split(';');
-
-  for (var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1, c.length);
-    }
-
-    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-  }
-
-  return null;
-}
 
 (function (w) {
   w.URLSearchParams = w.URLSearchParams || function (searchString) {
