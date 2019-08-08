@@ -1546,6 +1546,15 @@ jQuery(document).ready(function ($) {
       location.reload();
     });
   });
+  $('#dr_login_form, #dr-signup-form, #dr-pass-reset-form, #checkout-email-form').find('input[type=email]').on('change', function (e) {
+    var elem = e.target;
+
+    if (elem.validity.valueMissing) {
+      $(elem).next('.invalid-feedback').text('This field is required.');
+    } else if (elem.validity.typeMismatch) {
+      $(elem).next('.invalid-feedback').text('Please enter a valid email address.');
+    }
+  });
   $('.dr-signup').on('click', '', function (e) {
     e.preventDefault();
     var $form = $('.dr-signup-form');

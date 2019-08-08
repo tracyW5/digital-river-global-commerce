@@ -73,7 +73,7 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                 <form id="dr_login_form" class="dr-login-form needs-validation" novalidate>
 
                     <div class="form-group">
-                        <input class="form-control" name="username" type="text" placeholder="Email/User Name" required>
+                        <input class="form-control" name="username" type="email" placeholder="Email/User Name" required>
 
                         <div class="invalid-feedback">
 		                    <?php echo __( 'This field is required.' ); ?>
@@ -155,10 +155,10 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                     </p>
                 </div>
 
-                <form class="dr-signup-form needs-validation" oninput='upw2.setCustomValidity(upw2.value != upw.value ? "Passwords do not match." : "")' novalidate>
+                <form class="dr-signup-form needs-validation" id="dr-signup-form" oninput='upw2.setCustomValidity(upw2.value != upw.value ? "Passwords do not match." : "")' novalidate>
 
                     <div class="form-group">
-                        <input class="form-control" name="uemail" type="email" minlength="4" placeholder="Email Address" required>
+                        <input class="form-control" name="uemail" type="email" placeholder="Email Address" required>
 
                         <div class="invalid-feedback">
 			                <?php echo __( 'This field is required.' ); ?>
