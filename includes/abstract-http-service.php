@@ -125,8 +125,7 @@ abstract class AbstractHttpService {
         if ( $this->token ) {
             $this->config['headers']['Authorization'] = trim( ucfirst( $this->tokenType ) . ' ' . $this->token );
         } else {
-            $basic_auth = get_option( 'drgc_api_key' ) . ':' . get_option( 'drgc_api_secret' );
-            $auth = base64_encode( $basic_auth );
+            $auth = base64_encode( get_option( 'drgc_api_key' ) . ':' . get_option( 'drgc_api_secret' ) );
             $this->config['headers']['Authorization'] = trim( 'Basic ' . $auth );
         }
 

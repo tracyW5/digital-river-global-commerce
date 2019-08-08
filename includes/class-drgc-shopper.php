@@ -127,40 +127,6 @@ class DRGC_Shopper extends AbstractHttpService {
 	}
 
 	/**
-	 * Generate full access token
-	 *
-	 * @param string $username
-	 * @param string $password
-	 *
-	 * @return mixed $data
-	 */
-	public function generate_full_access_token( $username = '', $password = '' ) {
-		// test user
-		// $username = 'stoyan.lilov@myCompany.com';
-		// $password = 'cFGzc3dvcmQ=';
-
-		$params = array(
-			'username'                 => $username,
-			'password'                 => base64_encode($password),
-			"dr_external_reference_id" => $username,
-			"grant_type"               => "client_credentials"
-		);
-
-		if ( $username != ''  && $password != '') {
-			$data =  $this->authenticator->generate_access_token_by_login_id($username, base64_encode($password));
-		} else {
-			$data =  $this->authenticator->generate_access_token( '', $params );
-		}
-
-		$this->refresh_token        = null;
-		$this->token                = isset( $data['access_token'] ) ? $data['access_token'] : null;
-		$this->tokenType            = isset( $data['token_type'] ) ? $data['token_type'] : null;
-		$this->expires_in           = isset( $data['expires_in'] ) ? $data['expires_in'] : null;
-
-		return $data;
-	}
-
-	/**
 	 * Generate limited access token
 	 *
 	 * @return mixed $this
