@@ -743,14 +743,12 @@ jQuery(document).ready(function ($) {
     var saveShippingAddress = function saveShippingAddress() {
       var address = getAddress('shipping');
       address.address.isDefault = true;
-      console.log('save shipping: ', address);
       saveShopperAddress(JSON.stringify(address));
     };
 
     var saveBillingAddress = function saveBillingAddress() {
       var address = getAddress('billing');
       address.address.isDefault = false;
-      console.log('save billing: ', address);
       saveShopperAddress(JSON.stringify(address));
     };
 
@@ -762,9 +760,9 @@ jQuery(document).ready(function ($) {
           Authorization: "Bearer ".concat(drgc_params.accessToken)
         },
         data: address,
-        url: "".concat(apiBaseUrl, "/me/addresses?client_id=").concat(apiKey, "&format=json"),
-        success: function success(data) {
-          console.log('address update success:', data);
+        url: "".concat(apiBaseUrl, "/me/addresses"),
+        success: function success() {
+          console.log('address update success.');
         },
         error: function error(jqXHR) {
           console.log(jqXHR);
@@ -1174,6 +1172,7 @@ jQuery(document).ready(function ($) {
       var $button = $form.find('button[type="submit"]');
       var billingSameAsShipping = $('[name="checkbox-billing"]').is(':visible:checked');
       var isFormValid = prepareAddress($form);
+      var requestShipping = $('.dr-checkout__shipping').length ? true : false;
       if (!isFormValid) return;
       if (billingSameAsShipping) payload.billing = Object.assign({}, payload.shipping);
       $button.addClass('sending').blur();
@@ -1182,7 +1181,12 @@ jQuery(document).ready(function ($) {
       }, {
         billingAddress: payload.billing
       }).then(function (data) {
-        if (isLogin == 'true') saveBillingAddress();
+        if (isLogin == 'true') {
+          if (requestShipping && !billingSameAsShipping || !requestShipping) {
+            saveBillingAddress();
+          }
+        }
+
         $button.removeClass('sending').blur();
         var $section = $('.dr-checkout__billing');
         displaySavedAddress(data.cart.billingAddress, $section.find('.dr-panel-result__text'));
@@ -1643,26 +1647,9 @@ jQuery(document).ready(function ($) {
   }
 
   function toggleCartBtns() {
-    $.ajax({
-      type: 'GET',
-      headers: {
-        "Accept": "application/json"
-      },
-      url: function () {
-        var url = "".concat(apiBaseUrl, "/me/carts/active?");
-        url += "&expand=all";
-        url += "&token=".concat(drgc_params.accessToken);
-        return url;
-      }(),
-      success: function success(data) {
-        if ($('section.dr-login-sections__section.logged-in').length && data.cart.totalItemsInCart == 0) {
-          $('section.dr-login-sections__section.logged-in > div').hide();
-        }
-      },
-      error: function error(jqXHR) {
-        console.log(jqXHR);
-      }
-    });
+    if ($('section.dr-login-sections__section.logged-in').length && !drgc_params.cart.cart.lineItems.hasOwnProperty('lineItem')) {
+      $('section.dr-login-sections__section.logged-in > div').hide();
+    }
   }
 });
 
@@ -1734,9 +1721,9 @@ jQuery(document).ready(function ($) {
           $.ajax({
             type: 'POST',
             headers: {
-              Authorization: "Bearer ".concat(_this.sessionToken)
+              Authorization: "Bearer ".concat(drgc_params.accessToken)
             },
-            url: "".concat(_this.apiBaseUrl, "/me?format=json&locale=").concat(_this.drLocale),
+            url: "".concat(_this.apiBaseUrl, "/me?locale=").concat(_this.drLocale),
             success: function success(data) {
               resolve(data);
             },
@@ -1758,12 +1745,7 @@ jQuery(document).ready(function ($) {
               Accept: 'application/json',
               Authorization: "Bearer ".concat(drgc_params.accessToken)
             },
-            url: function () {
-              var url = "".concat(_this2.apiBaseUrl, "/me/carts/active?");
-              url += 'format=json';
-              url += "&token=".concat(drgc_params.accessToken);
-              return url;
-            }(),
+            url: "".concat(_this2.apiBaseUrl, "/me/carts/active"),
             success: function success(data) {
               resolve(data.cart);
             },
@@ -1786,12 +1768,9 @@ jQuery(document).ready(function ($) {
               Authorization: "Bearer ".concat(drgc_params.accessToken)
             },
             url: function () {
-              var url = "".concat(_this3.apiBaseUrl, "/me/carts/active?");
-              url += 'format=json';
-              url += "&productId=".concat(productID);
+              var url = "".concat(_this3.apiBaseUrl, "/me/carts/active?productId=").concat(productID);
               if (quantity) url += "&quantity=".concat(quantity);
               if (drgc_params.testOrder == "true") url += '&testOrder=true';
-              url += "&token=".concat(drgc_params.accessToken);
               return url;
             }(),
             success: function success(data) {
@@ -1813,14 +1792,10 @@ jQuery(document).ready(function ($) {
           $.ajax({
             type: 'DELETE',
             headers: {
-              Accept: 'application/json'
+              Accept: 'application/json',
+              Authorization: "Bearer ".concat(drgc_params.accessToken)
             },
-            url: function () {
-              var url = "".concat(_this4.apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemID, "?");
-              url += 'format=json';
-              url += "&token=".concat(drgc_params.accessToken);
-              return url;
-            }(),
+            url: "".concat(_this4.apiBaseUrl, "/me/carts/active/line-items/").concat(lineItemID),
             success: function success() {
               resolve();
             },
@@ -1839,7 +1814,7 @@ jQuery(document).ready(function ($) {
           $.ajax({
             type: 'GET',
             headers: {
-              Authorization: "Bearer ".concat(_this5.sessionToken)
+              Authorization: "Bearer ".concat(drgc_params.accessToken)
             },
             url: "".concat(_this5.apiBaseUrl, "/me/point-of-promotions/SiteMerchandising_").concat(popName, "/offers?format=json&expand=all"),
             success: function success(data) {
@@ -1861,7 +1836,7 @@ jQuery(document).ready(function ($) {
           $.ajax({
             type: 'GET',
             headers: {
-              Authorization: "Bearer ".concat(_this6.sessionToken)
+              Authorization: "Bearer ".concat(drgc_params.accessToken)
             },
             url: "".concat(_this6.apiBaseUrl, "/me/products/").concat(productID, "/pricing?format=json&expand=all"),
             success: function success(data) {
@@ -1882,7 +1857,7 @@ jQuery(document).ready(function ($) {
           $.ajax({
             type: 'GET',
             headers: {
-              Authorization: "Bearer ".concat(_this7.sessionToken)
+              Authorization: "Bearer ".concat(drgc_params.accessToken)
             },
             url: "".concat(_this7.apiBaseUrl, "/me/products/").concat(productID, "/inventory-status?format=json&expand=all"),
             success: function success(data) {
@@ -2003,11 +1978,7 @@ jQuery(document).ready(function ($) {
 
   (function () {
     if ($('#dr-minicart'.length)) {
-      drService.getCart().then(function (cart) {
-        return displayMiniCart(cart);
-      }).catch(function (jqXHR) {
-        return errorCallback(jqXHR);
-      });
+      displayMiniCart(drgc_params.cart.cart);
     }
   })();
 

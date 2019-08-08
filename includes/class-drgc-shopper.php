@@ -111,8 +111,7 @@ class DRGC_Shopper extends AbstractHttpService {
 	/**
 	 * Generate full access token
 	 *
-	 * @param string $username
-	 * @param string $password
+	 * @param string $external_reference_id
 	 *
 	 * @return mixed $data
 	 */
@@ -167,12 +166,7 @@ class DRGC_Shopper extends AbstractHttpService {
 	 * @return mixed $this
 	 */
 	public function generate_limited_access_token() {
-		$params = array(
-			'dr_session_token' => $this->authenticator->dr_session_token,
-			'grant_type'       => 'password'
-		);
-
-		$data = $this->authenticator->generate_access_token( '', $params );
+		$data = $this->authenticator->generate_access_token( '' );
 
 		$this->token          = isset( $data['access_token'] ) ? $data['access_token'] : null;
 		$this->tokenType      = isset( $data['token_type'] ) ? $data['token_type'] : null;
@@ -191,12 +185,7 @@ class DRGC_Shopper extends AbstractHttpService {
 	 */
 	public function update_shopper_fields( $params = array() ) {
 		$default = array(
-			'token'             => $this->token,
-			'currency'          => null,
-			'ipAddress'         => null,
-			'locale'            => null,
-			'expand'            => null,
-			'fields'            => null
+			'expand'            => 'all'
 		);
 
 		$params = array_merge(
@@ -217,8 +206,7 @@ class DRGC_Shopper extends AbstractHttpService {
 	 */
 	public function get_access_token_information() {
 		$params = array(
-			'token'  => $this->token,
-			'format' => 'json'
+			'token' => $this->token
 		);
 
 		$url = "/oauth20/access-tokens?" . http_build_query( $params );
@@ -248,10 +236,7 @@ class DRGC_Shopper extends AbstractHttpService {
 	 */
 	public function retrieve_shopper( $params = array() ) {
 		$default = array(
-			'token'             => $this->token,
-			'ipAddress'         => null,
-			'expand'            => 'all',
-			'fields'            => null
+			'expand'            => 'all'
 		);
 
 		$params = array_merge(
@@ -281,8 +266,6 @@ class DRGC_Shopper extends AbstractHttpService {
 
 	public function retrieve_shopper_address( $params = array() ) {
 		$default = array(
-			'token'             => $this->token,
-			'client_id'         => $this->drgc_api_key,
 			'expand'            => 'all'
 		);
 
@@ -314,16 +297,18 @@ class DRGC_Shopper extends AbstractHttpService {
 	 * @param string $first_name
 	 * @param string $last_name
 	 * @param string $email_address
+	 * @param string $externalReferenceId
 	 *
 	 * @return mixed
 	 */
-	public function create_shopper($username,
-			$password,
-			$first_name,
-			$last_name,
-			$email_address,
-			$externalReferenceId
-		) {
+	public function create_shopper(
+		$username,
+		$password,
+		$first_name,
+		$last_name,
+		$email_address,
+		$externalReferenceId
+	) {
 		$data = array (
 			'shopper' => array (
 				'username'     			  => $username,
@@ -331,7 +316,7 @@ class DRGC_Shopper extends AbstractHttpService {
 				'firstName'    			  => $first_name,
 				'lastName'     			  => $last_name,
 				'emailAddress' 			  => $email_address,
-				'externalReferenceId'     => $externalReferenceId
+				'externalReferenceId' => $externalReferenceId
 				// 'locale'       => $this->locale,
 				// 'currency'     => $this->currency,
 			),
@@ -346,7 +331,7 @@ class DRGC_Shopper extends AbstractHttpService {
 				return $res;
 			}
 
-			$this->generate_full_access_token( $username, $password );
+			$this->generate_access_token_by_ref_id( $externalReferenceId );
 
 			return true;
 		} catch (\Exception $e) {

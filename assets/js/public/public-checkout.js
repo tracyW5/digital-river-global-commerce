@@ -30,14 +30,12 @@ jQuery(document).ready(($) => {
         function saveShippingAddress() {
             var address = getAddress('shipping');
             address.address.isDefault = true;
-            console.log('save shipping: ', address);
             saveShopperAddress(JSON.stringify(address))
         }
 
         function saveBillingAddress() {
             var address = getAddress('billing');
             address.address.isDefault = false;
-            console.log('save billing: ', address);
             saveShopperAddress(JSON.stringify(address))
         }
 
@@ -49,9 +47,9 @@ jQuery(document).ready(($) => {
                     Authorization: `Bearer ${drgc_params.accessToken}`
                 },
                 data: address,
-                url: `${apiBaseUrl}/me/addresses?client_id=${apiKey}&format=json`,
-                success: (data) => {
-                    console.log('address update success:',data);
+                url: `${apiBaseUrl}/me/addresses`,
+                success: () => {
+                    console.log('address update success.');
                 },
                 error: (jqXHR) => {
                     console.log(jqXHR);
@@ -341,13 +339,19 @@ jQuery(document).ready(($) => {
             const $button = $form.find('button[type="submit"]');
             const billingSameAsShipping = $('[name="checkbox-billing"]').is(':visible:checked');
             const isFormValid = prepareAddress($form);
+            const requestShipping = $('.dr-checkout__shipping').length ? true : false;
 
             if (!isFormValid) return;
             if (billingSameAsShipping) payload.billing = Object.assign({}, payload.shipping);
 
             $button.addClass('sending').blur();
             updateCart({ expand: 'all' }, { billingAddress: payload.billing }).then((data) => {
-                if ( isLogin == 'true') saveBillingAddress();
+                if (isLogin == 'true') {
+                    if ((requestShipping && !billingSameAsShipping) || !requestShipping) {
+                        saveBillingAddress();
+                    }
+                }
+                
                 $button.removeClass('sending').blur();
 
                 const $section = $('.dr-checkout__billing');

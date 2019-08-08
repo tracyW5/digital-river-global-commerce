@@ -134,7 +134,7 @@ class DRGC_Public {
 				wp_send_json_error( __( 'Authorization failed for specified credentials' ) );
 			}
 
-			$attempt = $plugin->shopper->generate_access_token_by_login_id( $username, $password );
+			$attempt = $plugin->shopper->generate_access_token_by_ref_id( $externalReferenceId );
 		}
 
 		if ( array_key_exists( 'error', $attempt ) ) {

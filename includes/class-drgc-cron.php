@@ -17,18 +17,11 @@ class DRGC_Cron extends AbstractHttpService {
 	private $enabled;
 
 	/**
-	 * Api key option
-	 * @var mixed|void
-	 */
-	public $api_key;
-
-	/**
 	 * DRGC_Cron constructor.
 	 */
 	public function __construct() {
 		$option 								= get_option( 'drgc_cron_handler' );
 		$this->enabled          = ( is_array( $option ) && '1' == $option['checkbox'] )  ? true : false;
-		$this->api_key          = get_option( 'drgc_api_key' );
 		$this->init();
 	}
 
@@ -79,25 +72,24 @@ class DRGC_Cron extends AbstractHttpService {
 		$products = $this->get_api_products();
 
 		if ( $products ) {
-
 			$imported = array();
+			$currencies = array();
+			$local_currencies = DRGC()->cart->retrieve_currencies();
+
+			if ( is_array( $local_currencies ) && isset( $local_currencies['site'] ) ) {
+				$currencies['default_locale'] = $local_currencies['site']['defaultLocale'];
+
+				if ( isset( $local_currencies['site']['localeOptions']['localeOption'] ) ) {
+					foreach ( $local_currencies['site']['localeOptions']['localeOption'] as $locale ) {
+						$currencies['locales'][ $locale['locale'] ] = $locale['primaryCurrency'];
+					}
+				}
+			}
 
 			foreach ( $products as $product_data ) {
-				$currencies          = array();
 				$post_terms          = array();
 				$gc_id               = isset( $product_data['id'] ) ? absint( $product_data['id'] ) : 0;
 				$existing_product_id = drgc_get_product_by_gcid( $gc_id );
-				$local_currencies    = DRGC()->cart->retrieve_currencies();
-
-				if ( is_array( $local_currencies ) && isset( $local_currencies['site'] ) ) {
-					$currencies['default_locale'] = $local_currencies['site']['defaultLocale'];
-
-					if ( isset( $local_currencies['site']['localeOptions']['localeOption'] ) ) {
-						foreach ( $local_currencies['site']['localeOptions']['localeOption'] as $locale ) {
-							$currencies['locales'][ $locale['locale'] ] = $locale['primaryCurrency'];
-						}
-					}
-				}
 
 				$parent_product = new DRGC_Product( $existing_product_id );
 				$parent_product->set_data( $product_data );
@@ -236,8 +228,7 @@ class DRGC_Cron extends AbstractHttpService {
 	 */
 	public function get_api_products() {
 		$params = array(
-			'apiKey'         => $this->api_key,
-			'expand'         => 'all',
+			'expand'         => 'all'
 		);
 
 		$url = '/v1/shoppers/me/products?' . http_build_query( $params );
@@ -260,11 +251,7 @@ class DRGC_Cron extends AbstractHttpService {
 	 * @return array|bool
 	 */
 	public function get_api_product_category( $id ) {
-		$params = array(
-			'apiKey'         => $this->api_key,
-		);
-
-		$url = '/v1/shoppers/me/products/' . $id . '/categories?' . http_build_query( $params );
+		$url = '/v1/shoppers/me/products/' . $id . '/categories';
 
 		try {
 			$res = $this->get( $url );

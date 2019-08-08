@@ -219,28 +219,10 @@ jQuery(document).ready(($) => {
     }
 
     function toggleCartBtns() {
-        $.ajax({
-            type: 'GET',
-            headers: {
-                "Accept": "application/json"
-            },
-            url: (() => {
-                let url = `${apiBaseUrl}/me/carts/active?`;
-                url += `&expand=all`
-                url += `&token=${drgc_params.accessToken}`
-                return url;
-            })(),
-            success: (data) => {
-                if ($('section.dr-login-sections__section.logged-in').length && data.cart.totalItemsInCart == 0) {
-                    $('section.dr-login-sections__section.logged-in > div').hide();
-                }
-            },
-            error: (jqXHR) => {
-                console.log(jqXHR);
-            }
-        });
+        if ($('section.dr-login-sections__section.logged-in').length && !drgc_params.cart.cart.lineItems.hasOwnProperty('lineItem')) {
+            $('section.dr-login-sections__section.logged-in > div').hide();
+        }
     }
-
 });
 
 function readCookie(name) {
