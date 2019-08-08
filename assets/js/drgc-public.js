@@ -1517,7 +1517,7 @@ jQuery(document).ready(function ($) {
       location.reload();
     });
   });
-  $('input[name=uemail]').on('change', function (e) {
+  $('#dr_login_form, #dr-signup-form, #dr-pass-reset-form, #checkout-email-form').find('input[type=email]').on('change', function (e) {
     var elem = e.target;
 
     if (elem.validity.valueMissing) {

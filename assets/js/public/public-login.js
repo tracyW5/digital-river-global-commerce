@@ -73,7 +73,7 @@ jQuery(document).ready(($) => {
         });
     });
 
-    $('input[name=uemail]').on('change', (e) => {
+    $('#dr_login_form, #dr-signup-form, #dr-pass-reset-form, #checkout-email-form').find('input[type=email]').on('change', (e) => {
         const elem = e.target;
         if (elem.validity.valueMissing) {
             $(elem).next('.invalid-feedback').text('This field is required.');
