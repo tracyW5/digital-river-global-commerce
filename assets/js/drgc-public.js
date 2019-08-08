@@ -1058,8 +1058,6 @@ jQuery(document).ready(function ($) {
     }; // check billing info
 
 
-    var siteID = drgc_params.siteID;
-    var apiKey = drgc_params.apiKey;
     var domain = drgc_params.domain;
     var isLogin = drgc_params.isLogin;
     var apiBaseUrl = 'https://' + domain + '/v1/shoppers';
@@ -1487,7 +1485,6 @@ jQuery(document).ready(function ($) {
 /* eslint-disable no-alert, no-console */
 jQuery(document).ready(function ($) {
   var ajaxUrl = drgc_params.ajaxUrl;
-  var apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers';
   $('#dr_login_form').on('submit', function (e) {
     e.preventDefault();
     var $form = $('#dr_login_form');
