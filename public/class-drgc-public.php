@@ -171,7 +171,7 @@ class DRGC_Public {
 
 			preg_match( '/^[a-zA-Z0-9!_@]+$/', $password, $result );
 			if ( empty( $result ) ) {
-				array_push( $error_msgs, __( 'Do not contain non-allowable special characters (only ! _ @ are allowed).' ) );
+				array_push( $error_msgs, __( 'Contains non-allowable special characters (only ! _ @ are allowed).' ) );
 			}
 
 			if ( !empty( $error_msgs ) ) {
