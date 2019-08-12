@@ -206,7 +206,7 @@ class DRGC_Public {
 			);
 
 			$user_id = wp_insert_user( $userdata ) ;
-			$externalReferenceId = md5(uniqid( $user_id, true ));
+			$externalReferenceId = hash( 'sha256', uniqid( $user_id, true ) );
 
 			add_user_meta( $user_id, '_external_reference_id', $externalReferenceId);
 
@@ -433,15 +433,6 @@ class DRGC_Public {
 		}
 		return $template;
 	}
-
-	public function send_smtp_email( $phpmailer ) {
-		$phpmailer->isSMTP();
-		$phpmailer->Host       = 'smtp.mailtrap.io';
-		$phpmailer->SMTPAuth   = true;
-		$phpmailer->Port       = 2525;
-		$phpmailer->Username   = '8c0d84a880f6b1';
-		$phpmailer->Password   = 'ab951668e78885';
-  }
 
 	public function add_legal_link() {
 		if ( is_page( 'cart' ) || is_page( 'checkout' ) || is_page( 'thank-you' ) ) {
