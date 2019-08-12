@@ -157,6 +157,28 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
 
                 <form class="dr-signup-form needs-validation" id="dr-signup-form" oninput='upw2.setCustomValidity(upw2.value != upw.value ? "Passwords do not match." : "")' novalidate>
 
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <input class="form-control" name="first_name" type="text" placeholder="First Name" required>
+
+                                <div class="invalid-feedback">
+                                    <?php echo __( 'This field is required.' ); ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <input class="form-control" name="last_name" type="text" placeholder="Last Name" required>
+
+                                <div class="invalid-feedback">
+                                    <?php echo __( 'This field is required.' ); ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <input class="form-control" name="uemail" type="email" placeholder="Email Address" required>
 
