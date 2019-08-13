@@ -145,6 +145,8 @@ input[type=radio] { position: relative; opacity: 1; width: -webkit-max-content; 
 
 .drgc-wrapper .form-control::-webkit-input-placeholder { color: #6c757d; opacity: 1; }
 
+.drgc-wrapper .form-control::-moz-placeholder { color: #6c757d; opacity: 1; }
+
 .drgc-wrapper .form-control:-ms-input-placeholder { color: #6c757d; opacity: 1; }
 
 .drgc-wrapper .form-control::-ms-input-placeholder { color: #6c757d; opacity: 1; }
@@ -712,6 +714,8 @@ input[type=radio] { position: relative; opacity: 1; width: -webkit-max-content; 
 
 .drgc-wrapper ::-webkit-input-placeholder { opacity: 0.5; white-space: nowrap; }
 
+.drgc-wrapper ::-moz-placeholder { opacity: 0.5; white-space: nowrap; }
+
 .drgc-wrapper :-ms-input-placeholder { opacity: 0.5; white-space: nowrap; }
 
 .drgc-wrapper ::-ms-input-placeholder { opacity: 0.5; white-space: nowrap; }
@@ -948,6 +952,8 @@ input[type=radio] { position: relative; opacity: 1; width: -webkit-max-content; 
 .dr-login .dr-login-sections__section.section-returning .dr-login-form input { height: 51px; padding: 0 10px; }
 
 .dr-login .dr-login-sections__section.section-returning .dr-login-form input::-webkit-input-placeholder { font-family: "Open Sans", sans-serif; }
+
+.dr-login .dr-login-sections__section.section-returning .dr-login-form input::-moz-placeholder { font-family: "Open Sans", sans-serif; }
 
 .dr-login .dr-login-sections__section.section-returning .dr-login-form input:-ms-input-placeholder { font-family: "Open Sans", sans-serif; }
 

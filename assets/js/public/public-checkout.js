@@ -573,45 +573,13 @@ jQuery(document).ready(($) => {
                 url: `${apiBaseUrl}/me/carts/active/apply-payment-method?expand=all`,
                 data: JSON.stringify(data),
                 success: () => {
-                    const billingSameAsShipping = $('[name="checkbox-billing"]').is(':checked');
-                    if (billingSameAsShipping) {
-                        submitCart();
-                    } else {
-                        applyBillingAddress(payload.billing).then(() => submitCart());
-                    }
+                    submitCart();
                 },
                 error: (jqXHR) => {
                     $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
                     $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
                     $('body').css({'pointer-events': 'auto', 'opacity': 1});
                 }
-            });
-        }
-
-        function applyBillingAddress(billingAddress) {
-            return new Promise((resolve, reject) => {
-                $.ajax({
-                    type: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type':'application/json',
-                        Authorization: `Bearer ${drgc_params.accessToken}`
-                    },
-                    url: `${apiBaseUrl}/me/carts/active`,
-                    data: JSON.stringify({
-                        cart: {
-                            billingAddress
-                        }
-                    })
-                })
-                .done((data) => {
-                    resolve(data);
-                })
-                .fail((jqXHR) => {
-                    $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
-                    $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
-                    reject(jqXHR);
-                });
             });
         }
 
