@@ -121,7 +121,7 @@ class DRGC_Cart extends AbstractHttpService {
      * River will provide all corresponding order information.
      */
     public function retrieve_order() {
-        if ( is_null ( $id = $_GET[ 'order' ] ?? null ) ) {
+        if ( is_null ( $id = $_POST[ 'order_id' ] ?? null ) ) {
             // Maybe redirect to other page
             return;
         }
