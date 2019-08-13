@@ -996,15 +996,7 @@ jQuery(document).ready(function ($) {
         url: "".concat(apiBaseUrl, "/me/carts/active/apply-payment-method?expand=all"),
         data: JSON.stringify(data),
         success: function success() {
-          var billingSameAsShipping = $('[name="checkbox-billing"]').is(':checked');
-
-          if (billingSameAsShipping) {
-            submitCart();
-          } else {
-            applyBillingAddress(payload.billing).then(function () {
-              return submitCart();
-            });
-          }
+          submitCart();
         },
         error: function error(jqXHR) {
           $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
@@ -1014,31 +1006,6 @@ jQuery(document).ready(function ($) {
             'opacity': 1
           });
         }
-      });
-    };
-
-    var applyBillingAddress = function applyBillingAddress(billingAddress) {
-      return new Promise(function (resolve, reject) {
-        $.ajax({
-          type: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: "Bearer ".concat(drgc_params.accessToken)
-          },
-          url: "".concat(apiBaseUrl, "/me/carts/active"),
-          data: JSON.stringify({
-            cart: {
-              billingAddress: billingAddress
-            }
-          })
-        }).done(function (data) {
-          resolve(data);
-        }).fail(function (jqXHR) {
-          $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
-          $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
-          reject(jqXHR);
-        });
       });
     };
 
