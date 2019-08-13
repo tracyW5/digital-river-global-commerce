@@ -384,12 +384,6 @@ jQuery(document).ready(($) => {
                             <span class="black">
                                 ${freeShipping ? 'FREE' : option.formattedCost}
                             </span>
-                            <span class="smoller">
-                                Estimated Arrival:
-                            </span>
-                            <span class="black">
-                                Apr 08 - Apr 11
-                            </span>
                         </label>
                     </div>
                 `;
