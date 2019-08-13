@@ -1448,6 +1448,30 @@ jQuery(document).ready(function ($) {
 });
 "use strict";
 
+(function (w) {
+  w.URLSearchParams = w.URLSearchParams || function (searchString) {
+    var self = this;
+    self.searchString = searchString;
+
+    self.get = function (name) {
+      var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(self.searchString);
+
+      if (results == null) {
+        return null;
+      } else {
+        return decodeURI(results[1]) || 0;
+      }
+    };
+  };
+})(window);
+
+window.onpageshow = function (event) {
+  if (event.persisted) {
+    window.location.reload();
+  }
+};
+"use strict";
+
 /* global drgc_params, iFrameResize */
 
 /* eslint-disable no-alert, no-console */
@@ -1668,10 +1692,7 @@ jQuery(document).ready(function ($) {
     function DRService() {
       _classCallCheck(this, DRService);
 
-      this.siteID = drgc_params.siteID;
-      this.apiKey = drgc_params.apiKey;
       this.domain = drgc_params.domain;
-      this.sessionToken = null;
       this.apiBaseUrl = 'https://' + this.domain + '/v1/shoppers';
       this.drLocale = drgc_params.drLocale || 'en_US';
     }
@@ -1924,7 +1945,6 @@ jQuery(document).ready(function ($) {
     console.log('errorStatus', jqXHR.status);
 
     if (jqXHR.status === 401) {
-      localStorage.removeItem('drSessionToken');
       init(); // eslint-disable-line no-use-before-define
     }
   }
@@ -2047,27 +2067,3 @@ jQuery(document).ready(function ($) {
     });
   }
 });
-"use strict";
-
-(function (w) {
-  w.URLSearchParams = w.URLSearchParams || function (searchString) {
-    var self = this;
-    self.searchString = searchString;
-
-    self.get = function (name) {
-      var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(self.searchString);
-
-      if (results == null) {
-        return null;
-      } else {
-        return decodeURI(results[1]) || 0;
-      }
-    };
-  };
-})(window);
-
-window.onpageshow = function (event) {
-  if (event.persisted) {
-    window.location.reload();
-  }
-};

@@ -103,7 +103,6 @@ class DRGC_Public {
 			'cartUrl'           =>  drgc_get_page_link( 'cart' ),
 			'checkoutUrl'	      =>  drgc_get_page_link( 'checkout' ),
 			'siteID'            =>  get_option( 'drgc_site_id' ),
-			'apiKey'            =>  get_option( 'drgc_api_key' ),
 			'domain'            =>  get_option( 'drgc_domain' ),
 			'digitalRiverKey'   =>  get_option( 'drgc_digitalRiver_key' ),
 			'accessToken'       =>  $access_token,
