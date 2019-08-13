@@ -18,9 +18,9 @@ jQuery(document).ready(($) => {
                 $.ajax({
                     type: 'POST',
                     headers: {
-                        Authorization: `Bearer ${this.sessionToken}`,
+                        Authorization: `Bearer ${drgc_params.accessToken}`,
                     },
-                    url: `${this.apiBaseUrl}/me?format=json&locale=${this.drLocale}`,
+                    url: `${this.apiBaseUrl}/me?locale=${this.drLocale}`,
                     success: (data) => {
                         resolve(data);
                     },
@@ -37,13 +37,9 @@ jQuery(document).ready(($) => {
                     type: 'GET',
                     headers: {
                         Accept: 'application/json',
-                        Authorization: `Bearer ${drgc_params.accessToken}`                    },
-                    url: (() => {
-                        let url = `${this.apiBaseUrl}/me/carts/active?`;
-                        url += 'format=json'
-                        url += `&token=${drgc_params.accessToken}`
-                        return url;
-                    })(),
+                        Authorization: `Bearer ${drgc_params.accessToken}`
+                    },
+                    url: `${this.apiBaseUrl}/me/carts/active`,
                     success: (data) => {
                         resolve(data.cart);
                     },
@@ -63,12 +59,9 @@ jQuery(document).ready(($) => {
                         Authorization: `Bearer ${drgc_params.accessToken}`
                     },
                     url: (() => {
-                        let url = `${this.apiBaseUrl}/me/carts/active?`;
-                        url += 'format=json'
-                        url += `&productId=${productID}`
+                        let url = `${this.apiBaseUrl}/me/carts/active?productId=${productID}`;
                         if (quantity) url += `&quantity=${quantity}`;
-                        if(drgc_params.testOrder == "true")url += '&testOrder=true';
-                        url += `&token=${drgc_params.accessToken}`
+                        if (drgc_params.testOrder == "true") url += '&testOrder=true';
                         return url;
                     })(),
                     success: (data) => {
@@ -89,13 +82,9 @@ jQuery(document).ready(($) => {
                     type: 'DELETE',
                     headers: {
                         Accept: 'application/json',
+                        Authorization: `Bearer ${drgc_params.accessToken}`
                     },
-                    url: (() => {
-                        let url = `${this.apiBaseUrl}/me/carts/active/line-items/${lineItemID}?`;
-                        url += 'format=json'
-                        url += `&token=${drgc_params.accessToken}`
-                        return url;
-                    })(),
+                    url: `${this.apiBaseUrl}/me/carts/active/line-items/${lineItemID}`,
                     success: () => {
                         resolve();
                     },
@@ -111,7 +100,7 @@ jQuery(document).ready(($) => {
                 $.ajax({
                     type: 'GET',
                     headers: {
-                        Authorization: `Bearer ${this.sessionToken}`,
+                        Authorization: `Bearer ${drgc_params.accessToken}`,
                     },
                     url: `${this.apiBaseUrl}/me/point-of-promotions/SiteMerchandising_${popName}/offers?format=json&expand=all`,
                     success: (data) => {
@@ -130,7 +119,7 @@ jQuery(document).ready(($) => {
                 $.ajax({
                     type: 'GET',
                     headers: {
-                        Authorization: `Bearer ${this.sessionToken}`,
+                        Authorization: `Bearer ${drgc_params.accessToken}`,
                     },
                     url: `${this.apiBaseUrl}/me/products/${productID}/pricing?format=json&expand=all`,
                     success: (data) => {
@@ -148,7 +137,7 @@ jQuery(document).ready(($) => {
                 $.ajax({
                     type: 'GET',
                     headers: {
-                        Authorization: `Bearer ${this.sessionToken}`,
+                        Authorization: `Bearer ${drgc_params.accessToken}`,
                     },
                     url: `${this.apiBaseUrl}/me/products/${productID}/inventory-status?format=json&expand=all`,
                     success: (data) => {
@@ -272,11 +261,9 @@ jQuery(document).ready(($) => {
         this.find('.dr-loader-container').remove();
     };
 
-    (function () {
+    (function() {
         if ( $('#dr-minicart'.length)) {
-            drService.getCart()
-                .then(cart => displayMiniCart(cart))
-                .catch(jqXHR => errorCallback(jqXHR));
+            displayMiniCart(drgc_params.cart.cart);
         }
     }());
 

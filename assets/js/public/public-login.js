@@ -3,7 +3,6 @@
 
 jQuery(document).ready(($) => {
     const ajaxUrl = drgc_params.ajaxUrl;
-    const apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers';
 
     $('#dr_login_form').on('submit', (e) => {
         e.preventDefault();
@@ -227,42 +226,8 @@ jQuery(document).ready(($) => {
     }
 
     function toggleCartBtns() {
-        $.ajax({
-            type: 'GET',
-            headers: {
-                "Accept": "application/json"
-            },
-            url: (() => {
-                let url = `${apiBaseUrl}/me/carts/active?`;
-                url += `&expand=all`
-                url += `&token=${drgc_params.accessToken}`
-                return url;
-            })(),
-            success: (data) => {
-                if ($('section.dr-login-sections__section.logged-in').length && data.cart.totalItemsInCart == 0) {
-                    $('section.dr-login-sections__section.logged-in > div').hide();
-                }
-            },
-            error: (jqXHR) => {
-                console.log(jqXHR);
-            }
-        });
+        if ($('section.dr-login-sections__section.logged-in').length && !drgc_params.cart.cart.lineItems.hasOwnProperty('lineItem')) {
+            $('section.dr-login-sections__section.logged-in > div').hide();
+        }
     }
-
 });
-
-(function (w) {
-    w.URLSearchParams = w.URLSearchParams || function (searchString) {
-        var self = this;
-        self.searchString = searchString;
-        self.get = function (name) {
-            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(self.searchString);
-            if (results == null) {
-                return null;
-            }
-            else {
-                return decodeURI(results[1]) || 0;
-            }
-        };
-    }
-})(window)

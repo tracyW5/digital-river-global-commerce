@@ -83,9 +83,7 @@ class DRGC_Cart extends AbstractHttpService {
      */
     public function retrieve_cart( $params = array() ) {
         $default = array(
-            'token'  => $this->token,
-            'expand' => 'all',
-            'fields' => null
+            'expand' => 'all'
         );
 
         $params = array_merge(
@@ -129,9 +127,7 @@ class DRGC_Cart extends AbstractHttpService {
         $hasPhysicalProduct = false;
 
         $default = array(
-            'token'      => $this->token,
             'expand'     => 'all',
-            'fields'     => null,
             'orderState' => 'Open'
         );
 
@@ -160,12 +156,7 @@ class DRGC_Cart extends AbstractHttpService {
      * supported currencies and locales.
      */
     public function retrieve_currencies() {
-        $params = array(
-            'token'             => $this->token,
-            'expand'            => null
-        );
-
-        return $this->get( "/v1/shoppers/site?" . http_build_query( $params ) );
+        return $this->get( "/v1/shoppers/site" );
     }
 
     /**
@@ -174,17 +165,6 @@ class DRGC_Cart extends AbstractHttpService {
      * the corresponding product and price information for all cart line-items.
      */
     public function fetch_items( $params = array() ) {
-        $default = array(
-            'token'             => $this->token,
-            'expand'            => null,
-            'fields'            => null
-        );
-
-        $params = array_merge(
-            $default,
-            array_intersect_key( $params, $default )
-        );
-
         $res = $this->get( "/v1/shoppers/me/carts/active/line-items" . http_build_query( $params ) );
 
         if ( $line_items = $res['lineItems']['lineItem'] ) {
@@ -202,21 +182,7 @@ class DRGC_Cart extends AbstractHttpService {
      * ID's or your system's product ID's (external reference ID)
      * and Digital River will add those products to the shopper's cart.
      */
-    public function update_line_items( $params = array() ) {
-        $default = array(
-            'token'               => $this->token,
-            'companyId'           => null,
-            'externalReferenceId' => null,
-            'offerId'             => null,
-            'productId'           => null, //5104521600
-            'quantity'            => null
-        );
-
-        $params = array_merge(
-            $default,
-            array_intersect_key( $params, $default )
-        );
-    
+    public function update_line_items( $params = array() ) {    
         try {
             $this->post( "/v1/shoppers/me/carts/active/line-items".http_build_query( $params ));
             return true;
@@ -232,9 +198,7 @@ class DRGC_Cart extends AbstractHttpService {
      */
     public function get_billing_address( $params = array() ) {
         $default = array(
-            'token'             => $this->token,
-            'expand'            => 'all',
-            'fields'            => null
+            'expand'            => 'all'
         );
 
         $params = array_merge(

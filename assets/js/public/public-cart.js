@@ -430,13 +430,7 @@ jQuery(document).ready(($) => {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${drgc_params.accessToken}`
             },
-            url: (() => {
-                let url = `${apiBaseUrl}/me?`;
-                url += `format=json`
-                url += `&currency=${data.currency}`
-                url += `&locale=${data.locale}`
-                return url;
-            })(),
+            url: `${apiBaseUrl}/me?currency=${data.currency}&locale=${data.locale}`,
             success: (data, textStatus, xhr) => {
                 if (xhr.status === 204) {
                     location.reload();
