@@ -15,7 +15,6 @@
         &__section {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
 
             padding: 16px 16px 48px 16px;
             text-align: center;
@@ -51,7 +50,6 @@
                     position: relative;
                     display: flex;
                     flex-direction: column;
-                    margin-top: auto;
 
                     input {
                         height: 51px;
@@ -156,6 +154,10 @@
                 @include for-tablet-landscape-up {
                     font-size: 18px;
                 }
+            }
+
+            h2 + p {
+                min-height: 55px;
             }
 
             span {

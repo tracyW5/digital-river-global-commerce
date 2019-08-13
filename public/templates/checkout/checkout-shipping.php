@@ -1,7 +1,10 @@
 <?php
 $shippingAddress = $cart['cart']['shippingAddress'];
-if ($customer_address) {
+if ( $customer_address ) {
     $shippingAddress = $customer_address[0];
+} elseif ( $customer ) {
+    $shippingAddress['firstName'] = $shippingAddress['firstName'] ?: $customer['firstName'];
+    $shippingAddress['lastName'] = $shippingAddress['lastName'] ?: $customer['lastName'];
 }
 if ( $cart['cart']['shippingAddress']['line1'] != '') {
     $shippingAddress = $cart['cart']['shippingAddress'];

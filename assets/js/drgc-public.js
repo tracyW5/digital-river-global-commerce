@@ -1567,9 +1567,11 @@ jQuery(document).ready(function ($) {
     $form.data('processing', true);
     $('.dr-signin-form-error').text('');
     var data = {
-      'action': 'drgc_signup',
-      'username': $(".dr-signup-form input[name='uemail']").val(),
-      'password': $(".dr-signup-form input[name='upw']").val()
+      action: 'drgc_signup',
+      first_name: $('.dr-signup-form input[name=first_name]').val(),
+      last_name: $('.dr-signup-form input[name=last_name]').val(),
+      username: $('.dr-signup-form input[name=uemail]').val(),
+      password: $('.dr-signup-form input[name=upw]').val()
     };
     $.post(ajaxUrl, data, function (response) {
       if (response.success) {
@@ -1578,7 +1580,7 @@ jQuery(document).ready(function ($) {
         $form.data('processing', false);
         but.removeClass('sending').blur();
 
-        if (response.data.errors && response.data.errors.error[0].hasOwnProperty('description')) {
+        if (response.data && response.data.errors && response.data.errors.error[0].hasOwnProperty('description')) {
           $('.dr-signin-form-error').text(response.data.errors.error[0].description);
         } else if (Object.prototype.toString.call(response.data) == '[object String]') {
           $('.dr-signin-form-error').text(response.data);

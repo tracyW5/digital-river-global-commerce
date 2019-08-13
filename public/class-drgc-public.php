@@ -153,31 +153,15 @@ class DRGC_Public {
 	public function dr_signup_ajax() {
 		$plugin = DRGC();
 
-		if ( (isset( $_POST['username'] ) && isset( $_POST['password'] )) ) {
+		if ( isset( $_POST['first_name'] ) && isset( $_POST['last_name'] ) &&
+			   isset( $_POST['username'] ) && isset( $_POST['password'] ) ) {
+			$first_name = sanitize_text_field( $_POST['first_name'] );
+			$last_name = sanitize_text_field( $_POST['last_name'] );
 			$email = sanitize_text_field( $_POST['username'] );
 			$password = sanitize_text_field( $_POST['password'] );
 
 			$plugin->session->dirty_set_session( $_COOKIE['drgc_session'] );
-
-			$parts_name = '';
-			$parts = explode( "@",$email );
-			$username = $parts[0];
-			$delimiters = array( '.', '-', '_' );
 			$error_msgs = array();
-
-			foreach ( $delimiters as $delimiter ) {
-				if ( strpos( $username, $delimiter ) ) {
-					$parts_name = explode( $delimiter, $username );
-					break;
-				}
-			}
-			if ( ! empty( $parts_name ) ) {
-				$first_name = ucfirst( strtolower( $parts_name[0] ) );
-				$last_name = ucfirst( strtolower( $parts_name[1] ) );
-			} else {
-				$first_name = ucfirst( strtolower( $username ) );
-				$last_name = ucfirst( strtolower( $username ) );
-			}
 
 			if ( !filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
 				array_push( $error_msgs, __( 'Please enter a valid email address.' ) );
@@ -189,7 +173,7 @@ class DRGC_Public {
 
 			preg_match( '/^[a-zA-Z0-9!_@]+$/', $password, $result );
 			if ( empty( $result ) ) {
-				array_push( $error_msgs, __( 'Do not contain non-allowable special characters (only ! _ @ are allowed).' ) );
+				array_push( $error_msgs, __( 'Contains non-allowable special characters (only ! _ @ are allowed).' ) );
 			}
 
 			if ( !empty( $error_msgs ) ) {
@@ -208,7 +192,7 @@ class DRGC_Public {
 			);
 
 			$user_id = wp_insert_user( $userdata ) ;
-			$externalReferenceId = md5(uniqid( $user_id, true ));
+			$externalReferenceId = hash( 'sha256', uniqid( $user_id, true ) );
 
 			add_user_meta( $user_id, '_external_reference_id', $externalReferenceId);
 
@@ -435,15 +419,6 @@ class DRGC_Public {
 		}
 		return $template;
 	}
-
-	public function send_smtp_email( $phpmailer ) {
-		$phpmailer->isSMTP();
-		$phpmailer->Host       = 'smtp.mailtrap.io';
-		$phpmailer->SMTPAuth   = true;
-		$phpmailer->Port       = 2525;
-		$phpmailer->Username   = '8c0d84a880f6b1';
-		$phpmailer->Password   = 'ab951668e78885';
-  }
 
 	public function add_legal_link() {
 		if ( is_page( 'cart' ) || is_page( 'checkout' ) || is_page( 'thank-you' ) ) {
