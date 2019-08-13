@@ -5,10 +5,7 @@ jQuery(document).ready(($) => {
     class DRService {
 
         constructor() {
-            this.siteID = drgc_params.siteID;
-            this.apiKey = drgc_params.apiKey;
             this.domain = drgc_params.domain;
-            this.sessionToken = null;
             this.apiBaseUrl = 'https://' + this.domain + '/v1/shoppers';
             this.drLocale = drgc_params.drLocale || 'en_US';
         }
@@ -247,7 +244,6 @@ jQuery(document).ready(($) => {
     function errorCallback(jqXHR) {
         console.log('errorStatus', jqXHR.status);
         if (jqXHR.status === 401) {
-            localStorage.removeItem('drSessionToken');
             init(); // eslint-disable-line no-use-before-define
         }
     }
