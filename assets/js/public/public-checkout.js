@@ -510,9 +510,9 @@ jQuery(document).ready(($) => {
             }
         });
 
-        $('form#checkout-confirmation-form').on('submit', function(e) {
+        $('#checkout-confirmation-form button[type="submit"]').on('click', (e) => {
             e.preventDefault();
-            $(this).find('button[type="submit"]').toggleClass('sending').blur();
+            $(e.target).toggleClass('sending').blur();
             $('#dr-payment-failed-msg').hide();
             applyPaymentToCart(paymentSourceId);
         });
@@ -594,9 +594,8 @@ jQuery(document).ready(($) => {
                 },
                 url: `${apiBaseUrl}/me/carts/active/submit-cart?expand=all`,
                 success: (data) => {
-                    window.location.replace(
-                        `${drgc_params.thankYouEndpoint}?order=${data.submitCart.order.id}`
-                    )
+                    $('#checkout-confirmation-form input[name="order_id"]').val(data.submitCart.order.id);
+                    $('#checkout-confirmation-form').submit();
                 },
                 error: (jqXHR) => {
                     $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
