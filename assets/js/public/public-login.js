@@ -79,6 +79,16 @@ jQuery(document).ready(($) => {
         }
     });
 
+    $('#dr-signup-form input[type=password]').on('input', (e) => {
+        const $form = $(e.target).closest('form');
+        comparePassword($form.find('input[name=upw]')[0], $form.find('input[name=upw2]')[0]);
+    });
+
+    $('#dr-confirm-password-reset-form input[type=password]').on('input', (e) => {
+        const $form = $(e.target).closest('form');
+        comparePassword($form.find('input[name=password]')[0], $form.find('input[name=confirm-password]')[0]);
+    });
+
     $('.dr-signup').on('click', '', function(e) {
         e.preventDefault();
 
@@ -157,10 +167,10 @@ jQuery(document).ready(($) => {
             if (!response.success) {
                $errMsg.text(response.data[0].message).show();
             } else {
-                $('#drResetPasswordModalBody').html('').html(
-                    `<h3>${drgc_params.translations.password_reset_title}</h3>
-                    <p>${drgc_params.translations.password_reset_msg}</p>`
-                );
+                $('#drResetPasswordModalBody').html('').html(`
+                    <h3>${drgc_params.translations.password_reset_title}</h3>
+                    <p>${drgc_params.translations.password_reset_msg}</p>
+                `);
 
                 $('#dr-pass-reset-submit').hide();
             }
@@ -171,46 +181,39 @@ jQuery(document).ready(($) => {
 
     $('form.dr-confirm-password-reset-form').on('submit', function(e) {
         e.preventDefault();
-        let $form = $(this);
-        let $errMsg = $('.dr-form-error-msg', this).text('').hide();
-
+        const $form = $(this);
+        const $errMsg = $form.find('.dr-form-error-msg').text('').hide();
 
         $form.addClass('was-validated');
         if ($form[0].checkValidity() === false) {
             return false;
         }
 
-        let $button = $('button[type=submit]', this).toggleClass('sending').blur().removeClass('btn');
-
-        let searchParams = new URLSearchParams(window.location.search)
+        const searchParams = new URLSearchParams(window.location.search)
         if ( !searchParams.get('key') || !searchParams.get('login') ) {
             $errMsg.text(drgc_params.translations.undefined_error_msg).show();
+            return;
         }
 
-        let data = {
+        const data = {
             'action': 'drgc_reset_password',
             'key': searchParams.get('key'),
             'login': searchParams.get('login')
         };
 
-        $.each($form.serializeArray(), function( index, obj ) {
+        $.each($form.serializeArray(), function(index, obj) {
             data[obj.name] = obj.value;
         });
 
-        if (data['password'] !== data['confirm-password']) {
-           $errMsg.text(drgc_params.translations.password_confirm_error_msg).show();
-           $button.removeClass('sending').blur();
-           return;
-        }
-
+        const $button = $form.find('button[type=submit]').addClass('sending').blur();
         $.post(ajaxUrl, data, function(response) {
             if (!response.success) {
-               $errMsg.text(response.data).show();
+               if (response.data) $errMsg.text(response.data).show();
             } else {
-                $('section.reset-password').html('').html(
-                    `<h3>${drgc_params.translations.password_saved_title}</h3>
-                    <p>${drgc_params.translations.password_saved_msg}</p>`
-                ).css('color', 'green');
+                $('section.reset-password').html('').html(`
+                    <h3>${drgc_params.translations.password_saved_title}</h3>
+                    <p>${drgc_params.translations.password_saved_msg}</p>
+                `).css('color', 'green');
 
                 setTimeout(() => location.replace(`${location.origin}${location.pathname}`), 2000);
             }
@@ -221,6 +224,15 @@ jQuery(document).ready(($) => {
 
     if ( $('section.logged-in').length) {
         toggleCartBtns();
+    }
+
+    function comparePassword(pw, cpw) {
+        cpw.setCustomValidity(pw.value !== cpw.value ? 'Passwords do not match.' : '');
+        if (cpw.validity.valueMissing) {
+            $(cpw).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
+        } else if (cpw.validity.customError) {
+            $(cpw).next('.invalid-feedback').text(cpw.validationMessage);
+        }
     }
 
     function toggleCartBtns() {

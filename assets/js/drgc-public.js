@@ -1496,6 +1496,14 @@ jQuery(document).ready(function ($) {
       $(elem).next('.invalid-feedback').text(drgc_params.translations.invalid_email_msg);
     }
   });
+  $('#dr-signup-form input[type=password]').on('input', function (e) {
+    var $form = $(e.target).closest('form');
+    comparePassword($form.find('input[name=upw]')[0], $form.find('input[name=upw2]')[0]);
+  });
+  $('#dr-confirm-password-reset-form input[type=password]').on('input', function (e) {
+    var $form = $(e.target).closest('form');
+    comparePassword($form.find('input[name=password]')[0], $form.find('input[name=confirm-password]')[0]);
+  });
   $('.dr-signup').on('click', '', function (e) {
     e.preventDefault();
     var $form = $('.dr-signup-form');
@@ -1565,7 +1573,7 @@ jQuery(document).ready(function ($) {
       if (!response.success) {
         $errMsg.text(response.data[0].message).show();
       } else {
-        $('#drResetPasswordModalBody').html('').html("<h3>".concat(drgc_params.translations.password_reset_title, "</h3>\n                    <p>").concat(drgc_params.translations.password_reset_msg, "</p>"));
+        $('#drResetPasswordModalBody').html('').html("\n                    <h3>".concat(drgc_params.translations.password_reset_title, "</h3>\n                    <p>").concat(drgc_params.translations.password_reset_msg, "</p>\n                "));
         $('#dr-pass-reset-submit').hide();
       }
 
@@ -1575,18 +1583,18 @@ jQuery(document).ready(function ($) {
   $('form.dr-confirm-password-reset-form').on('submit', function (e) {
     e.preventDefault();
     var $form = $(this);
-    var $errMsg = $('.dr-form-error-msg', this).text('').hide();
+    var $errMsg = $form.find('.dr-form-error-msg').text('').hide();
     $form.addClass('was-validated');
 
     if ($form[0].checkValidity() === false) {
       return false;
     }
 
-    var $button = $('button[type=submit]', this).toggleClass('sending').blur().removeClass('btn');
     var searchParams = new URLSearchParams(window.location.search);
 
     if (!searchParams.get('key') || !searchParams.get('login')) {
       $errMsg.text(drgc_params.translations.undefined_error_msg).show();
+      return;
     }
 
     var data = {
@@ -1597,18 +1605,12 @@ jQuery(document).ready(function ($) {
     $.each($form.serializeArray(), function (index, obj) {
       data[obj.name] = obj.value;
     });
-
-    if (data['password'] !== data['confirm-password']) {
-      $errMsg.text(drgc_params.translations.password_confirm_error_msg).show();
-      $button.removeClass('sending').blur();
-      return;
-    }
-
+    var $button = $form.find('button[type=submit]').addClass('sending').blur();
     $.post(ajaxUrl, data, function (response) {
       if (!response.success) {
-        $errMsg.text(response.data).show();
+        if (response.data) $errMsg.text(response.data).show();
       } else {
-        $('section.reset-password').html('').html("<h3>".concat(drgc_params.translations.password_saved_title, "</h3>\n                    <p>").concat(drgc_params.translations.password_saved_msg, "</p>")).css('color', 'green');
+        $('section.reset-password').html('').html("\n                    <h3>".concat(drgc_params.translations.password_saved_title, "</h3>\n                    <p>").concat(drgc_params.translations.password_saved_msg, "</p>\n                ")).css('color', 'green');
         setTimeout(function () {
           return location.replace("".concat(location.origin).concat(location.pathname));
         }, 2000);
@@ -1620,6 +1622,16 @@ jQuery(document).ready(function ($) {
 
   if ($('section.logged-in').length) {
     toggleCartBtns();
+  }
+
+  function comparePassword(pw, cpw) {
+    cpw.setCustomValidity(pw.value !== cpw.value ? 'Passwords do not match.' : '');
+
+    if (cpw.validity.valueMissing) {
+      $(cpw).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
+    } else if (cpw.validity.customError) {
+      $(cpw).next('.invalid-feedback').text(cpw.validationMessage);
+    }
   }
 
   function toggleCartBtns() {

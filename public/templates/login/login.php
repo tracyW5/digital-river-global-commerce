@@ -38,7 +38,7 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                     <p><?php echo __( 'Please enter secure password twice to continue', 'digital-river-global-commerce' ); ?></p>
                 </div>
 
-                <form class="dr-confirm-password-reset-form needs-validation" novalidate>
+                <form class="dr-confirm-password-reset-form needs-validation" id="dr-confirm-password-reset-form" novalidate>
 
                     <div class="form-group">
                         <input class="form-control" name="password" type="password" placeholder="New Password" required autocomplete="off">
@@ -155,7 +155,7 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                     </p>
                 </div>
 
-                <form class="dr-signup-form needs-validation" id="dr-signup-form" oninput='upw2.setCustomValidity(upw2.value != upw.value ? "Passwords do not match." : "")' novalidate>
+                <form class="dr-signup-form needs-validation" id="dr-signup-form" novalidate>
 
                     <div class="row">
                         <div class="col-sm-6">
@@ -199,7 +199,7 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                         <input class="form-control" name="upw2" type="password" placeholder="Confirm Password" required autocomplete="off">
 
                         <div class="invalid-feedback">
-			                <?php echo __( 'Passwords do not match.' ); ?>
+			                <?php echo __( 'This field is required.' ); ?>
                         </div>
                     </div>
 
