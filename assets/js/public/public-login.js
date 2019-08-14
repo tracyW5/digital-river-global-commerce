@@ -73,9 +73,9 @@ jQuery(document).ready(($) => {
     $('#dr_login_form, #dr-signup-form, #dr-pass-reset-form, #checkout-email-form').find('input[type=email]').on('change', (e) => {
         const elem = e.target;
         if (elem.validity.valueMissing) {
-            $(elem).next('.invalid-feedback').text('This field is required.');
+            $(elem).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
         } else if (elem.validity.typeMismatch) {
-            $(elem).next('.invalid-feedback').text('Please enter a valid email address.');
+            $(elem).next('.invalid-feedback').text(drgc_params.translations.invalid_email_msg);
         }
     });
 
@@ -119,7 +119,7 @@ jQuery(document).ready(($) => {
                 } else if (Object.prototype.toString.call(response.data) == '[object String]') {
                     $('.dr-signin-form-error').text(response.data);
                 } else {
-                    $('.dr-signin-form-error').text( 'Something went wrong.' );
+                    $('.dr-signin-form-error').text(drgc_params.translations.undefined_error_msg);
                 }
 
                 $('.dr-signin-form-error').css('color', 'red');
@@ -148,7 +148,7 @@ jQuery(document).ready(($) => {
         });
 
         if (data['email'] !== data['email-confirm']) {
-           $errMsg.text('Emails do not match').show();
+           $errMsg.text(drgc_params.translations.email_confirm_error_msg).show();
            $button.removeClass('sending').blur();
            return;
         }
@@ -157,12 +157,10 @@ jQuery(document).ready(($) => {
             if (!response.success) {
                $errMsg.text(response.data[0].message).show();
             } else {
-                $('#drResetPasswordModalBody').html('').html(`
-                    <h3>Password reset email sent</h3>
-                    <p>You will be receiving an email
-                    soon with instructions on resetting your
-                    login password</p>
-                `);
+                $('#drResetPasswordModalBody').html('').html(
+                    `<h3>${drgc_params.translations.password_reset_title}</h3>
+                    <p>${drgc_params.translations.password_reset_msg}</p>`
+                );
 
                 $('#dr-pass-reset-submit').hide();
             }
@@ -186,7 +184,7 @@ jQuery(document).ready(($) => {
 
         let searchParams = new URLSearchParams(window.location.search)
         if ( !searchParams.get('key') || !searchParams.get('login') ) {
-            $errMsg.text('Something went wrong').show();
+            $errMsg.text(drgc_params.translations.undefined_error_msg).show();
         }
 
         let data = {
@@ -200,7 +198,7 @@ jQuery(document).ready(($) => {
         });
 
         if (data['password'] !== data['confirm-password']) {
-           $errMsg.text('Passwords do not match').show();
+           $errMsg.text(drgc_params.translations.password_confirm_error_msg).show();
            $button.removeClass('sending').blur();
            return;
         }
@@ -209,10 +207,10 @@ jQuery(document).ready(($) => {
             if (!response.success) {
                $errMsg.text(response.data).show();
             } else {
-                $('section.reset-password').html('').html(`
-                    <h3>Password saved</h3>
-                    <p>You can now log in with your new password</p>
-                `).css('color', 'green');
+                $('section.reset-password').html('').html(
+                    `<h3>${drgc_params.translations.password_saved_title}</h3>
+                    <p>${drgc_params.translations.password_saved_msg}</p>`
+                ).css('color', 'green');
 
                 setTimeout(() => location.replace(`${location.origin}${location.pathname}`), 2000);
             }

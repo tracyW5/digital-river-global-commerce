@@ -201,11 +201,11 @@ jQuery(document).ready(($) => {
         function displayAddressErrMsg(jqXHR, $target) {
             if (jqXHR.status === 409) {
                 if (jqXHR.responseJSON.errors.error[0].code === 'restricted-bill-to-country') {
-                    $target.text('Address not accepted for current currency.').show();
+                    $target.text(drgc_params.translations.address_error_msg).show();
                 }
 
                 if (jqXHR.responseJSON.errors.error[0].code === 'restricted-ship-to-country') {
-                    $target.text('Address not accepted for current currency.').show();
+                    $target.text(drgc_params.translations.address_error_msg).show();
                 }
             } else {
                 $target.text(jqXHR.responseJSON.errors.error[0].description).show();
@@ -236,7 +236,7 @@ jQuery(document).ready(($) => {
             const {formattedOrderTotal, formattedTax} = cart.pricing;
 
             if (Object.keys(cart.shippingMethod).length > 0) {
-                const formattedShippingAndHandling = (cart.pricing.shippingAndHandling.value === 0) ? 'FREE' : cart.pricing.formattedShippingAndHandling;
+                const formattedShippingAndHandling = (cart.pricing.shippingAndHandling.value === 0) ? drgc_params.translations.free_label : cart.pricing.formattedShippingAndHandling;
 
                 $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
             }
@@ -270,9 +270,9 @@ jQuery(document).ready(($) => {
 
         function updateTaxLabel() {
             if ($('.dr-checkout__el.active').hasClass('dr-checkout__payment') || $('.dr-checkout__el.active').hasClass('dr-checkout__confirmation')) {
-                $('.dr-summary__tax > .item-label').text('Tax');
+                $('.dr-summary__tax > .item-label').text(drgc_params.translations.tax_label);
             } else {
-                $('.dr-summary__tax > .item-label').text('Estimated Tax');
+                $('.dr-summary__tax > .item-label').text(drgc_params.translations.estimated_tax_label);
             }
         }
 
@@ -382,7 +382,7 @@ jQuery(document).ready(($) => {
                                 ${option.description}
                             </span>
                             <span class="black">
-                                ${freeShipping ? 'FREE' : option.formattedCost}
+                                ${freeShipping ? drgc_params.translations.free_label : option.formattedCost}
                             </span>
                             <span class="smoller">
                                 Estimated Arrival:
@@ -430,7 +430,7 @@ jQuery(document).ready(($) => {
 
                     const $section = $('.dr-checkout__delivery');
                     const freeShipping = data.cart.pricing.shippingAndHandling.value === 0;
-                    const resultText = `${$input.data('desc')} ${freeShipping ? 'FREE' : $input.data('cost')}`;
+                    const resultText = `${$input.data('desc')} ${freeShipping ? drgc_params.translations.free_label : $input.data('cost')}`;
                     $section.find('.dr-panel-result__text').text(resultText);
                     moveToNextSection($section);
                     updateSummaryPricing(data.cart);
@@ -492,7 +492,7 @@ jQuery(document).ready(($) => {
                     $button.removeClass('sending').blur();
                     if (result.error) {
                         if (result.error.state === 'failed') {
-                            $('#dr-payment-failed-msg').text('Failed payment for specified credit card').show();
+                            $('#dr-payment-failed-msg').text(drgc_params.translations.credit_card_error_msg).show();
                         }
                         if (result.error.errors) {
                             $('#dr-payment-failed-msg').text(result.error.errors[0].message).show();
@@ -501,7 +501,7 @@ jQuery(document).ready(($) => {
                         if (result.source.state === 'chargeable') {
                             paymentSourceId = result.source.id;
                             $section.find('.dr-panel-result__text').text(
-                                `Credit card ending in ${result.source.creditCard.lastFourDigits}`
+                                `${drgc_params.translations.credit_card_ending_label} ${result.source.creditCard.lastFourDigits}`
                             );
                             moveToNextSection($section);
                         }
@@ -648,14 +648,14 @@ jQuery(document).ready(($) => {
                 case 'credit-card':
                     $('#dr-paypal-button').hide();
                     $('.credit-card-info').show();
-                    $('#dr-submit-payment').text('pay with card'.toUpperCase()).show();
+                    $('#dr-submit-payment').text(drgc_params.translations.pay_with_card_label.toUpperCase()).show();
 
                     break;
                 case 'paypal':
                     $('#dr-submit-payment').hide();
                     $('.credit-card-info').hide();
                     $('#dr-paypal-button').show();
-                    $('#dr-submit-payment').text('pay with paypal'.toUpperCase());
+                    $('#dr-submit-payment').text(drgc_params.translations.pay_with_paypal_label.toUpperCase());
 
                     break;
             }
