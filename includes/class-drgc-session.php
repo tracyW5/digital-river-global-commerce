@@ -135,10 +135,10 @@ class DRGC_Session {
 
 	/**
 	 * Session expiration time
-	 * 24 hour from now
+	 * 1 hour from now
 	 */
 	public function set_expiration_time() {
-		$this->expires = time() + intval( 24 * 60 * 60 );
+		$this->expires = time() + intval( 60 * 60 );
 	}
 
 	/**
