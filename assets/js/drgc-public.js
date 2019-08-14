@@ -1542,6 +1542,14 @@ jQuery(document).ready(function ($) {
       $(elem).next('.invalid-feedback').text('Please enter a valid email address.');
     }
   });
+  $('#dr-signup-form input[type=password]').on('input', function (e) {
+    var $form = $(e.target).closest('form');
+    comparePassword($form.find('input[name=upw]')[0], $form.find('input[name=upw2]')[0]);
+  });
+  $('#dr-confirm-password-reset-form input[type=password]').on('input', function (e) {
+    var $form = $(e.target).closest('form');
+    comparePassword($form.find('input[name=password]')[0], $form.find('input[name=confirm-password]')[0]);
+  });
   $('.dr-signup').on('click', '', function (e) {
     e.preventDefault();
     var $form = $('.dr-signup-form');
@@ -1621,18 +1629,18 @@ jQuery(document).ready(function ($) {
   $('form.dr-confirm-password-reset-form').on('submit', function (e) {
     e.preventDefault();
     var $form = $(this);
-    var $errMsg = $('.dr-form-error-msg', this).text('').hide();
+    var $errMsg = $form.find('.dr-form-error-msg').text('').hide();
     $form.addClass('was-validated');
 
     if ($form[0].checkValidity() === false) {
       return false;
     }
 
-    var $button = $('button[type=submit]', this).toggleClass('sending').blur().removeClass('btn');
     var searchParams = new URLSearchParams(window.location.search);
 
     if (!searchParams.get('key') || !searchParams.get('login')) {
-      $errMsg.text('Something went wrong').show();
+      $errMsg.text('Something went wrong.').show();
+      return;
     }
 
     var data = {
@@ -1643,16 +1651,10 @@ jQuery(document).ready(function ($) {
     $.each($form.serializeArray(), function (index, obj) {
       data[obj.name] = obj.value;
     });
-
-    if (data['password'] !== data['confirm-password']) {
-      $errMsg.text('Passwords do not match').show();
-      $button.removeClass('sending').blur();
-      return;
-    }
-
+    var $button = $form.find('button[type=submit]').addClass('sending').blur();
     $.post(ajaxUrl, data, function (response) {
       if (!response.success) {
-        $errMsg.text(response.data).show();
+        if (response.data) $errMsg.text(response.data).show();
       } else {
         $('section.reset-password').html('').html("\n                    <h3>Password saved</h3>\n                    <p>You can now log in with your new password</p>\n                ").css('color', 'green');
         setTimeout(function () {
@@ -1666,6 +1668,16 @@ jQuery(document).ready(function ($) {
 
   if ($('section.logged-in').length) {
     toggleCartBtns();
+  }
+
+  function comparePassword(pw, cpw) {
+    cpw.setCustomValidity(pw.value !== cpw.value ? 'Passwords do not match.' : '');
+
+    if (cpw.validity.valueMissing) {
+      $(cpw).next('.invalid-feedback').text('This field is required.');
+    } else if (cpw.validity.customError) {
+      $(cpw).next('.invalid-feedback').text(cpw.validationMessage);
+    }
   }
 
   function toggleCartBtns() {
