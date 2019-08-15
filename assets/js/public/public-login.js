@@ -92,10 +92,10 @@ jQuery(document).ready(($) => {
         }
     });
 
-    $('.dr-signup').on('click', '', function(e) {
+    $('.dr-signup-form').on('submit', function(e) {
         e.preventDefault();
 
-        let $form = $('.dr-signup-form');
+        const $form = $(e.target);
 
         $form.addClass('was-validated');
 
@@ -107,7 +107,7 @@ jQuery(document).ready(($) => {
             return false;
         }
 
-        let but = $(this).toggleClass('sending').blur();
+        const $button = $form.find('button[type=submit]').toggleClass('sending').blur();
         $form.data('processing', true);
 
         $('.dr-signin-form-error').text('');
@@ -125,7 +125,7 @@ jQuery(document).ready(($) => {
                 location.reload();
             } else {
                 $form.data('processing', false);
-                but.removeClass('sending').blur();
+                $button.removeClass('sending').blur();
 
                 if (response.data && response.data.errors && response.data.errors.error[0].hasOwnProperty('description') ) {
                     $('.dr-signin-form-error').text( response.data.errors.error[0].description );
@@ -141,18 +141,19 @@ jQuery(document).ready(($) => {
 
     });
 
-    $('#dr-pass-reset-submit').on('click', function(e) {
-        let $errMsg = $('#dr-reset-pass-error').text('').hide();
-        let $form = $('form#dr-pass-reset-form');
+    $('#dr-pass-reset-form').on('submit', function(e) {
+        e.preventDefault();
+        const $form = $(e.target);
+        const $errMsg = $('#dr-reset-pass-error').text('').hide();
 
         $form.addClass('was-validated');
         if ($form[0].checkValidity() === false) {
             return false;
         }
 
-        let $button = $(this).toggleClass('sending').blur().removeClass('btn');
+        const $button = $form.find('button[type=submit]').addClass('sending').blur();
 
-        let data = {
+        const data = {
             'action': 'drgc_pass_reset_request'
         };
 
@@ -177,7 +178,7 @@ jQuery(document).ready(($) => {
                     login password</p>
                 `);
 
-                $('#dr-pass-reset-submit').hide();
+                $button.hide();
             }
 
             $button.removeClass('sending').blur();
