@@ -1508,9 +1508,9 @@ jQuery(document).ready(function ($) {
       $(cpw).next('.invalid-feedback').text(cpw.validationMessage);
     }
   });
-  $('.dr-signup').on('click', '', function (e) {
+  $('.dr-signup-form').on('submit', function (e) {
     e.preventDefault();
-    var $form = $('.dr-signup-form');
+    var $form = $(e.target);
     $form.addClass('was-validated');
 
     if ($form.data('processing')) {
@@ -1521,7 +1521,7 @@ jQuery(document).ready(function ($) {
       return false;
     }
 
-    var but = $(this).toggleClass('sending').blur();
+    var $button = $form.find('button[type=submit]').toggleClass('sending').blur();
     $form.data('processing', true);
     $('.dr-signin-form-error').text('');
     var data = {
@@ -1536,7 +1536,7 @@ jQuery(document).ready(function ($) {
         location.reload();
       } else {
         $form.data('processing', false);
-        but.removeClass('sending').blur();
+        $button.removeClass('sending').blur();
 
         if (response.data && response.data.errors && response.data.errors.error[0].hasOwnProperty('description')) {
           $('.dr-signin-form-error').text(response.data.errors.error[0].description);
@@ -1550,16 +1550,17 @@ jQuery(document).ready(function ($) {
       }
     });
   });
-  $('#dr-pass-reset-submit').on('click', function (e) {
+  $('#dr-pass-reset-form').on('submit', function (e) {
+    e.preventDefault();
+    var $form = $(e.target);
     var $errMsg = $('#dr-reset-pass-error').text('').hide();
-    var $form = $('form#dr-pass-reset-form');
     $form.addClass('was-validated');
 
     if ($form[0].checkValidity() === false) {
       return false;
     }
 
-    var $button = $(this).toggleClass('sending').blur().removeClass('btn');
+    var $button = $form.find('button[type=submit]').addClass('sending').blur();
     var data = {
       'action': 'drgc_pass_reset_request'
     };
@@ -1578,7 +1579,7 @@ jQuery(document).ready(function ($) {
         $errMsg.text(response.data[0].message).show();
       } else {
         $('#drResetPasswordModalBody').html('').html("\n                    <h3>".concat(drgc_params.translations.password_reset_title, "</h3>\n                    <p>").concat(drgc_params.translations.password_reset_msg, "</p>\n                "));
-        $('#dr-pass-reset-submit').hide();
+        $button.hide();
       }
 
       $button.removeClass('sending').blur();
