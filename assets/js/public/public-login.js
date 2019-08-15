@@ -79,14 +79,17 @@ jQuery(document).ready(($) => {
         }
     });
 
-    $('#dr-signup-form input[type=password]').on('input', (e) => {
+    $('#dr-signup-form input[type=password], #dr-confirm-password-reset-form input[type=password]').on('input', (e) => {
         const $form = $(e.target).closest('form');
-        comparePassword($form.find('input[name=upw]')[0], $form.find('input[name=upw2]')[0]);
-    });
+        const pw = $form.find('input[type=password]')[0];
+        const cpw = $form.find('input[type=password]')[1];
 
-    $('#dr-confirm-password-reset-form input[type=password]').on('input', (e) => {
-        const $form = $(e.target).closest('form');
-        comparePassword($form.find('input[name=password]')[0], $form.find('input[name=confirm-password]')[0]);
+        cpw.setCustomValidity(pw.value !== cpw.value ? 'Passwords do not match.' : '');
+        if (cpw.validity.valueMissing) {
+            $(cpw).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
+        } else if (cpw.validity.customError) {
+            $(cpw).next('.invalid-feedback').text(cpw.validationMessage);
+        }
     });
 
     $('.dr-signup').on('click', '', function(e) {
@@ -224,15 +227,6 @@ jQuery(document).ready(($) => {
 
     if ( $('section.logged-in').length) {
         toggleCartBtns();
-    }
-
-    function comparePassword(pw, cpw) {
-        cpw.setCustomValidity(pw.value !== cpw.value ? 'Passwords do not match.' : '');
-        if (cpw.validity.valueMissing) {
-            $(cpw).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
-        } else if (cpw.validity.customError) {
-            $(cpw).next('.invalid-feedback').text(cpw.validationMessage);
-        }
     }
 
     function toggleCartBtns() {
