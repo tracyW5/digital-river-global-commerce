@@ -119,10 +119,12 @@ abstract class AbstractHttpService {
     /**
      * Initialize new client
      * 
+     * @param boolean $force_basic_auth
+     * 
      * @return \GuzzleHttp\Client
      */
-    private function createClient(): Client {
-        if ( $this->token ) {
+    private function createClient( $force_basic_auth = false ): Client {
+        if ( $this->token && ! $force_basic_auth ) {
             $this->config['headers']['Authorization'] = trim( ucfirst( $this->tokenType ) . ' ' . $this->token );
         } else {
             $auth = base64_encode( get_option( 'drgc_api_key' ) . ':' . get_option( 'drgc_api_secret' ) );
@@ -245,11 +247,12 @@ abstract class AbstractHttpService {
     /**
      * @param string $uri
      * @param array  $data
+     * @param boolean $force_basic_auth
      *
      * @return array
      */
-    protected function get( string $uri = '', array $data = array() ): array {
-        $client = $this->createClient();
+    protected function get( string $uri = '', array $data = array(), $force_basic_auth = false ): array {
+        $client = $this->createClient( $force_basic_auth );
         $uri = $this->normalizeUri($uri);
         $response = $client->get( $uri, $data );
         

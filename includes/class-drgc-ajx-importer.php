@@ -67,7 +67,6 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 
 		if ( false === $this->dr_products ) {	
 			$this->get_store_locales_and_currencies();
-			$this->update_locale_and_currency( $this->default_locale, $this->default_currency );
 			$this->fetch_and_cache_products();
 		}
 	}
@@ -127,9 +126,9 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 						}
 
 						$imported_currencies[] = $currency;
-
-						if ( $this->update_locale_and_currency( $locale, $currency ) ) {
-							$loc_price = $this->get_product_pricing( $gc_id );
+						$loc_price = $this->get_product_pricing_for_currency( $gc_id, $currency );
+						
+						if ( ! empty( $loc_price ) ) {
 							$parent_product->set_pricing_for_currency( $loc_price );
 						}
 					}
@@ -177,9 +176,9 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 							}
 
 							$imported_currencies[] = $currency;
+							$loc_price = $this->get_product_pricing_for_currency( $_gc_id, $currency );
 
-							if ( $this->update_locale_and_currency( $locale, $currency ) ) {
-								$loc_price = $this->get_product_pricing( $_gc_id );
+							if ( ! empty( $loc_price ) ) {
 								$variation_product->set_pricing_for_currency( $loc_price );
 							}
 						}
@@ -462,6 +461,30 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 			$this->post( $url );
 
 			return true;
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Retrieve API data
+	 *
+	 * @param integer $id dr product id
+	 * @param string $currency currency code
+	 * 
+	 * @return array|bool
+	 */
+	public function get_product_pricing_for_currency( $id, $currency ) {
+		$params = array(
+			'currency'       => $currency,
+		);
+
+		$url = '/v1/shoppers/me/products/' . $id . '/pricing?' . http_build_query( $params );
+		
+		try {
+			$res = $this->get( $url, array(), true );
+
+			return isset( $res['pricing'] ) ? $res['pricing'] : array();
 		} catch (\Exception $e) {
 			return false;
 		}
