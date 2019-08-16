@@ -400,7 +400,6 @@ jQuery(document).ready(function ($) {
       url: "".concat(apiBaseUrl, "/me/carts/active?expand=all"),
       success: function success(data) {
         renderCartProduct(data);
-        displayMiniCart(data.cart);
       },
       error: function error(jqXHR) {
         console.log(jqXHR);
@@ -466,7 +465,7 @@ jQuery(document).ready(function ($) {
       success: function success(candyRackData, textStatus, xhr) {
         $.each(candyRackData.offers.offer, function (index, offer) {
           var promoText = offer.salesPitch[0].length > 0 ? offer.salesPitch[0] : "";
-          var buyButtonText = offer.type == "Up-sell" ? "Upgrade" : "Add";
+          var buyButtonText = offer.type == "Up-sell" ? drgc_params.translations.upgrade_label : drgc_params.translations.add_label;
           $.each(offer.productOffers.productOffer, function (index, productOffer) {
             var candyRackProductHTML = "\n              <div  class=\"dr-product dr-candyRackProduct\" data-product-id=\"".concat(productOffer.product.id, "\" data-parent-product-id=\"").concat(productID, "\">\n                <div class=\"dr-product-content\">\n                    <img src=\"").concat(productOffer.product.thumbnailImage, "\" class=\"dr-candyRackProduct__img\"/>\n                    <div class=\"dr-product__info\">\n                      <div class=\"product-color\">\n                        <span style=\"background-color: yellow;\">").concat(promoText, "</span>\n                      </div>\n                      ").concat(productOffer.product.displayName, "\n                      <div class=\"product-sku\">\n                        <span>").concat(productLabel, "  </span>\n                        <span>#").concat(productOffer.product.id, "</span>\n                      </div>\n                    </div>\n                </div>\n                <div class=\"dr-product__price\">\n                    <button type=\"button\" class=\"dr-btn dr-buy-candyRack\" data-buy-uri=\"").concat(productOffer.addProductToCart.uri, "\">").concat(buyButtonText, "</button>\n                    <span class=\"sale-price\">").concat(productOffer.pricing.formattedSalePriceWithQuantity, "</span>\n                    <span class=\"regular-price dr-strike-price\">").concat(productOffer.pricing.formattedListPriceWithQuantity, "</span>\n                </div>\n              </div>\n              ");
             if ($('div.dr-product[data-product-id="' + productOffer.product.id + '"]:not(.dr-candyRackProduct)').length == 0) $('div[data-product-id="' + productID + '"]').after(candyRackProductHTML);
@@ -560,7 +559,7 @@ jQuery(document).ready(function ($) {
 
     $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling); //overwrite $0.00 to FREE
 
-    if (pricing.shippingAndHandling.value === 0) $('div.dr-summary__shipping .shipping-value').text("FREE");
+    if (pricing.shippingAndHandling.value === 0) $('div.dr-summary__shipping .shipping-value').text(drgc_params.translations.free_label);
     $('div.dr-summary__discount .discount-value').text("-".concat(pricing.formattedDiscount));
     $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
 
@@ -627,7 +626,7 @@ jQuery(document).ready(function ($) {
     if (data.cart.lineItems.lineItem) {
       renderLineItemsAndSummary(data, hasPhysicalProduct);
     } else {
-      $('.dr-cart__products').text('Your cart is empty.');
+      $('.dr-cart__products').text(drgc_params.translations.empty_cart_msg);
       $('#cart-estimate').hide();
     }
   }
@@ -656,51 +655,6 @@ jQuery(document).ready(function ($) {
       }
     });
   });
-
-  function displayMiniCart(cart) {
-    if (cart === undefined || cart === null) {
-      return;
-    }
-
-    var $display = $('.dr-minicart-display');
-    var $body = $('<div class="dr-minicart-body"></div>');
-    var $footer = $('<div class="dr-minicart-footer"></div>');
-    var lineItems = cart.lineItems && cart.lineItems.lineItem ? cart.lineItems.lineItem : [];
-    $('.dr-minicart-count').text(cart.totalItemsInCart);
-    $('.dr-minicart-header').siblings().remove();
-
-    if (!lineItems.length) {
-      var emptyMsg = '<p class="dr-minicart-empty-msg">Your shopping cart is currently empty.</p>';
-      $body.append(emptyMsg);
-      $display.append($body);
-    } else {
-      var miniCartLineItems = '<ul class="dr-minicart-list">';
-      var miniCartSubtotal = "<p class=\"dr-minicart-subtotal\"><label>Sub-Total</label><span>".concat(cart.pricing.formattedSubtotal, "</span></p>");
-      var miniCartViewCartBtn = "<a class=\"dr-btn\" id=\"dr-minicart-view-cart-btn\" href=\"".concat(drgc_params.cartUrl, "\">View Cart</a>");
-      var miniCartCheckoutBtn = "<a class=\"dr-btn\" id=\"dr-minicart-checkout-btn\" href=\"".concat(drgc_params.checkoutUrl, "\">Checkout</a>");
-      lineItems.forEach(function (li) {
-        var productId = li.product.uri.replace("".concat(apiBaseUrl, "/me/products/"), '');
-        var listPrice = Number(li.pricing.listPriceWithQuantity.value);
-        var salePrice = Number(li.pricing.salePriceWithQuantity.value);
-        var formattedSalePrice = li.pricing.formattedSalePriceWithQuantity;
-        var priceContent = '';
-
-        if (listPrice > salePrice) {
-          priceContent = "<del class=\"dr-strike-price\">".concat(listPrice, "</del><span class=\"dr-sale-price\">").concat(formattedSalePrice, "</span>");
-        } else {
-          priceContent = formattedSalePrice;
-        }
-
-        var miniCartLineItem = "\n                <li class=\"dr-minicart-item clearfix\">\n                    <div class=\"dr-minicart-item-thumbnail\">\n                        <img src=\"".concat(li.product.thumbnailImage, "\" alt=\"").concat(li.product.displayName, "\" />\n                    </div>\n                    <div class=\"dr-minicart-item-info\" data-product-id=\"").concat(productId, "\">\n                        <span class=\"dr-minicart-item-title\">").concat(li.product.displayName, "</span>\n                        <span class=\"dr-minicart-item-qty\">Qty.").concat(li.quantity, "</span>\n                        <p class=\"dr-pd-price dr-minicart-item-price\">").concat(priceContent, "</p>\n                    </div>\n                    <a href=\"#\" class=\"dr-minicart-item-remove-btn\" aria-label=\"Remove\" data-line-item-id=\"").concat(li.id, "\">Remove</a>\n                </li>");
-        miniCartLineItems += miniCartLineItem;
-      });
-      miniCartLineItems += '</ul>';
-      $body.append(miniCartLineItems, miniCartSubtotal);
-      $footer.append(miniCartViewCartBtn, miniCartCheckoutBtn);
-      $display.append($body, $footer);
-    }
-  }
-
   $('.promo-code-toggle').click(function () {
     $('.promo-code-wrapper').toggle();
   });
@@ -708,7 +662,7 @@ jQuery(document).ready(function ($) {
     var promoCode = $('#promo-code').val();
 
     if (!promoCode) {
-      $('#dr-promo-code-err-field').text('Please enter a valid promo code.').show();
+      $('#dr-promo-code-err-field').text(drgc_params.translations.invalid_promo_code_msg).show();
       return;
     }
 
@@ -855,11 +809,11 @@ jQuery(document).ready(function ($) {
     var displayAddressErrMsg = function displayAddressErrMsg(jqXHR, $target) {
       if (jqXHR.status === 409) {
         if (jqXHR.responseJSON.errors.error[0].code === 'restricted-bill-to-country') {
-          $target.text('Address not accepted for current currency.').show();
+          $target.text(drgc_params.translations.address_error_msg).show();
         }
 
         if (jqXHR.responseJSON.errors.error[0].code === 'restricted-ship-to-country') {
-          $target.text('Address not accepted for current currency.').show();
+          $target.text(drgc_params.translations.address_error_msg).show();
         }
       } else {
         $target.text(jqXHR.responseJSON.errors.error[0].description).show();
@@ -892,7 +846,7 @@ jQuery(document).ready(function ($) {
           formattedTax = _cart$pricing.formattedTax;
 
       if (Object.keys(cart.shippingMethod).length > 0) {
-        var formattedShippingAndHandling = cart.pricing.shippingAndHandling.value === 0 ? 'FREE' : cart.pricing.formattedShippingAndHandling;
+        var formattedShippingAndHandling = cart.pricing.shippingAndHandling.value === 0 ? drgc_params.translations.free_label : cart.pricing.formattedShippingAndHandling;
         $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
       }
 
@@ -925,9 +879,9 @@ jQuery(document).ready(function ($) {
 
     var updateTaxLabel = function updateTaxLabel() {
       if ($('.dr-checkout__el.active').hasClass('dr-checkout__payment') || $('.dr-checkout__el.active').hasClass('dr-checkout__confirmation')) {
-        $('.dr-summary__tax > .item-label').text('Tax');
+        $('.dr-summary__tax > .item-label').text(drgc_params.translations.tax_label);
       } else {
-        $('.dr-summary__tax > .item-label').text('Estimated Tax');
+        $('.dr-summary__tax > .item-label').text(drgc_params.translations.estimated_tax_label);
       }
     };
 
@@ -936,7 +890,7 @@ jQuery(document).ready(function ($) {
       var shippingOptionId = cart.shippingMethod.code;
       $.each(cart.shippingOptions.shippingOption, function (index, option) {
         if ($('#shipping-option-' + option.id).length) return;
-        var html = "\n                    <div class=\"field-radio\">\n                        <input type=\"radio\"\n                            name=\"selector\"\n                            id=\"shipping-option-".concat(option.id, "\"\n                            data-cost=\"").concat(option.formattedCost, "\"\n                            data-id=\"").concat(option.id, "\"\n                            data-desc=\"").concat(option.description, "\"\n                            >\n                        <label for=\"shipping-option-").concat(option.id, "\">\n                            <span>\n                                ").concat(option.description, "\n                            </span>\n                            <span class=\"black\">\n                                ").concat(freeShipping ? 'FREE' : option.formattedCost, "\n                            </span>\n                        </label>\n                    </div>\n                ");
+        var html = "\n                    <div class=\"field-radio\">\n                        <input type=\"radio\"\n                            name=\"selector\"\n                            id=\"shipping-option-".concat(option.id, "\"\n                            data-cost=\"").concat(option.formattedCost, "\"\n                            data-id=\"").concat(option.id, "\"\n                            data-desc=\"").concat(option.description, "\"\n                            >\n                        <label for=\"shipping-option-").concat(option.id, "\">\n                            <span>\n                                ").concat(option.description, "\n                            </span>\n                            <span class=\"black\">\n                                ").concat(freeShipping ? drgc_params.translations.free_label : option.formattedCost, "\n                            </span>\n                        </label>\n                    </div>\n                ");
         $('form#checkout-delivery-form .dr-panel-edit__el').append(html);
       });
       $('form#checkout-delivery-form').children().find('input:radio[data-id="' + shippingOptionId + '"]').prop("checked", true);
@@ -1209,7 +1163,7 @@ jQuery(document).ready(function ($) {
           button.removeClass('sending').blur();
           var $section = $('.dr-checkout__delivery');
           var freeShipping = data.cart.pricing.shippingAndHandling.value === 0;
-          var resultText = "".concat($input.data('desc'), " ").concat(freeShipping ? 'FREE' : $input.data('cost'));
+          var resultText = "".concat($input.data('desc'), " ").concat(freeShipping ? drgc_params.translations.free_label : $input.data('cost'));
           $section.find('.dr-panel-result__text').text(resultText);
           moveToNextSection($section);
           updateSummaryPricing(data.cart);
@@ -1265,7 +1219,7 @@ jQuery(document).ready(function ($) {
 
           if (result.error) {
             if (result.error.state === 'failed') {
-              $('#dr-payment-failed-msg').text('Failed payment for specified credit card').show();
+              $('#dr-payment-failed-msg').text(drgc_params.translations.credit_card_error_msg).show();
             }
 
             if (result.error.errors) {
@@ -1274,7 +1228,7 @@ jQuery(document).ready(function ($) {
           } else {
             if (result.source.state === 'chargeable') {
               paymentSourceId = result.source.id;
-              $section.find('.dr-panel-result__text').text("Credit card ending in ".concat(result.source.creditCard.lastFourDigits));
+              $section.find('.dr-panel-result__text').text("".concat(drgc_params.translations.credit_card_ending_label, " ").concat(result.source.creditCard.lastFourDigits));
               moveToNextSection($section);
             }
           }
@@ -1340,14 +1294,14 @@ jQuery(document).ready(function ($) {
         case 'credit-card':
           $('#dr-paypal-button').hide();
           $('.credit-card-info').show();
-          $('#dr-submit-payment').text('pay with card'.toUpperCase()).show();
+          $('#dr-submit-payment').text(drgc_params.translations.pay_with_card_label.toUpperCase()).show();
           break;
 
         case 'paypal':
           $('#dr-submit-payment').hide();
           $('.credit-card-info').hide();
           $('#dr-paypal-button').show();
-          $('#dr-submit-payment').text('pay with paypal'.toUpperCase());
+          $('#dr-submit-payment').text(drgc_params.translations.pay_with_paypal_label.toUpperCase());
           break;
       }
     });
@@ -1537,9 +1491,9 @@ jQuery(document).ready(function ($) {
     var elem = e.target;
 
     if (elem.validity.valueMissing) {
-      $(elem).next('.invalid-feedback').text('This field is required.');
+      $(elem).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
     } else if (elem.validity.typeMismatch) {
-      $(elem).next('.invalid-feedback').text('Please enter a valid email address.');
+      $(elem).next('.invalid-feedback').text(drgc_params.translations.invalid_email_msg);
     }
   });
   $('.dr-signup').on('click', '', function (e) {
@@ -1577,7 +1531,7 @@ jQuery(document).ready(function ($) {
         } else if (Object.prototype.toString.call(response.data) == '[object String]') {
           $('.dr-signin-form-error').text(response.data);
         } else {
-          $('.dr-signin-form-error').text('Something went wrong.');
+          $('.dr-signin-form-error').text(drgc_params.translations.undefined_error_msg);
         }
 
         $('.dr-signin-form-error').css('color', 'red');
@@ -1602,7 +1556,7 @@ jQuery(document).ready(function ($) {
     });
 
     if (data['email'] !== data['email-confirm']) {
-      $errMsg.text('Emails do not match').show();
+      $errMsg.text(drgc_params.translations.email_confirm_error_msg).show();
       $button.removeClass('sending').blur();
       return;
     }
@@ -1611,7 +1565,7 @@ jQuery(document).ready(function ($) {
       if (!response.success) {
         $errMsg.text(response.data[0].message).show();
       } else {
-        $('#drResetPasswordModalBody').html('').html("\n                    <h3>Password reset email sent</h3>\n                    <p>You will be receiving an email\n                    soon with instructions on resetting your\n                    login password</p>\n                ");
+        $('#drResetPasswordModalBody').html('').html("<h3>".concat(drgc_params.translations.password_reset_title, "</h3>\n                    <p>").concat(drgc_params.translations.password_reset_msg, "</p>"));
         $('#dr-pass-reset-submit').hide();
       }
 
@@ -1632,7 +1586,7 @@ jQuery(document).ready(function ($) {
     var searchParams = new URLSearchParams(window.location.search);
 
     if (!searchParams.get('key') || !searchParams.get('login')) {
-      $errMsg.text('Something went wrong').show();
+      $errMsg.text(drgc_params.translations.undefined_error_msg).show();
     }
 
     var data = {
@@ -1645,7 +1599,7 @@ jQuery(document).ready(function ($) {
     });
 
     if (data['password'] !== data['confirm-password']) {
-      $errMsg.text('Passwords do not match').show();
+      $errMsg.text(drgc_params.translations.password_confirm_error_msg).show();
       $button.removeClass('sending').blur();
       return;
     }
@@ -1654,7 +1608,7 @@ jQuery(document).ready(function ($) {
       if (!response.success) {
         $errMsg.text(response.data).show();
       } else {
-        $('section.reset-password').html('').html("\n                    <h3>Password saved</h3>\n                    <p>You can now log in with your new password</p>\n                ").css('color', 'green');
+        $('section.reset-password').html('').html("<h3>".concat(drgc_params.translations.password_saved_title, "</h3>\n                    <p>").concat(drgc_params.translations.password_saved_msg, "</p>")).css('color', 'green');
         setTimeout(function () {
           return location.replace("".concat(location.origin).concat(location.pathname));
         }, 2000);
@@ -1894,14 +1848,14 @@ jQuery(document).ready(function ($) {
     }
 
     if (!lineItems.length) {
-      var emptyMsg = '<p class="dr-minicart-empty-msg">Your shopping cart is currently empty.</p>';
+      var emptyMsg = "<p class=\"dr-minicart-empty-msg\">".concat(drgc_params.translations.empty_cart_msg, "</p>");
       $body.append(emptyMsg);
       $display.append($body);
     } else {
       var miniCartLineItems = '<ul class="dr-minicart-list">';
-      var miniCartSubtotal = "<p class=\"dr-minicart-subtotal\"><label>Sub-Total</label><span>".concat(cart.pricing.formattedSubtotal, "</span></p>");
-      var miniCartViewCartBtn = "<a class=\"dr-btn\" id=\"dr-minicart-view-cart-btn\" href=\"".concat(drgc_params.cartUrl, "\">View Cart</a>");
-      var miniCartCheckoutBtn = "<a class=\"dr-btn\" id=\"dr-minicart-checkout-btn\" href=\"".concat(drgc_params.checkoutUrl, "\">Checkout</a>");
+      var miniCartSubtotal = "<p class=\"dr-minicart-subtotal\"><label>".concat(drgc_params.translations.subtotal_label, "</label><span>").concat(cart.pricing.formattedSubtotal, "</span></p>");
+      var miniCartViewCartBtn = "<a class=\"dr-btn\" id=\"dr-minicart-view-cart-btn\" href=\"".concat(drgc_params.cartUrl, "\">").concat(drgc_params.translations.view_cart_label, "</a>");
+      var miniCartCheckoutBtn = "<a class=\"dr-btn\" id=\"dr-minicart-checkout-btn\" href=\"".concat(drgc_params.checkoutUrl, "\">").concat(drgc_params.translations.checkout_label, "</a>");
       lineItems.forEach(function (li) {
         var productId = li.product.uri.replace("".concat(drService.apiBaseUrl, "/me/products/"), '');
         var listPrice = Number(li.pricing.listPriceWithQuantity.value);
@@ -1915,7 +1869,7 @@ jQuery(document).ready(function ($) {
           priceContent = formattedSalePrice;
         }
 
-        var miniCartLineItem = "\n                <li class=\"dr-minicart-item clearfix\">\n                    <div class=\"dr-minicart-item-thumbnail\">\n                        <img src=\"".concat(li.product.thumbnailImage, "\" alt=\"").concat(li.product.displayName, "\" />\n                    </div>\n                    <div class=\"dr-minicart-item-info\" data-product-id=\"").concat(productId, "\">\n                        <span class=\"dr-minicart-item-title\">").concat(li.product.displayName, "</span>\n                        <span class=\"dr-minicart-item-qty\">Qty.").concat(li.quantity, "</span>\n                        <p class=\"dr-pd-price dr-minicart-item-price\">").concat(priceContent, "</p>\n                    </div>\n                    <a href=\"#\" class=\"dr-minicart-item-remove-btn\" aria-label=\"Remove\" data-line-item-id=\"").concat(li.id, "\">Remove</a>\n                </li>");
+        var miniCartLineItem = "\n                <li class=\"dr-minicart-item clearfix\">\n                    <div class=\"dr-minicart-item-thumbnail\">\n                        <img src=\"".concat(li.product.thumbnailImage, "\" alt=\"").concat(li.product.displayName, "\" />\n                    </div>\n                    <div class=\"dr-minicart-item-info\" data-product-id=\"").concat(productId, "\">\n                        <span class=\"dr-minicart-item-title\">").concat(li.product.displayName, "</span>\n                        <span class=\"dr-minicart-item-qty\">").concat(drgc_params.translations.qty_label, ".").concat(li.quantity, "</span>\n                        <p class=\"dr-pd-price dr-minicart-item-price\">").concat(priceContent, "</p>\n                    </div>\n                    <a href=\"#\" class=\"dr-minicart-item-remove-btn\" aria-label=\"Remove\" data-line-item-id=\"").concat(li.id, "\">").concat(drgc_params.translations.remove_label, "</a>\n                </li>");
         miniCartLineItems += miniCartLineItem;
       });
       miniCartLineItems += '</ul>';
@@ -1925,22 +1879,6 @@ jQuery(document).ready(function ($) {
     }
   }
 
-  function displayPrice(priceObj, isInLoop) {
-    var listPrice = Number(priceObj.listPriceWithQuantity.value);
-    var salePrice = Number(priceObj.salePriceWithQuantity.value);
-    var formattedSalePrice = priceObj.formattedSalePriceWithQuantity;
-    var priceClass = isInLoop ? 'dr-pd-price dr-pd-item-price' : 'dr-pd-price';
-    var priceContent = '';
-
-    if (listPrice > salePrice) {
-      priceContent = "<p class=\"".concat(priceClass, "\"><del class=\"dr-strike-price\">").concat(listPrice, "</del><span class=\"dr-sale-price\">").concat(formattedSalePrice, "</span></p>");
-    } else {
-      priceContent = "<p class=\"".concat(priceClass, "\">").concat(formattedSalePrice, "</p>");
-    }
-
-    return priceContent;
-  }
-
   function errorCallback(jqXHR) {
     console.log('errorStatus', jqXHR.status);
 
@@ -1948,17 +1886,6 @@ jQuery(document).ready(function ($) {
       init(); // eslint-disable-line no-use-before-define
     }
   }
-
-  $.fn.appendLoadingIcon = function () {
-    var size = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'sm';
-    var gap = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '0';
-    var loader = "<div class=\"dr-loader-container\"><div class=\"dr-loader dr-loader-".concat(size, "\" style=\"margin: ").concat(gap, " auto;\">Loading...</div></div>");
-    this.append(loader);
-  };
-
-  $.fn.removeLoadingIcon = function () {
-    this.find('.dr-loader-container').remove();
-  };
 
   (function () {
     if ($('#dr-minicart'.length)) {

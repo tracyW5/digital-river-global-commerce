@@ -95,6 +95,35 @@ class DRGC_Public {
     $testOrder_option = get_option( 'drgc_testOrder_handler' );
 		$testOrder_enable = ( is_array( $testOrder_option ) && '1' == $testOrder_option['checkbox'] )  ? "true" : "false";
 
+		$translation_array = array(
+			'upgrade_label'               => __('Upgrade', 'digital-river-global-commerce'),
+			'add_label'                   => __('Add', 'digital-river-global-commerce'),
+			'free_label'                  => __('FREE', 'digital-river-global-commerce'),
+			'tax_label'              	    => __('Tax', 'digital-river-global-commerce'),
+			'estimated_tax_label'         => __('Estimated Tax', 'digital-river-global-commerce'),
+			'credit_card_ending_label'    => __('Credit card ending in', 'digital-river-global-commerce'),
+			'pay_with_card_label'         => __('pay with card', 'digital-river-global-commerce'),
+			'pay_with_paypal_label'       => __('pay with paypal', 'digital-river-global-commerce'),
+			'view_cart_label'             => __('View Cart', 'digital-river-global-commerce'),
+			'checkout_label'              => __('Checkout', 'digital-river-global-commerce'),
+			'remove_label'                => __('Remove', 'digital-river-global-commerce'),
+			'subtotal_label'              => __('Sub-Total', 'digital-river-global-commerce'),
+			'qty_label'                   => __('Qty', 'digital-river-global-commerce'),
+			'password_reset_title'        => __('Password reset email sent', 'digital-river-global-commerce'),
+			'password_saved_title'        => __('Password saved', 'digital-river-global-commerce'),
+			'password_reset_msg'          => __('You will be receiving an email soon with instructions on resetting your login password.', 'digital-river-global-commerce'),
+			'password_saved_msg'          => __('You can now log in with your new password.', 'digital-river-global-commerce'),
+			'empty_cart_msg'              => __('Your cart is empty.', 'digital-river-global-commerce'),
+			'invalid_promo_code_msg'      => __('Please enter a valid promo code.', 'digital-river-global-commerce'),
+			'invalid_email_msg'           => __('Please enter a valid email address.', 'digital-river-global-commerce'),
+			'address_error_msg'           => __('Address not accepted for current currency.', 'digital-river-global-commerce'),
+			'credit_card_error_msg'       => __('Failed payment for specified credit card.', 'digital-river-global-commerce'),
+			'required_field_msg'          => __('This field is required.', 'digital-river-global-commerce'),
+			'email_confirm_error_msg'     => __('Emails do not match.', 'digital-river-global-commerce'),
+			'password_confirm_error_msg'  => __('Passwords do not match.', 'digital-river-global-commerce'),
+			'undefined_error_msg'         => __('Something went wrong.', 'digital-river-global-commerce')
+		);
+		
 		// transfer drgc options from PHP to JS
 		$options = array(
 			'wpLocale'          =>  get_locale(),
@@ -108,13 +137,14 @@ class DRGC_Public {
 			'accessToken'       =>  $access_token,
 			'cart'              =>  $cart_obj,
 			'thankYouEndpoint'  =>  esc_url( drgc_get_page_link( 'thank-you' ) ),
-			'isLogin'              =>  drgc_get_user_status(),
+			'isLogin'           =>  drgc_get_user_status(),
 			'payPal'            =>  array (
 				'sourceId' => isset( $_GET['sourceId'] ) ? $_GET['sourceId'] : false,
-				'failure' => isset( $_GET['ppcancel'] ) ? $_GET['ppcancel'] : false,
-				'success' => isset ( $_GET['ppsuccess'] ) ? $_GET['ppsuccess'] : false,
+				'failure'  => isset( $_GET['ppcancel'] ) ? $_GET['ppcancel'] : false,
+				'success'  => isset ( $_GET['ppsuccess'] ) ? $_GET['ppsuccess'] : false,
       ),
-      'testOrder' => $testOrder_enable,
+			'testOrder'         => $testOrder_enable,
+			'translations'      => $translation_array
 		);
 
 		wp_localize_script( $this->drgc, 'drgc_params', $options );

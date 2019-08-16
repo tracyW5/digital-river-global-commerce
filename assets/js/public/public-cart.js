@@ -139,7 +139,6 @@ jQuery(document).ready(($) => {
             url: `${apiBaseUrl}/me/carts/active?expand=all`,
             success: (data) => {
                 renderCartProduct(data);
-                displayMiniCart(data.cart);
             },
             error: (jqXHR) => {
                 console.log(jqXHR);
@@ -210,7 +209,7 @@ jQuery(document).ready(($) => {
         success: (candyRackData, textStatus, xhr) => {
           $.each(candyRackData.offers.offer, function( index, offer ) {
             let promoText = offer.salesPitch[0].length > 0 ? offer.salesPitch[0]   : "";
-            let buyButtonText = (offer.type == "Up-sell") ? "Upgrade" : "Add";
+            let buyButtonText = (offer.type == "Up-sell") ? drgc_params.translations.upgrade_label : drgc_params.translations.add_label;
             $.each(offer.productOffers.productOffer, function( index, productOffer ) {
               let candyRackProductHTML = `
               <div  class="dr-product dr-candyRackProduct" data-product-id="${productOffer.product.id}" data-parent-product-id="${productID}">
@@ -322,7 +321,7 @@ jQuery(document).ready(($) => {
       }
       $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling);
       //overwrite $0.00 to FREE
-      if(pricing.shippingAndHandling.value === 0 )$('div.dr-summary__shipping .shipping-value').text("FREE");
+      if(pricing.shippingAndHandling.value === 0 )$('div.dr-summary__shipping .shipping-value').text(drgc_params.translations.free_label);
       $('div.dr-summary__discount .discount-value').text(`-${pricing.formattedDiscount}`);
       $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
 
@@ -410,7 +409,7 @@ jQuery(document).ready(($) => {
       if(data.cart.lineItems.lineItem){
         renderLineItemsAndSummary(data,hasPhysicalProduct);
       }else{
-        $('.dr-cart__products').text('Your cart is empty.');
+        $('.dr-cart__products').text(drgc_params.translations.empty_cart_msg);
         $('#cart-estimate').hide();
       }
     }
@@ -442,67 +441,6 @@ jQuery(document).ready(($) => {
         });
     });
 
-
-
-    function displayMiniCart(cart) {
-
-        if ( cart === undefined || cart === null ) {
-            return;
-        }
-
-        const $display = $('.dr-minicart-display');
-        const $body = $('<div class="dr-minicart-body"></div>');
-        const $footer = $('<div class="dr-minicart-footer"></div>');
-
-        let lineItems = (cart.lineItems && cart.lineItems.lineItem) ? cart.lineItems.lineItem : [];
-
-        $('.dr-minicart-count').text(cart.totalItemsInCart);
-        $('.dr-minicart-header').siblings().remove();
-
-        if (!lineItems.length) {
-            const emptyMsg = '<p class="dr-minicart-empty-msg">Your shopping cart is currently empty.</p>';
-            $body.append(emptyMsg);
-            $display.append($body);
-        } else {
-            let miniCartLineItems = '<ul class="dr-minicart-list">';
-            const miniCartSubtotal = `<p class="dr-minicart-subtotal"><label>Sub-Total</label><span>${cart.pricing.formattedSubtotal}</span></p>`;
-            const miniCartViewCartBtn = `<a class="dr-btn" id="dr-minicart-view-cart-btn" href="${drgc_params.cartUrl}">View Cart</a>`;
-            const miniCartCheckoutBtn = `<a class="dr-btn" id="dr-minicart-checkout-btn" href="${drgc_params.checkoutUrl}">Checkout</a>`;
-
-            lineItems.forEach((li) => {
-                const productId = li.product.uri.replace(`${apiBaseUrl}/me/products/`, '');
-                const listPrice = Number(li.pricing.listPriceWithQuantity.value);
-                const salePrice = Number(li.pricing.salePriceWithQuantity.value);
-                const formattedSalePrice = li.pricing.formattedSalePriceWithQuantity;
-                let priceContent = '';
-
-                if (listPrice > salePrice) {
-                    priceContent = `<del class="dr-strike-price">${listPrice}</del><span class="dr-sale-price">${formattedSalePrice}</span>`;
-                } else {
-                    priceContent = formattedSalePrice;
-                }
-
-                const miniCartLineItem = `
-                <li class="dr-minicart-item clearfix">
-                    <div class="dr-minicart-item-thumbnail">
-                        <img src="${li.product.thumbnailImage}" alt="${li.product.displayName}" />
-                    </div>
-                    <div class="dr-minicart-item-info" data-product-id="${productId}">
-                        <span class="dr-minicart-item-title">${li.product.displayName}</span>
-                        <span class="dr-minicart-item-qty">Qty.${li.quantity}</span>
-                        <p class="dr-pd-price dr-minicart-item-price">${priceContent}</p>
-                    </div>
-                    <a href="#" class="dr-minicart-item-remove-btn" aria-label="Remove" data-line-item-id="${li.id}">Remove</a>
-                </li>`;
-                miniCartLineItems += miniCartLineItem;
-            });
-            miniCartLineItems += '</ul>';
-            $body.append(miniCartLineItems, miniCartSubtotal);
-            $footer.append(miniCartViewCartBtn, miniCartCheckoutBtn);
-            $display.append($body, $footer);
-        }
-    }
-
     $('.promo-code-toggle').click(() => {
         $('.promo-code-wrapper').toggle();
     });
@@ -511,7 +449,7 @@ jQuery(document).ready(($) => {
         const promoCode = $('#promo-code').val();
 
         if (!promoCode) {
-          $('#dr-promo-code-err-field').text('Please enter a valid promo code.').show();
+          $('#dr-promo-code-err-field').text(drgc_params.translations.invalid_promo_code_msg).show();
           return;
         }
 

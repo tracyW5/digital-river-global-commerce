@@ -182,14 +182,14 @@ jQuery(document).ready(($) => {
         }
 
         if (!lineItems.length) {
-            const emptyMsg = '<p class="dr-minicart-empty-msg">Your shopping cart is currently empty.</p>';
+            const emptyMsg = `<p class="dr-minicart-empty-msg">${drgc_params.translations.empty_cart_msg}</p>`;
             $body.append(emptyMsg);
             $display.append($body);
         } else {
             let miniCartLineItems = '<ul class="dr-minicart-list">';
-            const miniCartSubtotal = `<p class="dr-minicart-subtotal"><label>Sub-Total</label><span>${cart.pricing.formattedSubtotal}</span></p>`;
-            const miniCartViewCartBtn = `<a class="dr-btn" id="dr-minicart-view-cart-btn" href="${drgc_params.cartUrl}">View Cart</a>`;
-            const miniCartCheckoutBtn = `<a class="dr-btn" id="dr-minicart-checkout-btn" href="${drgc_params.checkoutUrl}">Checkout</a>`;
+            const miniCartSubtotal = `<p class="dr-minicart-subtotal"><label>${drgc_params.translations.subtotal_label}</label><span>${cart.pricing.formattedSubtotal}</span></p>`;
+            const miniCartViewCartBtn = `<a class="dr-btn" id="dr-minicart-view-cart-btn" href="${drgc_params.cartUrl}">${drgc_params.translations.view_cart_label}</a>`;
+            const miniCartCheckoutBtn = `<a class="dr-btn" id="dr-minicart-checkout-btn" href="${drgc_params.checkoutUrl}">${drgc_params.translations.checkout_label}</a>`;
 
             lineItems.forEach((li) => {
                 const productId = li.product.uri.replace(`${drService.apiBaseUrl}/me/products/`, '');
@@ -211,10 +211,10 @@ jQuery(document).ready(($) => {
                     </div>
                     <div class="dr-minicart-item-info" data-product-id="${productId}">
                         <span class="dr-minicart-item-title">${li.product.displayName}</span>
-                        <span class="dr-minicart-item-qty">Qty.${li.quantity}</span>
+                        <span class="dr-minicart-item-qty">${drgc_params.translations.qty_label}.${li.quantity}</span>
                         <p class="dr-pd-price dr-minicart-item-price">${priceContent}</p>
                     </div>
-                    <a href="#" class="dr-minicart-item-remove-btn" aria-label="Remove" data-line-item-id="${li.id}">Remove</a>
+                    <a href="#" class="dr-minicart-item-remove-btn" aria-label="Remove" data-line-item-id="${li.id}">${drgc_params.translations.remove_label}</a>
                 </li>`;
                 miniCartLineItems += miniCartLineItem;
             });
@@ -225,37 +225,12 @@ jQuery(document).ready(($) => {
         }
     }
 
-    function displayPrice(priceObj, isInLoop) {
-        const listPrice = Number(priceObj.listPriceWithQuantity.value);
-        const salePrice = Number(priceObj.salePriceWithQuantity.value);
-        const formattedSalePrice = priceObj.formattedSalePriceWithQuantity;
-        const priceClass = isInLoop ? 'dr-pd-price dr-pd-item-price' : 'dr-pd-price';
-        let priceContent = '';
-
-        if (listPrice > salePrice) {
-            priceContent = `<p class="${priceClass}"><del class="dr-strike-price">${listPrice}</del><span class="dr-sale-price">${formattedSalePrice}</span></p>`;
-        } else {
-            priceContent = `<p class="${priceClass}">${formattedSalePrice}</p>`;
-        }
-
-        return priceContent;
-    }
-
     function errorCallback(jqXHR) {
         console.log('errorStatus', jqXHR.status);
         if (jqXHR.status === 401) {
             init(); // eslint-disable-line no-use-before-define
         }
     }
-
-    $.fn.appendLoadingIcon = function (size = 'sm', gap = '0') {
-        const loader = `<div class="dr-loader-container"><div class="dr-loader dr-loader-${size}" style="margin: ${gap} auto;">Loading...</div></div>`;
-        this.append(loader);
-    };
-
-    $.fn.removeLoadingIcon = function () {
-        this.find('.dr-loader-container').remove();
-    };
 
     (function() {
         if ( $('#dr-minicart'.length)) {
