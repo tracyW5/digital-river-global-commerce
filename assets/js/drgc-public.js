@@ -1420,7 +1420,7 @@ jQuery(document).ready(function ($) {
 })(window);
 
 window.onpageshow = function (event) {
-  if (event.persisted) {
+  if (event.persisted || window.performance && window.performance.navigation.type === 2) {
     window.location.reload();
   }
 };
@@ -1496,9 +1496,21 @@ jQuery(document).ready(function ($) {
       $(elem).next('.invalid-feedback').text(drgc_params.translations.invalid_email_msg);
     }
   });
-  $('.dr-signup').on('click', '', function (e) {
+  $('#dr-signup-form input[type=password], #dr-confirm-password-reset-form input[type=password]').on('input', function (e) {
+    var $form = $(e.target).closest('form');
+    var pw = $form.find('input[type=password]')[0];
+    var cpw = $form.find('input[type=password]')[1];
+    cpw.setCustomValidity(pw.value !== cpw.value ? drgc_params.translations.password_confirm_error_msg : '');
+
+    if (cpw.validity.valueMissing) {
+      $(cpw).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
+    } else if (cpw.validity.customError) {
+      $(cpw).next('.invalid-feedback').text(cpw.validationMessage);
+    }
+  });
+  $('.dr-signup-form').on('submit', function (e) {
     e.preventDefault();
-    var $form = $('.dr-signup-form');
+    var $form = $(e.target);
     $form.addClass('was-validated');
 
     if ($form.data('processing')) {
@@ -1509,7 +1521,7 @@ jQuery(document).ready(function ($) {
       return false;
     }
 
-    var but = $(this).toggleClass('sending').blur();
+    var $button = $form.find('button[type=submit]').toggleClass('sending').blur();
     $form.data('processing', true);
     $('.dr-signin-form-error').text('');
     var data = {
@@ -1524,7 +1536,7 @@ jQuery(document).ready(function ($) {
         location.reload();
       } else {
         $form.data('processing', false);
-        but.removeClass('sending').blur();
+        $button.removeClass('sending').blur();
 
         if (response.data && response.data.errors && response.data.errors.error[0].hasOwnProperty('description')) {
           $('.dr-signin-form-error').text(response.data.errors.error[0].description);
@@ -1538,16 +1550,17 @@ jQuery(document).ready(function ($) {
       }
     });
   });
-  $('#dr-pass-reset-submit').on('click', function (e) {
+  $('#dr-pass-reset-form').on('submit', function (e) {
+    e.preventDefault();
+    var $form = $(e.target);
     var $errMsg = $('#dr-reset-pass-error').text('').hide();
-    var $form = $('form#dr-pass-reset-form');
     $form.addClass('was-validated');
 
     if ($form[0].checkValidity() === false) {
       return false;
     }
 
-    var $button = $(this).toggleClass('sending').blur().removeClass('btn');
+    var $button = $form.find('button[type=submit]').addClass('sending').blur();
     var data = {
       'action': 'drgc_pass_reset_request'
     };
@@ -1565,8 +1578,8 @@ jQuery(document).ready(function ($) {
       if (!response.success) {
         $errMsg.text(response.data[0].message).show();
       } else {
-        $('#drResetPasswordModalBody').html('').html("<h3>".concat(drgc_params.translations.password_reset_title, "</h3>\n                    <p>").concat(drgc_params.translations.password_reset_msg, "</p>"));
-        $('#dr-pass-reset-submit').hide();
+        $('#drResetPasswordModalBody').html('').html("\n                    <h3>".concat(drgc_params.translations.password_reset_title, "</h3>\n                    <p>").concat(drgc_params.translations.password_reset_msg, "</p>\n                "));
+        $button.hide();
       }
 
       $button.removeClass('sending').blur();
@@ -1575,18 +1588,18 @@ jQuery(document).ready(function ($) {
   $('form.dr-confirm-password-reset-form').on('submit', function (e) {
     e.preventDefault();
     var $form = $(this);
-    var $errMsg = $('.dr-form-error-msg', this).text('').hide();
+    var $errMsg = $form.find('.dr-form-error-msg').text('').hide();
     $form.addClass('was-validated');
 
     if ($form[0].checkValidity() === false) {
       return false;
     }
 
-    var $button = $('button[type=submit]', this).toggleClass('sending').blur().removeClass('btn');
     var searchParams = new URLSearchParams(window.location.search);
 
     if (!searchParams.get('key') || !searchParams.get('login')) {
       $errMsg.text(drgc_params.translations.undefined_error_msg).show();
+      return;
     }
 
     var data = {
@@ -1597,18 +1610,12 @@ jQuery(document).ready(function ($) {
     $.each($form.serializeArray(), function (index, obj) {
       data[obj.name] = obj.value;
     });
-
-    if (data['password'] !== data['confirm-password']) {
-      $errMsg.text(drgc_params.translations.password_confirm_error_msg).show();
-      $button.removeClass('sending').blur();
-      return;
-    }
-
+    var $button = $form.find('button[type=submit]').addClass('sending').blur();
     $.post(ajaxUrl, data, function (response) {
       if (!response.success) {
-        $errMsg.text(response.data).show();
+        if (response.data) $errMsg.text(response.data).show();
       } else {
-        $('section.reset-password').html('').html("<h3>".concat(drgc_params.translations.password_saved_title, "</h3>\n                    <p>").concat(drgc_params.translations.password_saved_msg, "</p>")).css('color', 'green');
+        $('section.reset-password').html('').html("\n                    <h3>".concat(drgc_params.translations.password_saved_title, "</h3>\n                    <p>").concat(drgc_params.translations.password_saved_msg, "</p>\n                ")).css('color', 'green');
         setTimeout(function () {
           return location.replace("".concat(location.origin).concat(location.pathname));
         }, 2000);
