@@ -84,7 +84,7 @@ jQuery(document).ready(($) => {
         const pw = $form.find('input[type=password]')[0];
         const cpw = $form.find('input[type=password]')[1];
 
-        cpw.setCustomValidity(pw.value !== cpw.value ? 'Passwords do not match.' : '');
+        cpw.setCustomValidity(pw.value !== cpw.value ? drgc_params.translations.password_confirm_error_msg : '');
         if (cpw.validity.valueMissing) {
             $(cpw).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
         } else if (cpw.validity.customError) {
