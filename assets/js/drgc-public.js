@@ -1542,21 +1542,9 @@ jQuery(document).ready(function ($) {
       $(elem).next('.invalid-feedback').text('Please enter a valid email address.');
     }
   });
-  $('#dr-signup-form input[type=password], #dr-confirm-password-reset-form input[type=password]').on('input', function (e) {
-    var $form = $(e.target).closest('form');
-    var pw = $form.find('input[type=password]')[0];
-    var cpw = $form.find('input[type=password]')[1];
-    cpw.setCustomValidity(pw.value !== cpw.value ? 'Passwords do not match.' : '');
-
-    if (cpw.validity.valueMissing) {
-      $(cpw).next('.invalid-feedback').text('This field is required.');
-    } else if (cpw.validity.customError) {
-      $(cpw).next('.invalid-feedback').text(cpw.validationMessage);
-    }
-  });
-  $('.dr-signup-form').on('submit', function (e) {
+  $('.dr-signup').on('click', '', function (e) {
     e.preventDefault();
-    var $form = $(e.target);
+    var $form = $('.dr-signup-form');
     $form.addClass('was-validated');
 
     if ($form.data('processing')) {
@@ -1567,7 +1555,7 @@ jQuery(document).ready(function ($) {
       return false;
     }
 
-    var $button = $form.find('button[type=submit]').toggleClass('sending').blur();
+    var but = $(this).toggleClass('sending').blur();
     $form.data('processing', true);
     $('.dr-signin-form-error').text('');
     var data = {
@@ -1582,7 +1570,7 @@ jQuery(document).ready(function ($) {
         location.reload();
       } else {
         $form.data('processing', false);
-        $button.removeClass('sending').blur();
+        but.removeClass('sending').blur();
 
         if (response.data && response.data.errors && response.data.errors.error[0].hasOwnProperty('description')) {
           $('.dr-signin-form-error').text(response.data.errors.error[0].description);
@@ -1596,17 +1584,16 @@ jQuery(document).ready(function ($) {
       }
     });
   });
-  $('#dr-pass-reset-form').on('submit', function (e) {
-    e.preventDefault();
-    var $form = $(e.target);
+  $('#dr-pass-reset-submit').on('click', function (e) {
     var $errMsg = $('#dr-reset-pass-error').text('').hide();
+    var $form = $('form#dr-pass-reset-form');
     $form.addClass('was-validated');
 
     if ($form[0].checkValidity() === false) {
       return false;
     }
 
-    var $button = $form.find('button[type=submit]').addClass('sending').blur();
+    var $button = $(this).toggleClass('sending').blur().removeClass('btn');
     var data = {
       'action': 'drgc_pass_reset_request'
     };
@@ -1625,7 +1612,7 @@ jQuery(document).ready(function ($) {
         $errMsg.text(response.data[0].message).show();
       } else {
         $('#drResetPasswordModalBody').html('').html("\n                    <h3>Password reset email sent</h3>\n                    <p>You will be receiving an email\n                    soon with instructions on resetting your\n                    login password</p>\n                ");
-        $button.hide();
+        $('#dr-pass-reset-submit').hide();
       }
 
       $button.removeClass('sending').blur();
@@ -1634,18 +1621,18 @@ jQuery(document).ready(function ($) {
   $('form.dr-confirm-password-reset-form').on('submit', function (e) {
     e.preventDefault();
     var $form = $(this);
-    var $errMsg = $form.find('.dr-form-error-msg').text('').hide();
+    var $errMsg = $('.dr-form-error-msg', this).text('').hide();
     $form.addClass('was-validated');
 
     if ($form[0].checkValidity() === false) {
       return false;
     }
 
+    var $button = $('button[type=submit]', this).toggleClass('sending').blur().removeClass('btn');
     var searchParams = new URLSearchParams(window.location.search);
 
     if (!searchParams.get('key') || !searchParams.get('login')) {
-      $errMsg.text('Something went wrong.').show();
-      return;
+      $errMsg.text('Something went wrong').show();
     }
 
     var data = {
@@ -1656,10 +1643,16 @@ jQuery(document).ready(function ($) {
     $.each($form.serializeArray(), function (index, obj) {
       data[obj.name] = obj.value;
     });
-    var $button = $form.find('button[type=submit]').addClass('sending').blur();
+
+    if (data['password'] !== data['confirm-password']) {
+      $errMsg.text('Passwords do not match').show();
+      $button.removeClass('sending').blur();
+      return;
+    }
+
     $.post(ajaxUrl, data, function (response) {
       if (!response.success) {
-        if (response.data) $errMsg.text(response.data).show();
+        $errMsg.text(response.data).show();
       } else {
         $('section.reset-password').html('').html("\n                    <h3>Password saved</h3>\n                    <p>You can now log in with your new password</p>\n                ").css('color', 'green');
         setTimeout(function () {
