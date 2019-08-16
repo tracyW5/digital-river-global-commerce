@@ -319,33 +319,12 @@ class DRGC_Public {
 			empty( $key ) || ! is_string( $key ) ||
 			empty( $login ) || ! is_string( $login )
 		) {
-			wp_send_json_error( __( 'Something went wrong.' ) );
-			return;
+			wp_send_json_error( __( 'Something went wrong' ) );
 		}
 
-		$error_msgs = array();
-
-		if ( isset( $password ) && $password !== $confirm ) {
-			array_push( $error_msgs, __( 'Passwords do not match.' ) );
-		}
-
-		if ( 6 > strlen( $password ) ) {
-			array_push( $error_msgs, __( 'Password is too short, at least 6 symbols required.' ) );
-		}
-
-		preg_match( '/^[a-zA-Z0-9!_@]+$/', $password, $result );
-		if ( empty( $result ) ) {
-			array_push( $error_msgs, __( 'Contains non-allowable special characters (only ! _ @ are allowed).' ) );
-		}
-
-		if ( !empty( $error_msgs ) ) {
-			wp_send_json_error( join( ' ', $error_msgs) );
-			return;
-		}
-
-		// Check if key is valid
 		$user = check_password_reset_key( $key, $login );
 
+		// Check if key is valid
 		if ( is_wp_error( $user ) ) {
 			if ( $user->get_error_code() === 'expired_key' ){
 				wp_send_json_error( __( 'Expired key' ) );
@@ -354,7 +333,18 @@ class DRGC_Public {
 			}
 		}
 
-		reset_password( $user, $password );
+		// check if keys match
+		if ( isset( $password ) && $password !== $confirm ) {
+			wp_send_json_error( __( 'Passwords do not match' ) );
+			return;
+		}
+
+		if ( 6 > strlen( $password ) ) {
+			wp_send_json_error( __( 'Password is too short, at least 6 symbols required' ) );
+			return;
+		}
+
+		reset_password($user, $password);
 		wp_send_json_success();
 	}
 

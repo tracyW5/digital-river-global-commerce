@@ -947,6 +947,24 @@ input[type=radio] { position: relative; opacity: 1; width: -webkit-max-content; 
 
 @media (max-width: 991px) { .dr-login .dr-login-sections__section { border-bottom: 1px solid #d1d1d1; padding-left: 0; padding-right: 0; } }
 
+.dr-login .dr-login-sections__section.section-returning .dr-login-form { position: relative; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; }
+
+.dr-login .dr-login-sections__section.section-returning .dr-login-form input { height: 51px; padding: 0 10px; }
+
+.dr-login .dr-login-sections__section.section-returning .dr-login-form input::-webkit-input-placeholder { font-family: "Open Sans", sans-serif; }
+
+.dr-login .dr-login-sections__section.section-returning .dr-login-form input::-moz-placeholder { font-family: "Open Sans", sans-serif; }
+
+.dr-login .dr-login-sections__section.section-returning .dr-login-form input:-ms-input-placeholder { font-family: "Open Sans", sans-serif; }
+
+.dr-login .dr-login-sections__section.section-returning .dr-login-form input::-ms-input-placeholder { font-family: "Open Sans", sans-serif; }
+
+.dr-login .dr-login-sections__section.section-returning .dr-login-form input::placeholder { font-family: "Open Sans", sans-serif; }
+
+.dr-login .dr-login-sections__section.section-returning .dr-login-form input:focus { outline: none; }
+
+.dr-login .dr-login-sections__section.section-returning .dr-login-form a { font-family: "Open Sans", sans-serif; font-size: 14px; color: #000000; -webkit-text-decoration: underline solid #000000; text-decoration: underline solid #000000; }
+
 .dr-login .dr-login-sections__section .dr-signup-form { margin-bottom: 0; }
 
 .dr-login .dr-login-sections__section.reset-password button { width: 100%; }

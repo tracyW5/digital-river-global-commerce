@@ -38,7 +38,7 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                     <p><?php echo __( 'Please enter secure password twice to continue', 'digital-river-global-commerce' ); ?></p>
                 </div>
 
-                <form class="dr-confirm-password-reset-form needs-validation" id="dr-confirm-password-reset-form" novalidate>
+                <form class="dr-confirm-password-reset-form needs-validation" novalidate>
 
                     <div class="form-group">
                         <input class="form-control" name="password" type="password" placeholder="New Password" required autocomplete="off">
@@ -93,28 +93,26 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                     <div class="dr-form-error-msg"></div>
                 </form>
 
-                <div>
-                    <a class="forgotten-password" href="#" data-toggle="modal" data-target="#drResetPassword"><?php echo __( 'Forgot password?', 'digital-river-global-commerce' ); ?></a>
-                </div>
+                <a class="forgotten-password" href="#" data-toggle="modal" data-target="#drResetPassword"><?php echo __( 'Forgot password?', 'digital-river-global-commerce' ); ?></a>
 
                 <div class="modal fade" id="drResetPassword" tabindex="-1" role="dialog" aria-labelledby="drResetPasswordTitle" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
-                            <form id="dr-pass-reset-form" novalidate>
-                                <div class="modal-header">
-                                    <h5 class="modal-title">
-                                        <?php echo __( 'Forgot Password', 'digital-river-global-commerce' ); ?>
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body" id="drResetPasswordModalBody">
-                                    <p>
-                                        <?php echo __('To reset your password, please enter your email 
-                                        address below and an email with instructions on
-                                        resetting your password will be sent to you.', 'digital-river-global-commerce'); ?>
-                                    </p>
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <?php echo __( 'Forgot Password', 'digital-river-global-commerce' ); ?>
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" id="drResetPasswordModalBody">
+                                <p>
+                                    <?php echo __('To reset your password, please enter your email 
+                                    address below and an email with instructions on
+                                    resetting your password will be sent to you.', 'digital-river-global-commerce'); ?>
+                                </p>
+                                <form id="dr-pass-reset-form" novalidate>
                                     <div class="form-group">
                                         <label for="email-address" class="col-form-label"><?php echo __( 'Email Address:', 'digital-river-global-commerce' ); ?></label>
                                         <input name="email" type="email" class="form-control" id="email-address" required>
@@ -129,14 +127,15 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                                             <?php echo __( 'This field is required email.' ); ?>
                                         </div>
                                     </div>
-                                    <div id="dr-reset-pass-error" class="invalid-feedback"></div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button id="dr-pass-reset-submit" type="submit" class="dr-btn w-100">
-                                        <?php echo __( 'Reset Password', 'digital-river-global-commerce' ); ?>
-                                    </button>
-                                </div>
-                            </form>
+                                </form>
+
+                                <div id="dr-reset-pass-error" class="invalid-feedback"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="dr-pass-reset-submit" type="button" class="dr-btn w-100">
+                                    <?php echo __( 'Reset Password', 'digital-river-global-commerce' ); ?>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -156,7 +155,7 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                     </p>
                 </div>
 
-                <form class="dr-signup-form needs-validation" id="dr-signup-form" novalidate>
+                <form class="dr-signup-form needs-validation" id="dr-signup-form" oninput='upw2.setCustomValidity(upw2.value != upw.value ? "Passwords do not match." : "")' novalidate>
 
                     <div class="row">
                         <div class="col-sm-6">
@@ -200,18 +199,20 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
                         <input class="form-control" name="upw2" type="password" placeholder="Confirm Password" required autocomplete="off">
 
                         <div class="invalid-feedback">
-			                <?php echo __( 'This field is required.' ); ?>
+			                <?php echo __( 'Passwords do not match.' ); ?>
                         </div>
                     </div>
 
                     <div class="dr-signin-form-error"></div>
-
-                    <div>
-                        <button type="submit" class="dr-btn dr-signup"><?php echo __( 'Sign Up', 'digital-river-global-commerce' ); ?></button>
-
-                        <a class="dr-btn" href="<?php echo esc_url( drgc_get_page_link( 'cart' ) ); ?>" ><?php echo __( 'Continue As Guest', 'digital-river-global-commerce' ); ?></a>
-                    </div>
                 </form>
+
+                <div>
+
+                    <a class="dr-btn dr-signup" href="#"><?php echo __( 'Sign Up', 'digital-river-global-commerce' ); ?></a>
+
+                    <a class="dr-btn" href="<?php echo esc_url( drgc_get_page_link( 'cart' ) ); ?>" ><?php echo __( 'Continue As Guest', 'digital-river-global-commerce' ); ?></a>
+
+                </div>
 
 
             </section>
