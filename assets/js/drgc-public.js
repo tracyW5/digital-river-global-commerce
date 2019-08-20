@@ -1448,9 +1448,10 @@ jQuery(document).ready(function ($) {
     $form.data('processing', true);
     $('.dr-form-error-msg').text('');
     var data = {
-      'action': 'drgc_login',
-      'username': $(".dr-login-form input[name='username']").val(),
-      'password': $(".dr-login-form input[name='password']").val()
+      action: 'drgc_login',
+      nonce: drgc_params.ajaxNonce,
+      username: $('.dr-login-form input[name=username]').val(),
+      password: $('.dr-login-form input[name=password]').val()
     };
     $.post(ajaxUrl, data, function (response) {
       if (response.success) {
@@ -1481,7 +1482,8 @@ jQuery(document).ready(function ($) {
     var but = $(this).toggleClass('sending').blur();
     $(this).data('processing', true);
     var data = {
-      'action': 'drgc_logout'
+      action: 'drgc_logout',
+      nonce: drgc_params.ajaxNonce
     };
     $.post(ajaxUrl, data, function (response) {
       location.reload();
@@ -1526,6 +1528,7 @@ jQuery(document).ready(function ($) {
     $('.dr-signin-form-error').text('');
     var data = {
       action: 'drgc_signup',
+      nonce: drgc_params.ajaxNonce,
       first_name: $('.dr-signup-form input[name=first_name]').val(),
       last_name: $('.dr-signup-form input[name=last_name]').val(),
       username: $('.dr-signup-form input[name=uemail]').val(),
@@ -1562,7 +1565,8 @@ jQuery(document).ready(function ($) {
 
     var $button = $form.find('button[type=submit]').addClass('sending').blur();
     var data = {
-      'action': 'drgc_pass_reset_request'
+      action: 'drgc_pass_reset_request',
+      nonce: drgc_params.ajaxNonce
     };
     $.each($form.serializeArray(), function (index, obj) {
       data[obj.name] = obj.value;
@@ -1603,9 +1607,10 @@ jQuery(document).ready(function ($) {
     }
 
     var data = {
-      'action': 'drgc_reset_password',
-      'key': searchParams.get('key'),
-      'login': searchParams.get('login')
+      action: 'drgc_reset_password',
+      nonce: drgc_params.ajaxNonce,
+      key: searchParams.get('key'),
+      login: searchParams.get('login')
     };
     $.each($form.serializeArray(), function (index, obj) {
       data[obj.name] = obj.value;

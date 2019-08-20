@@ -118,7 +118,7 @@ class DRGC_Admin {
 				'site_id'               => $this->drgc_site_id,
 				'drgc_ajx_instance_id'  => $this->drgc_ajx->instance_id,
 				'ajax_url'              => admin_url( 'admin-ajax.php' ),
-				'ajax_nonce'            => wp_create_nonce( 'drgc_ajx' ),
+				'ajax_nonce'            => wp_create_nonce( 'drgc_admin_ajax' ),
 			)
 		);
 	}
