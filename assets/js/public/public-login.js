@@ -111,7 +111,7 @@ jQuery(document).ready(($) => {
         if (elem.validity.valueMissing) {
             $(elem).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
         } else if (elem.validity.customError) {
-            $(elem).next('.invalid-feedback').text(customMsg);
+            $(elem).next('.invalid-feedback').text(elem.validationMessage);
         }
     });
 

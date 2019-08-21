@@ -1533,7 +1533,7 @@ jQuery(document).ready(function ($) {
     if (elem.validity.valueMissing) {
       $(elem).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
     } else if (elem.validity.customError) {
-      $(elem).next('.invalid-feedback').text(customMsg);
+      $(elem).next('.invalid-feedback').text(elem.validationMessage);
     }
   });
   $('#dr-signup-form input[type=password], #dr-confirm-password-reset-form input[type=password]').on('input', function (e) {
