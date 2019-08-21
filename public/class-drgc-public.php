@@ -129,8 +129,9 @@ class DRGC_Public {
 			'wpLocale'          =>  get_locale(),
 			'drLocale'          =>  get_dr_locale( get_locale() ),
 			'ajaxUrl'           =>  admin_url( 'admin-ajax.php' ),
+			'ajaxNonce'         =>  wp_create_nonce( 'drgc_ajax' ),
 			'cartUrl'           =>  drgc_get_page_link( 'cart' ),
-			'checkoutUrl'	      =>  drgc_get_page_link( 'checkout' ),
+			'checkoutUrl'       =>  drgc_get_page_link( 'checkout' ),
 			'siteID'            =>  get_option( 'drgc_site_id' ),
 			'domain'            =>  get_option( 'drgc_domain' ),
 			'digitalRiverKey'   =>  get_option( 'drgc_digitalRiver_key' ),
@@ -151,6 +152,8 @@ class DRGC_Public {
 	}
 
 	public function ajax_attempt_auth() {
+		check_ajax_referer( 'drgc_ajax', 'nonce' );
+
 		$plugin = DRGC();
 
 		if ( (isset( $_POST['username'] ) && isset( $_POST['password'] )) ) {
@@ -180,6 +183,8 @@ class DRGC_Public {
 	}
 
 	public function dr_signup_ajax() {
+		check_ajax_referer( 'drgc_ajax', 'nonce' );
+
 		$plugin = DRGC();
 
 		if ( isset( $_POST['first_name'] ) && isset( $_POST['last_name'] ) &&
@@ -251,6 +256,7 @@ class DRGC_Public {
 	}
 
 	public function dr_logout_ajax() {
+		check_ajax_referer( 'drgc_ajax', 'nonce' );
 		$plugin = DRGC();
 		$plugin->shopper = null;
 		$plugin->session->dirty_set_session( $_COOKIE['drgc_session'] );
@@ -262,6 +268,8 @@ class DRGC_Public {
 	 * Ajax handles sending password retrieval email to user.
 	 */
 	function dr_send_email_reset_pass_ajax() {
+		check_ajax_referer( 'drgc_ajax', 'nonce' );
+
 		$errors = new WP_Error();
 
 		$email = sanitize_text_field( $_POST['email'] );
@@ -339,6 +347,8 @@ class DRGC_Public {
 	 * Reset user password AJAX
 	 */
 	public function dr_reset_password_ajax() {
+		check_ajax_referer( 'drgc_ajax', 'nonce' );
+
 		$password = sanitize_text_field( $_POST['password'] );
 		$confirm = sanitize_text_field( $_POST['confirm-password'] );
 		$key = sanitize_text_field( $_POST['key'] );
