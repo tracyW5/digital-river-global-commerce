@@ -72,12 +72,46 @@ jQuery(document).ready(($) => {
         });
     });
 
-    $('#dr_login_form, #dr-signup-form, #dr-pass-reset-form, #checkout-email-form').find('input[type=email]').on('change', (e) => {
+    $('#dr_login_form, #dr-signup-form, #dr-pass-reset-form, #checkout-email-form').find('input[type=email]').on('input', (e) => {
         const elem = e.target;
         if (elem.validity.valueMissing) {
             $(elem).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
         } else if (elem.validity.typeMismatch) {
             $(elem).next('.invalid-feedback').text(drgc_params.translations.invalid_email_msg);
+        }
+    });
+
+    $('#dr-signup-form input[name=upw], #dr-confirm-password-reset-form input[name=password]').on('input', (e) => {
+        const elem = e.target;
+        const customMsgArr = [];
+        let customMsg = '';
+
+        if (elem.value.length < 8 || elem.value.length > 32) {
+            customMsgArr.push(drgc_params.translations.password_length_error_msg);
+        }
+        if (!/[A-Z]/.test(elem.value)) {
+            customMsgArr.push(drgc_params.translations.password_uppercase_error_msg);
+        }
+        if (!/[a-z]/.test(elem.value)) {
+            customMsgArr.push(drgc_params.translations.password_lowercase_error_msg);
+        }
+        if (!/[0-9]/.test(elem.value)) {
+            customMsgArr.push(drgc_params.translations.password_number_error_msg);
+        }
+        if (!/[!_@]/.test(elem.value)) {
+            customMsgArr.push(drgc_params.translations.password_char_error_msg);
+        }
+        if (!/^[a-zA-Z0-9!_@]+$/.test(elem.value)) {
+            customMsgArr.push(drgc_params.translations.password_banned_char_error_msg);
+        }
+
+        customMsg = customMsgArr.join(' ');
+        elem.setCustomValidity(customMsg);
+
+        if (elem.validity.valueMissing) {
+            $(elem).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
+        } else if (elem.validity.customError) {
+            $(elem).next('.invalid-feedback').text(customMsg);
         }
     });
 
@@ -120,7 +154,8 @@ jQuery(document).ready(($) => {
             first_name: $('.dr-signup-form input[name=first_name]').val(),
             last_name : $('.dr-signup-form input[name=last_name]').val(),
             username  : $('.dr-signup-form input[name=uemail]').val(),
-            password  : $('.dr-signup-form input[name=upw]').val()
+            password  : $('.dr-signup-form input[name=upw]').val(),
+            confirm_password: $('.dr-signup-form input[name=upw2]').val()
         };
 
         $.post(ajaxUrl, data, function(response) {
