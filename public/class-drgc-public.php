@@ -120,10 +120,16 @@ class DRGC_Public {
 			'credit_card_error_msg'       => __('Failed payment for specified credit card.', 'digital-river-global-commerce'),
 			'required_field_msg'          => __('This field is required.', 'digital-river-global-commerce'),
 			'email_confirm_error_msg'     => __('Emails do not match.', 'digital-river-global-commerce'),
-			'password_confirm_error_msg'  => __('Passwords do not match.', 'digital-river-global-commerce'),
-			'undefined_error_msg'         => __('Something went wrong.', 'digital-river-global-commerce')
+			'password_length_error_msg'      => __('Password must be between 8 - 32 characters.', 'digital-river-global-commerce'),
+			'password_uppercase_error_msg'   => __('Must use at least one upper case letter.', 'digital-river-global-commerce'),
+			'password_lowercase_error_msg'   => __('Must use at least one lower case letter.', 'digital-river-global-commerce'),
+			'password_number_error_msg'      => __('Must use at least one number.', 'digital-river-global-commerce'),
+			'password_char_error_msg'        => __('Must use at least one special character (! _ @).', 'digital-river-global-commerce'),
+			'password_banned_char_error_msg' => __('Contains non-allowable special characters (only ! _ @ are allowed).', 'digital-river-global-commerce'),
+			'password_confirm_error_msg'     => __('Passwords do not match.', 'digital-river-global-commerce'),
+			'undefined_error_msg'            => __('Something went wrong.', 'digital-river-global-commerce')
 		);
-		
+
 		// transfer drgc options from PHP to JS
 		$options = array(
 			'wpLocale'          =>  get_locale(),
@@ -182,6 +188,40 @@ class DRGC_Public {
 		}
 	}
 
+	private function get_password_error_msgs( $password, $confirm_password ) {
+		$error_msgs = array();
+
+		if ( $password !== $confirm_password ) {
+			array_push( $error_msgs, __( 'Passwords do not match.' ) );
+		}
+
+		if ( 8 > strlen( $password ) || 32 < strlen( $password ) ) {
+			array_push( $error_msgs, __( 'Password must be between 8 - 32 characters.' ) );
+		}
+
+		if ( ! preg_match( '/[A-Z]/', $password ) ) {
+			array_push( $error_msgs, __( 'Must use at least one upper case letter.' ) );
+		}
+
+		if ( ! preg_match( '/[a-z]/', $password ) ) {
+			array_push( $error_msgs, __( 'Must use at least one lower case letter.' ) );
+		}
+
+		if ( ! preg_match( '/[0-9]/', $password ) ) {
+			array_push( $error_msgs, __( 'Must use at least one number.' ) );
+		}
+
+		if ( ! preg_match( '/[!_@]/', $password ) ) {
+			array_push( $error_msgs, __( 'Must use at least one special character (! _ @).' ) );
+		}
+
+		if ( ! preg_match( '/^[a-zA-Z0-9!_@]+$/', $password ) ) {
+			array_push( $error_msgs, __( 'Contains non-allowable special characters (only ! _ @ are allowed).' ) );
+		}
+
+		return $error_msgs;
+	}
+
 	public function dr_signup_ajax() {
 		check_ajax_referer( 'drgc_ajax', 'nonce' );
 
@@ -193,22 +233,16 @@ class DRGC_Public {
 			$last_name = sanitize_text_field( $_POST['last_name'] );
 			$email = sanitize_text_field( $_POST['username'] );
 			$password = sanitize_text_field( $_POST['password'] );
+			$confirm_password = sanitize_text_field( $_POST['confirm_password'] );
 
 			$plugin->session->dirty_set_session( $_COOKIE['drgc_session'] );
 			$error_msgs = array();
 
-			if ( !filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+			if ( ! is_email( $email ) ) {
 				array_push( $error_msgs, __( 'Please enter a valid email address.' ) );
 			}
 
-			if ( 6 > strlen( $password ) ) {
-				array_push( $error_msgs, __( 'Password is too short, at least 6 symbols required.' ) );
-			}
-
-			preg_match( '/^[a-zA-Z0-9!_@]+$/', $password, $result );
-			if ( empty( $result ) ) {
-				array_push( $error_msgs, __( 'Contains non-allowable special characters (only ! _ @ are allowed).' ) );
-			}
+			$error_msgs = array_merge( $error_msgs, $this->get_password_error_msgs( $password, $confirm_password ) );
 
 			if ( !empty( $error_msgs ) ) {
 				wp_send_json_error( join( ' ', $error_msgs) );
@@ -363,20 +397,7 @@ class DRGC_Public {
 			return;
 		}
 
-		$error_msgs = array();
-
-		if ( isset( $password ) && $password !== $confirm ) {
-			array_push( $error_msgs, __( 'Passwords do not match.' ) );
-		}
-
-		if ( 6 > strlen( $password ) ) {
-			array_push( $error_msgs, __( 'Password is too short, at least 6 symbols required.' ) );
-		}
-
-		preg_match( '/^[a-zA-Z0-9!_@]+$/', $password, $result );
-		if ( empty( $result ) ) {
-			array_push( $error_msgs, __( 'Contains non-allowable special characters (only ! _ @ are allowed).' ) );
-		}
+		$error_msgs = $this->get_password_error_msgs( $password, $confirm );
 
 		if ( !empty( $error_msgs ) ) {
 			wp_send_json_error( join( ' ', $error_msgs) );
