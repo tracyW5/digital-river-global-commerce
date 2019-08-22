@@ -188,6 +188,40 @@ class DRGC_Public {
 		}
 	}
 
+	private function get_password_error_msgs( $password, $confirm_password ) {
+		$error_msgs = array();
+
+		if ( $password !== $confirm_password ) {
+			array_push( $error_msgs, __( 'Passwords do not match.' ) );
+		}
+
+		if ( 8 > strlen( $password ) || 32 < strlen( $password ) ) {
+			array_push( $error_msgs, __( 'Password must be between 8 - 32 characters.' ) );
+		}
+
+		if ( ! preg_match( '/[A-Z]/', $password ) ) {
+			array_push( $error_msgs, __( 'Must use at least one upper case letter.' ) );
+		}
+
+		if ( ! preg_match( '/[a-z]/', $password ) ) {
+			array_push( $error_msgs, __( 'Must use at least one lower case letter.' ) );
+		}
+
+		if ( ! preg_match( '/[0-9]/', $password ) ) {
+			array_push( $error_msgs, __( 'Must use at least one number.' ) );
+		}
+
+		if ( ! preg_match( '/[!_@]/', $password ) ) {
+			array_push( $error_msgs, __( 'Must use at least one special character (! _ @).' ) );
+		}
+
+		if ( ! preg_match( '/^[a-zA-Z0-9!_@]+$/', $password ) ) {
+			array_push( $error_msgs, __( 'Contains non-allowable special characters (only ! _ @ are allowed).' ) );
+		}
+
+		return $error_msgs;
+	}
+
 	public function dr_signup_ajax() {
 		check_ajax_referer( 'drgc_ajax', 'nonce' );
 
@@ -208,33 +242,7 @@ class DRGC_Public {
 				array_push( $error_msgs, __( 'Please enter a valid email address.' ) );
 			}
 
-			if ( $password !== $confirm_password ) {
-				array_push( $error_msgs, __( 'Passwords do not match.' ) );
-			}
-
-			if ( 8 > strlen( $password ) || 32 < strlen( $password ) ) {
-				array_push( $error_msgs, __( 'Password must be between 8 - 32 characters.' ) );
-			}
-
-			if ( ! preg_match( '/[A-Z]/', $password ) ) {
-				array_push( $error_msgs, __( 'Must use at least one upper case letter.' ) );
-			}
-
-			if ( ! preg_match( '/[a-z]/', $password ) ) {
-				array_push( $error_msgs, __( 'Must use at least one lower case letter.' ) );
-			}
-
-			if ( ! preg_match( '/[0-9]/', $password ) ) {
-				array_push( $error_msgs, __( 'Must use at least one number.' ) );
-			}
-
-			if ( ! preg_match( '/[!_@]/', $password ) ) {
-				array_push( $error_msgs, __( 'Must use at least one special character (! _ @).' ) );
-			}
-
-			if ( ! preg_match( '/^[a-zA-Z0-9!_@]+$/', $password ) ) {
-				array_push( $error_msgs, __( 'Contains non-allowable special characters (only ! _ @ are allowed).' ) );
-			}
+			$error_msgs = array_merge( $error_msgs, $this->get_password_error_msgs( $password, $confirm_password ) );
 
 			if ( !empty( $error_msgs ) ) {
 				wp_send_json_error( join( ' ', $error_msgs) );
@@ -389,35 +397,7 @@ class DRGC_Public {
 			return;
 		}
 
-		$error_msgs = array();
-
-		if ( $password !== $confirm ) {
-			array_push( $error_msgs, __( 'Passwords do not match.' ) );
-		}
-
-		if ( 8 > strlen( $password ) || 32 < strlen( $password ) ) {
-			array_push( $error_msgs, __( 'Password must be between 8 - 32 characters.' ) );
-		}
-
-		if ( ! preg_match( '/[A-Z]/', $password ) ) {
-			array_push( $error_msgs, __( 'Must use at least one upper case letter.' ) );
-		}
-
-		if ( ! preg_match( '/[a-z]/', $password ) ) {
-			array_push( $error_msgs, __( 'Must use at least one lower case letter.' ) );
-		}
-
-		if ( ! preg_match( '/[0-9]/', $password ) ) {
-			array_push( $error_msgs, __( 'Must use at least one number.' ) );
-		}
-
-		if ( ! preg_match( '/[!_@]/', $password ) ) {
-			array_push( $error_msgs, __( 'Must use at least one special character (! _ @).' ) );
-		}
-
-		if ( ! preg_match( '/^[a-zA-Z0-9!_@]+$/', $password ) ) {
-			array_push( $error_msgs, __( 'Contains non-allowable special characters (only ! _ @ are allowed).' ) );
-		}
+		$error_msgs = $this->get_password_error_msgs( $password, $confirm );
 
 		if ( !empty( $error_msgs ) ) {
 			wp_send_json_error( join( ' ', $error_msgs) );
