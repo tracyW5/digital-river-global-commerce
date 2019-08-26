@@ -70,6 +70,4 @@ assets/img/.DS_Store
 package-lock.json
 
 # npm build file #
-/assets/js/drgc-admin.min.js
-/assets/js/drgc-public.min.js
 
