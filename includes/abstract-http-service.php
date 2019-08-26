@@ -59,20 +59,6 @@ abstract class AbstractHttpService {
     public $env;
 
     /**
-     * Basic Auth for test env
-     * 
-     * @var array
-     */
-    protected $test_basic_auth = array();
-
-    /**
-     * Basic Auth for production env
-     * 
-     * @var array
-     */
-    protected $production_basic_auth = array();
-
-    /**
      * Services constructor.
      *
      * @param string|null $userName
@@ -133,29 +119,15 @@ abstract class AbstractHttpService {
     /**
      * Initialize new client
      * 
+     * @param boolean $force_basic_auth
+     * 
      * @return \GuzzleHttp\Client
      */
-    private function createClient(): Client {
-        if ( $this->token ) {
+    private function createClient( $force_basic_auth = false ): Client {
+        if ( $this->token && ! $force_basic_auth ) {
             $this->config['headers']['Authorization'] = trim( ucfirst( $this->tokenType ) . ' ' . $this->token );
         } else {
-            $auth = '';
-
-            switch ( $this->env ) {
-                case 'test':
-                    if ( array_key_exists( $this->site_id, $this->test_basic_auth ) ) {
-                        $auth = $this->test_basic_auth[$this->site_id];
-                    }
-
-                    break;
-                case 'production':
-                    if ( array_key_exists( $this->site_id, $this->production_basic_auth ) ) {
-                        $auth = $this->production_basic_auth[$this->site_id];
-                    }
-
-                    break;
-            }
-
+            $auth = base64_encode( get_option( 'drgc_api_key' ) . ':' . get_option( 'drgc_api_secret' ) );
             $this->config['headers']['Authorization'] = trim( 'Basic ' . $auth );
         }
 
@@ -275,11 +247,12 @@ abstract class AbstractHttpService {
     /**
      * @param string $uri
      * @param array  $data
+     * @param boolean $force_basic_auth
      *
      * @return array
      */
-    protected function get( string $uri = '', array $data = array() ): array {
-        $client = $this->createClient();
+    protected function get( string $uri = '', array $data = array(), $force_basic_auth = false ): array {
+        $client = $this->createClient( $force_basic_auth );
         $uri = $this->normalizeUri($uri);
         $response = $client->get( $uri, $data );
         

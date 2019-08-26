@@ -95,48 +95,86 @@ class DRGC_Public {
     $testOrder_option = get_option( 'drgc_testOrder_handler' );
 		$testOrder_enable = ( is_array( $testOrder_option ) && '1' == $testOrder_option['checkbox'] )  ? "true" : "false";
 
+		$translation_array = array(
+			'upgrade_label'               => __('Upgrade', 'digital-river-global-commerce'),
+			'add_label'                   => __('Add', 'digital-river-global-commerce'),
+			'free_label'                  => __('FREE', 'digital-river-global-commerce'),
+			'tax_label'              	    => __('Tax', 'digital-river-global-commerce'),
+			'estimated_tax_label'         => __('Estimated Tax', 'digital-river-global-commerce'),
+			'credit_card_ending_label'    => __('Credit card ending in', 'digital-river-global-commerce'),
+			'pay_with_card_label'         => __('pay with card', 'digital-river-global-commerce'),
+			'pay_with_paypal_label'       => __('pay with paypal', 'digital-river-global-commerce'),
+			'view_cart_label'             => __('View Cart', 'digital-river-global-commerce'),
+			'checkout_label'              => __('Checkout', 'digital-river-global-commerce'),
+			'remove_label'                => __('Remove', 'digital-river-global-commerce'),
+			'subtotal_label'              => __('Sub-Total', 'digital-river-global-commerce'),
+			'qty_label'                   => __('Qty', 'digital-river-global-commerce'),
+			'password_reset_title'        => __('Password reset email sent', 'digital-river-global-commerce'),
+			'password_saved_title'        => __('Password saved', 'digital-river-global-commerce'),
+			'password_reset_msg'          => __('You will be receiving an email soon with instructions on resetting your login password.', 'digital-river-global-commerce'),
+			'password_saved_msg'          => __('You can now log in with your new password.', 'digital-river-global-commerce'),
+			'empty_cart_msg'              => __('Your cart is empty.', 'digital-river-global-commerce'),
+			'invalid_promo_code_msg'      => __('Please enter a valid promo code.', 'digital-river-global-commerce'),
+			'invalid_email_msg'           => __('Please enter a valid email address.', 'digital-river-global-commerce'),
+			'address_error_msg'           => __('Address not accepted for current currency.', 'digital-river-global-commerce'),
+			'credit_card_error_msg'       => __('Failed payment for specified credit card.', 'digital-river-global-commerce'),
+			'required_field_msg'          => __('This field is required.', 'digital-river-global-commerce'),
+			'email_confirm_error_msg'     => __('Emails do not match.', 'digital-river-global-commerce'),
+			'password_length_error_msg'      => __('Password must be between 8 - 32 characters.', 'digital-river-global-commerce'),
+			'password_uppercase_error_msg'   => __('Must use at least one upper case letter.', 'digital-river-global-commerce'),
+			'password_lowercase_error_msg'   => __('Must use at least one lower case letter.', 'digital-river-global-commerce'),
+			'password_number_error_msg'      => __('Must use at least one number.', 'digital-river-global-commerce'),
+			'password_char_error_msg'        => __('Must use at least one special character (! _ @).', 'digital-river-global-commerce'),
+			'password_banned_char_error_msg' => __('Contains non-allowable special characters (only ! _ @ are allowed).', 'digital-river-global-commerce'),
+			'password_confirm_error_msg'     => __('Passwords do not match.', 'digital-river-global-commerce'),
+			'undefined_error_msg'            => __('Something went wrong.', 'digital-river-global-commerce')
+		);
+
 		// transfer drgc options from PHP to JS
 		$options = array(
 			'wpLocale'          =>  get_locale(),
 			'drLocale'          =>  get_dr_locale( get_locale() ),
 			'ajaxUrl'           =>  admin_url( 'admin-ajax.php' ),
+			'ajaxNonce'         =>  wp_create_nonce( 'drgc_ajax' ),
 			'cartUrl'           =>  drgc_get_page_link( 'cart' ),
-			'checkoutUrl'	      =>  drgc_get_page_link( 'checkout' ),
+			'checkoutUrl'       =>  drgc_get_page_link( 'checkout' ),
 			'siteID'            =>  get_option( 'drgc_site_id' ),
-			'apiKey'            =>  get_option( 'drgc_api_key' ),
 			'domain'            =>  get_option( 'drgc_domain' ),
 			'digitalRiverKey'   =>  get_option( 'drgc_digitalRiver_key' ),
 			'accessToken'       =>  $access_token,
 			'cart'              =>  $cart_obj,
 			'thankYouEndpoint'  =>  esc_url( drgc_get_page_link( 'thank-you' ) ),
-			'isLogin'              =>  drgc_get_user_status(),
+			'isLogin'           =>  drgc_get_user_status(),
 			'payPal'            =>  array (
 				'sourceId' => isset( $_GET['sourceId'] ) ? $_GET['sourceId'] : false,
-				'failure' => isset( $_GET['ppcancel'] ) ? $_GET['ppcancel'] : false,
-				'success' => isset ( $_GET['ppsuccess'] ) ? $_GET['ppsuccess'] : false,
+				'failure'  => isset( $_GET['ppcancel'] ) ? $_GET['ppcancel'] : false,
+				'success'  => isset ( $_GET['ppsuccess'] ) ? $_GET['ppsuccess'] : false,
       ),
-      'testOrder' => $testOrder_enable,
+			'testOrder'         => $testOrder_enable,
+			'translations'      => $translation_array
 		);
 
 		wp_localize_script( $this->drgc, 'drgc_params', $options );
 	}
 
 	public function ajax_attempt_auth() {
+		check_ajax_referer( 'drgc_ajax', 'nonce' );
+
 		$plugin = DRGC();
 
-		$username = isset( $_POST['username'] ) ? trim( $_POST['username'] ) : false;
-		$password = isset( $_POST['password'] ) ? trim( $_POST['password'] ) : false;
-		$cookie = isset( $_POST['cookie'] ) ? trim( $_POST['cookie'] ) : false;
+		if ( (isset( $_POST['username'] ) && isset( $_POST['password'] )) ) {
+			$username = sanitize_text_field( $_POST['username'] );
+			$password = sanitize_text_field( $_POST['password'] );
 
-		if ( $username && $password ) {
 			$user = wp_authenticate( $username, $password );
 
 			if ( is_wp_error( $user ) ) {
 				wp_send_json_error( __( 'Authorization failed for specified credentials' ) );
 			}
 
-			$attempt = $plugin->shopper->generate_access_token_by_login_id($username, $password);
-
+			$current_user = get_user_by( 'login', $username );
+			$externalReferenceId = get_user_meta( $current_user->ID, '_external_reference_id', true );
+			$attempt = $plugin->shopper->generate_access_token_by_ref_id( $externalReferenceId );
 		}
 
 		if ( array_key_exists( 'error', $attempt ) ) {
@@ -144,43 +182,70 @@ class DRGC_Public {
 		}
 
 		if ( array_key_exists( 'access_token', $attempt ) ) {
-			$plugin->session->dirty_set_session( $cookie );
+			$plugin->session->dirty_set_session( $_COOKIE['drgc_session'] );
 
 			wp_send_json_success( $attempt );
 		}
 	}
 
+	private function get_password_error_msgs( $password, $confirm_password ) {
+		$error_msgs = array();
+
+		if ( $password !== $confirm_password ) {
+			array_push( $error_msgs, __( 'Passwords do not match.' ) );
+		}
+
+		if ( 8 > strlen( $password ) || 32 < strlen( $password ) ) {
+			array_push( $error_msgs, __( 'Password must be between 8 - 32 characters.' ) );
+		}
+
+		if ( ! preg_match( '/[A-Z]/', $password ) ) {
+			array_push( $error_msgs, __( 'Must use at least one upper case letter.' ) );
+		}
+
+		if ( ! preg_match( '/[a-z]/', $password ) ) {
+			array_push( $error_msgs, __( 'Must use at least one lower case letter.' ) );
+		}
+
+		if ( ! preg_match( '/[0-9]/', $password ) ) {
+			array_push( $error_msgs, __( 'Must use at least one number.' ) );
+		}
+
+		if ( ! preg_match( '/[!_@]/', $password ) ) {
+			array_push( $error_msgs, __( 'Must use at least one special character (! _ @).' ) );
+		}
+
+		if ( ! preg_match( '/^[a-zA-Z0-9!_@]+$/', $password ) ) {
+			array_push( $error_msgs, __( 'Contains non-allowable special characters (only ! _ @ are allowed).' ) );
+		}
+
+		return $error_msgs;
+	}
+
 	public function dr_signup_ajax() {
+		check_ajax_referer( 'drgc_ajax', 'nonce' );
+
 		$plugin = DRGC();
 
-		$email = isset( $_POST['username'] ) ? trim( $_POST['username'] ) : false;
-		$password = isset( $_POST['password'] ) ? trim( $_POST['password'] ) : false;
-		$cookie = isset( $_POST['cookie'] ) ? trim( $_POST['cookie'] ) : false;
+		if ( isset( $_POST['first_name'] ) && isset( $_POST['last_name'] ) &&
+			   isset( $_POST['username'] ) && isset( $_POST['password'] ) ) {
+			$first_name = sanitize_text_field( $_POST['first_name'] );
+			$last_name = sanitize_text_field( $_POST['last_name'] );
+			$email = sanitize_text_field( $_POST['username'] );
+			$password = sanitize_text_field( $_POST['password'] );
+			$confirm_password = sanitize_text_field( $_POST['confirm_password'] );
 
-		if ( $email && $password ) {
-			$plugin->session->dirty_set_session( $cookie );
+			$plugin->session->dirty_set_session( $_COOKIE['drgc_session'] );
+			$error_msgs = array();
 
-			$parts_name = '';
-			$parts = explode( "@",$email );
-			$username = $parts[0];
-			$delimiters = array( '.', '-', '_' );
-
-			foreach ( $delimiters as $delimiter ) {
-				if ( strpos( $username, $delimiter ) ) {
-					$parts_name = explode( $delimiter, $username );
-					break;
-				}
-			}
-			if ( ! empty( $parts_name ) ) {
-				$first_name = ucfirst( strtolower( $parts_name[0] ) );
-				$last_name = ucfirst( strtolower( $parts_name[1] ) );
-			} else {
-				$first_name = ucfirst( strtolower( $username ) );
-				$last_name = ucfirst( strtolower( $username ) );
+			if ( ! is_email( $email ) ) {
+				array_push( $error_msgs, __( 'Please enter a valid email address.' ) );
 			}
 
-			if ( 6 > strlen( $password )) {
-				wp_send_json_error( __( 'Password is too short, at least 6 symbols required' ) );
+			$error_msgs = array_merge( $error_msgs, $this->get_password_error_msgs( $password, $confirm_password ) );
+
+			if ( !empty( $error_msgs ) ) {
+				wp_send_json_error( join( ' ', $error_msgs) );
 				return;
 			}
 
@@ -195,7 +260,7 @@ class DRGC_Public {
 			);
 
 			$user_id = wp_insert_user( $userdata ) ;
-			$externalReferenceId = md5(uniqid( $user_id, true ));
+			$externalReferenceId = hash( 'sha256', uniqid( $user_id, true ) );
 
 			add_user_meta( $user_id, '_external_reference_id', $externalReferenceId);
 
@@ -216,7 +281,7 @@ class DRGC_Public {
 					wp_send_json_error( $user );
 				}
 
-				$attempt = $plugin->shopper->generate_access_token_by_login_id($email, $password);
+				$attempt = $plugin->shopper->generate_access_token_by_ref_id( $externalReferenceId );
 				wp_send_json_success( $attempt );
 			}
 		} else {
@@ -225,11 +290,10 @@ class DRGC_Public {
 	}
 
 	public function dr_logout_ajax() {
-		$cookie = isset( $_POST['cookie'] ) ? trim( $_POST['cookie'] ) : false;
-
+		check_ajax_referer( 'drgc_ajax', 'nonce' );
 		$plugin = DRGC();
 		$plugin->shopper = null;
-		$plugin->session->dirty_set_session( $cookie );
+		$plugin->session->dirty_set_session( $_COOKIE['drgc_session'] );
 		$plugin->session->clear_session();
 		wp_send_json_success();
 	}
@@ -238,17 +302,20 @@ class DRGC_Public {
 	 * Ajax handles sending password retrieval email to user.
 	 */
 	function dr_send_email_reset_pass_ajax() {
+		check_ajax_referer( 'drgc_ajax', 'nonce' );
+
 		$errors = new WP_Error();
-		if ( empty( $_POST['email'] ) || ! is_string( $_POST['email'] ) ) {
+
+		$email = sanitize_text_field( $_POST['email'] );
+		if ( empty( $email ) || ! is_string( $email ) ) {
 			$errors->add( 'empty_username', __( 'Enter a username or email address.' ) );
-		} elseif ( strpos( $_POST['email'], '@' ) ) {
-			$user_data = get_user_by( 'email', trim( wp_unslash( $_POST['email'] ) ) );
+		} elseif ( strpos( $email, '@' ) ) {
+			$user_data = get_user_by( 'email', wp_unslash( $email ) );
 			if ( empty( $user_data ) ) {
 				$errors->add( 'invalid_email', __( 'There is no account with that username or email address.' ) );
 			}
 		} else {
-			$login     = trim( $_POST['email'] );
-			$user_data = get_user_by( 'login', $login );
+			$user_data = get_user_by( 'login', $email );
 		}
 
 		/**
@@ -314,22 +381,32 @@ class DRGC_Public {
 	 * Reset user password AJAX
 	 */
 	public function dr_reset_password_ajax() {
-		$password = trim($_POST['password'] );
-		$confirm = trim($_POST['confirm-password']);
-		$key = trim($_POST['key'] );
-		$login = urldecode( urldecode( trim($_POST['login'] ) ) );
+		check_ajax_referer( 'drgc_ajax', 'nonce' );
+
+		$password = sanitize_text_field( $_POST['password'] );
+		$confirm = sanitize_text_field( $_POST['confirm-password'] );
+		$key = sanitize_text_field( $_POST['key'] );
+		$login = urldecode( sanitize_text_field( $_POST['login'] ) );
 
 		if (
 			empty( $password ) || ! is_string( $password ) ||
 			empty( $key ) || ! is_string( $key ) ||
 			empty( $login ) || ! is_string( $login )
 		) {
-			wp_send_json_error( __( 'Something went wrong' ) );
+			wp_send_json_error( __( 'Something went wrong.' ) );
+			return;
 		}
 
-		$user = check_password_reset_key( $key, $login );
+		$error_msgs = $this->get_password_error_msgs( $password, $confirm );
+
+		if ( !empty( $error_msgs ) ) {
+			wp_send_json_error( join( ' ', $error_msgs) );
+			return;
+		}
 
 		// Check if key is valid
+		$user = check_password_reset_key( $key, $login );
+
 		if ( is_wp_error( $user ) ) {
 			if ( $user->get_error_code() === 'expired_key' ){
 				wp_send_json_error( __( 'Expired key' ) );
@@ -338,18 +415,7 @@ class DRGC_Public {
 			}
 		}
 
-		// check if keys match
-		if ( isset( $password ) && $password !== $confirm ) {
-			wp_send_json_error( __( 'Passwords do not match' ) );
-			return;
-		}
-
-		if ( 6 > strlen( $password ) ) {
-			wp_send_json_error( __( 'Password is too short, at least 6 symbols required' ) );
-			return;
-		}
-
-		reset_password($user, $password);
+		reset_password( $user, $password );
 		wp_send_json_success();
 	}
 
@@ -423,15 +489,6 @@ class DRGC_Public {
 		}
 		return $template;
 	}
-
-	public function send_smtp_email( $phpmailer ) {
-		$phpmailer->isSMTP();
-		$phpmailer->Host       = 'smtp.mailtrap.io';
-		$phpmailer->SMTPAuth   = true;
-		$phpmailer->Port       = 2525;
-		$phpmailer->Username   = '8c0d84a880f6b1';
-		$phpmailer->Password   = 'ab951668e78885';
-  }
 
 	public function add_legal_link() {
 		if ( is_page( 'cart' ) || is_page( 'checkout' ) || is_page( 'thank-you' ) ) {

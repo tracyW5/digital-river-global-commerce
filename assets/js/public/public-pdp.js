@@ -5,10 +5,7 @@ jQuery(document).ready(($) => {
     class DRService {
 
         constructor() {
-            this.siteID = drgc_params.siteID;
-            this.apiKey = drgc_params.apiKey;
             this.domain = drgc_params.domain;
-            this.sessionToken = null;
             this.apiBaseUrl = 'https://' + this.domain + '/v1/shoppers';
             this.drLocale = drgc_params.drLocale || 'en_US';
         }
@@ -18,9 +15,9 @@ jQuery(document).ready(($) => {
                 $.ajax({
                     type: 'POST',
                     headers: {
-                        Authorization: `Bearer ${this.sessionToken}`,
+                        Authorization: `Bearer ${drgc_params.accessToken}`,
                     },
-                    url: `${this.apiBaseUrl}/me?format=json&locale=${this.drLocale}`,
+                    url: `${this.apiBaseUrl}/me?locale=${this.drLocale}`,
                     success: (data) => {
                         resolve(data);
                     },
@@ -37,13 +34,9 @@ jQuery(document).ready(($) => {
                     type: 'GET',
                     headers: {
                         Accept: 'application/json',
-                        Authorization: `Bearer ${drgc_params.accessToken}`                    },
-                    url: (() => {
-                        let url = `${this.apiBaseUrl}/me/carts/active?`;
-                        url += 'format=json'
-                        url += `&token=${drgc_params.accessToken}`
-                        return url;
-                    })(),
+                        Authorization: `Bearer ${drgc_params.accessToken}`
+                    },
+                    url: `${this.apiBaseUrl}/me/carts/active`,
                     success: (data) => {
                         resolve(data.cart);
                     },
@@ -63,12 +56,9 @@ jQuery(document).ready(($) => {
                         Authorization: `Bearer ${drgc_params.accessToken}`
                     },
                     url: (() => {
-                        let url = `${this.apiBaseUrl}/me/carts/active?`;
-                        url += 'format=json'
-                        url += `&productId=${productID}`
+                        let url = `${this.apiBaseUrl}/me/carts/active?productId=${productID}`;
                         if (quantity) url += `&quantity=${quantity}`;
-                        if(drgc_params.testOrder == "true")url += '&testOrder=true';
-                        url += `&token=${drgc_params.accessToken}`
+                        if (drgc_params.testOrder == "true") url += '&testOrder=true';
                         return url;
                     })(),
                     success: (data) => {
@@ -89,13 +79,9 @@ jQuery(document).ready(($) => {
                     type: 'DELETE',
                     headers: {
                         Accept: 'application/json',
+                        Authorization: `Bearer ${drgc_params.accessToken}`
                     },
-                    url: (() => {
-                        let url = `${this.apiBaseUrl}/me/carts/active/line-items/${lineItemID}?`;
-                        url += 'format=json'
-                        url += `&token=${drgc_params.accessToken}`
-                        return url;
-                    })(),
+                    url: `${this.apiBaseUrl}/me/carts/active/line-items/${lineItemID}`,
                     success: () => {
                         resolve();
                     },
@@ -111,7 +97,7 @@ jQuery(document).ready(($) => {
                 $.ajax({
                     type: 'GET',
                     headers: {
-                        Authorization: `Bearer ${this.sessionToken}`,
+                        Authorization: `Bearer ${drgc_params.accessToken}`,
                     },
                     url: `${this.apiBaseUrl}/me/point-of-promotions/SiteMerchandising_${popName}/offers?format=json&expand=all`,
                     success: (data) => {
@@ -130,7 +116,7 @@ jQuery(document).ready(($) => {
                 $.ajax({
                     type: 'GET',
                     headers: {
-                        Authorization: `Bearer ${this.sessionToken}`,
+                        Authorization: `Bearer ${drgc_params.accessToken}`,
                     },
                     url: `${this.apiBaseUrl}/me/products/${productID}/pricing?format=json&expand=all`,
                     success: (data) => {
@@ -148,7 +134,7 @@ jQuery(document).ready(($) => {
                 $.ajax({
                     type: 'GET',
                     headers: {
-                        Authorization: `Bearer ${this.sessionToken}`,
+                        Authorization: `Bearer ${drgc_params.accessToken}`,
                     },
                     url: `${this.apiBaseUrl}/me/products/${productID}/inventory-status?format=json&expand=all`,
                     success: (data) => {
@@ -196,14 +182,14 @@ jQuery(document).ready(($) => {
         }
 
         if (!lineItems.length) {
-            const emptyMsg = '<p class="dr-minicart-empty-msg">Your shopping cart is currently empty.</p>';
+            const emptyMsg = `<p class="dr-minicart-empty-msg">${drgc_params.translations.empty_cart_msg}</p>`;
             $body.append(emptyMsg);
             $display.append($body);
         } else {
             let miniCartLineItems = '<ul class="dr-minicart-list">';
-            const miniCartSubtotal = `<p class="dr-minicart-subtotal"><label>Sub-Total</label><span>${cart.pricing.formattedSubtotal}</span></p>`;
-            const miniCartViewCartBtn = `<a class="dr-btn" id="dr-minicart-view-cart-btn" href="${drgc_params.cartUrl}">View Cart</a>`;
-            const miniCartCheckoutBtn = `<a class="dr-btn" id="dr-minicart-checkout-btn" href="${drgc_params.checkoutUrl}">Checkout</a>`;
+            const miniCartSubtotal = `<p class="dr-minicart-subtotal"><label>${drgc_params.translations.subtotal_label}</label><span>${cart.pricing.formattedSubtotal}</span></p>`;
+            const miniCartViewCartBtn = `<a class="dr-btn" id="dr-minicart-view-cart-btn" href="${drgc_params.cartUrl}">${drgc_params.translations.view_cart_label}</a>`;
+            const miniCartCheckoutBtn = `<a class="dr-btn" id="dr-minicart-checkout-btn" href="${drgc_params.checkoutUrl}">${drgc_params.translations.checkout_label}</a>`;
 
             lineItems.forEach((li) => {
                 const productId = li.product.uri.replace(`${drService.apiBaseUrl}/me/products/`, '');
@@ -225,10 +211,10 @@ jQuery(document).ready(($) => {
                     </div>
                     <div class="dr-minicart-item-info" data-product-id="${productId}">
                         <span class="dr-minicart-item-title">${li.product.displayName}</span>
-                        <span class="dr-minicart-item-qty">Qty.${li.quantity}</span>
+                        <span class="dr-minicart-item-qty">${drgc_params.translations.qty_label}.${li.quantity}</span>
                         <p class="dr-pd-price dr-minicart-item-price">${priceContent}</p>
                     </div>
-                    <a href="#" class="dr-minicart-item-remove-btn" aria-label="Remove" data-line-item-id="${li.id}">Remove</a>
+                    <a href="#" class="dr-minicart-item-remove-btn" aria-label="Remove" data-line-item-id="${li.id}">${drgc_params.translations.remove_label}</a>
                 </li>`;
                 miniCartLineItems += miniCartLineItem;
             });
@@ -239,44 +225,16 @@ jQuery(document).ready(($) => {
         }
     }
 
-    function displayPrice(priceObj, isInLoop) {
-        const listPrice = Number(priceObj.listPriceWithQuantity.value);
-        const salePrice = Number(priceObj.salePriceWithQuantity.value);
-        const formattedSalePrice = priceObj.formattedSalePriceWithQuantity;
-        const priceClass = isInLoop ? 'dr-pd-price dr-pd-item-price' : 'dr-pd-price';
-        let priceContent = '';
-
-        if (listPrice > salePrice) {
-            priceContent = `<p class="${priceClass}"><del class="dr-strike-price">${listPrice}</del><span class="dr-sale-price">${formattedSalePrice}</span></p>`;
-        } else {
-            priceContent = `<p class="${priceClass}">${formattedSalePrice}</p>`;
-        }
-
-        return priceContent;
-    }
-
     function errorCallback(jqXHR) {
         console.log('errorStatus', jqXHR.status);
         if (jqXHR.status === 401) {
-            localStorage.removeItem('drSessionToken');
             init(); // eslint-disable-line no-use-before-define
         }
     }
 
-    $.fn.appendLoadingIcon = function (size = 'sm', gap = '0') {
-        const loader = `<div class="dr-loader-container"><div class="dr-loader dr-loader-${size}" style="margin: ${gap} auto;">Loading...</div></div>`;
-        this.append(loader);
-    };
-
-    $.fn.removeLoadingIcon = function () {
-        this.find('.dr-loader-container').remove();
-    };
-
-    (function () {
+    (function() {
         if ( $('#dr-minicart'.length)) {
-            drService.getCart()
-                .then(cart => displayMiniCart(cart))
-                .catch(jqXHR => errorCallback(jqXHR));
+            displayMiniCart(drgc_params.cart.cart);
         }
     }());
 

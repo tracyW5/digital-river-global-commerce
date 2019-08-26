@@ -17,18 +17,11 @@ class DRGC_Cron extends AbstractHttpService {
 	private $enabled;
 
 	/**
-	 * Api key option
-	 * @var mixed|void
-	 */
-	public $api_key;
-
-	/**
 	 * DRGC_Cron constructor.
 	 */
 	public function __construct() {
 		$option 								= get_option( 'drgc_cron_handler' );
 		$this->enabled          = ( is_array( $option ) && '1' == $option['checkbox'] )  ? true : false;
-		$this->api_key          = get_option( 'drgc_api_key' );
 		$this->init();
 	}
 
@@ -79,25 +72,24 @@ class DRGC_Cron extends AbstractHttpService {
 		$products = $this->get_api_products();
 
 		if ( $products ) {
-
 			$imported = array();
+			$currencies = array();
+			$local_currencies = DRGC()->cart->retrieve_currencies();
+
+			if ( is_array( $local_currencies ) && isset( $local_currencies['site'] ) ) {
+				$currencies['default_locale'] = $local_currencies['site']['defaultLocale'];
+
+				if ( isset( $local_currencies['site']['localeOptions']['localeOption'] ) ) {
+					foreach ( $local_currencies['site']['localeOptions']['localeOption'] as $locale ) {
+						$currencies['locales'][ $locale['locale'] ] = $locale['primaryCurrency'];
+					}
+				}
+			}
 
 			foreach ( $products as $product_data ) {
-				$currencies          = array();
 				$post_terms          = array();
 				$gc_id               = isset( $product_data['id'] ) ? absint( $product_data['id'] ) : 0;
 				$existing_product_id = drgc_get_product_by_gcid( $gc_id );
-				$local_currencies    = DRGC()->cart->retrieve_currencies();
-
-				if ( is_array( $local_currencies ) && isset( $local_currencies['site'] ) ) {
-					$currencies['default_locale'] = $local_currencies['site']['defaultLocale'];
-
-					if ( isset( $local_currencies['site']['localeOptions']['localeOption'] ) ) {
-						foreach ( $local_currencies['site']['localeOptions']['localeOption'] as $locale ) {
-							$currencies['locales'][ $locale['locale'] ] = $locale['primaryCurrency'];
-						}
-					}
-				}
 
 				$parent_product = new DRGC_Product( $existing_product_id );
 				$parent_product->set_data( $product_data );
@@ -110,9 +102,13 @@ class DRGC_Cron extends AbstractHttpService {
 							if ( $currencies['default_locale'] === $locale || in_array( $currency, $imported_currencies ) ) {
 								continue;
 							}
+							
 							$imported_currencies[] = $currency;
 							$loc_price = $this->get_product_pricing_for_currency( $gc_id, $currency );
-							$parent_product->set_pricing_for_currency( $loc_price );
+						
+							if ( ! empty( $loc_price ) ) {
+								$parent_product->set_pricing_for_currency( $loc_price );
+							}
 						}
 					}
 
@@ -160,9 +156,13 @@ class DRGC_Cron extends AbstractHttpService {
 								if ( $currencies['default_locale'] === $locale || in_array( $currency, $imported_currencies ) ) {
 									continue;
 								}
+								
 								$imported_currencies[] = $currency;
 								$loc_price = $this->get_product_pricing_for_currency( $_gc_id, $currency );
-								$variation_product->set_pricing_for_currency( $loc_price );
+
+								if ( ! empty( $loc_price ) ) {
+									$variation_product->set_pricing_for_currency( $loc_price );
+								}
 							}
 						}
 
@@ -228,8 +228,7 @@ class DRGC_Cron extends AbstractHttpService {
 	 */
 	public function get_api_products() {
 		$params = array(
-			'apiKey'         => $this->api_key,
-			'expand'         => 'all',
+			'expand'         => 'all'
 		);
 
 		$url = '/v1/shoppers/me/products?' . http_build_query( $params );
@@ -252,11 +251,7 @@ class DRGC_Cron extends AbstractHttpService {
 	 * @return array|bool
 	 */
 	public function get_api_product_category( $id ) {
-		$params = array(
-			'apiKey'         => $this->api_key,
-		);
-
-		$url = '/v1/shoppers/me/products/' . $id . '/categories?' . http_build_query( $params );
+		$url = '/v1/shoppers/me/products/' . $id . '/categories';
 
 		try {
 			$res = $this->get( $url );
@@ -274,19 +269,63 @@ class DRGC_Cron extends AbstractHttpService {
 	 * Retrieve API data
 	 *
 	 * @param integer $id dr product id
+	 * 
+	 * @return array|bool
+	 */
+	public function get_product_pricing( $id ) {
+		$url = '/v1/shoppers/me/products/' . $id . '/pricing';
+
+		try {
+			$res = $this->get( $url );
+
+			return isset( $res['pricing'] ) ? $res['pricing'] : array();
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
+/**
+	 * Update locale and currency for the current shopper
+	 *
+	 * @param string $locale locale
 	 * @param string $currency currency code
+	 * 
+	 * @return bool
+	 */
+	public function update_locale_and_currency( $locale, $currency ) {
+		$params = array(
+			'locale'         => $locale,
+			'currency'       => $currency
+		);
+
+		$url = '/v1/shoppers/me?' . http_build_query( $params );
+
+		try {
+			$this->post( $url );
+
+			return true;
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Retrieve API data
+	 *
+	 * @param integer $id dr product id
+	 * @param string $currency currency code
+	 * 
 	 * @return array|bool
 	 */
 	public function get_product_pricing_for_currency( $id, $currency ) {
 		$params = array(
-			'apiKey'         => $this->api_key,
 			'currency'       => $currency,
 		);
 
 		$url = '/v1/shoppers/me/products/' . $id . '/pricing?' . http_build_query( $params );
-
+		
 		try {
-			$res = $this->get( $url );
+			$res = $this->get( $url, array(), true );
 
 			return isset( $res['pricing'] ) ? $res['pricing'] : array();
 		} catch (\Exception $e) {

@@ -6,7 +6,8 @@
     
     <hr style="margin-top: -5px">
 
-    <form id="checkout-confirmation-form">
+    <form id="checkout-confirmation-form" action="<?php echo esc_url( drgc_get_page_link( 'thank-you' ) ); ?>" method="post">
+        <input type="hidden" name="order_id">
         <button type="submit" class="dr-btn">
             <?php echo __( 'Place Order' ); ?>
         </button>

@@ -210,8 +210,9 @@ class DRGC {
 	private function start_api_handler() {
 		$domain = get_option( 'drgc_domain' );
 		$api_key = get_option( 'drgc_api_key' );
+		$api_secret = get_option( 'drgc_api_secret' );
 
-		if ( empty( $domain ) || empty( $api_key ) ) {
+		if ( empty( $domain ) || empty( $api_key ) || empty( $api_secret ) ) {
 			return;
 		}
 
@@ -279,10 +280,6 @@ class DRGC {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
-		if ( defined( 'MAILTRAP_EXE' ) && MAILTRAP_EXE ) {
-			$this->loader->add_action( 'phpmailer_init', $plugin_public, 'send_smtp_email' );
-		}
 
 		$this->loader->add_action( 'after_setup_theme', $plugin_public, 'remove_admin_bar');
 

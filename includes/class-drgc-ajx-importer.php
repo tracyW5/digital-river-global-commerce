@@ -36,6 +36,16 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 	private $dr_products;
 
 	/**
+	 * @var string $default_locale
+	 */
+	public $default_locale;
+
+	/**
+	 * @var string $default_currency
+	 */
+	public $default_currency;
+
+	/**
 	 * DRGC_Ajx_Importer constructor.
 	 *
 	 * @param string $instance_id
@@ -45,15 +55,18 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 
 		$this->instance_id      = $instance_id;
 		$this->instance_slug    = DRGC_Ajx::slugify( $instance_id );
-		$this->site_id          = get_option( 'drgc_site_id' );
-		$this->api_key          = get_option( 'drgc_api_key' );
+
+		if ( ! DRGC()->authenticator->get_token() ) {
+			DRGC()->authenticator->generate_dr_session_token();
+			DRGC()->authenticator->generate_access_token( '' );
+		}
+
+		$this->token = DRGC()->authenticator->get_token();
 
 		$this->dr_products = wp_cache_get( 'dr_products' );
 
-		$token_response = $this->get_access_token();
-		$this->token = $token_response['access_token'];
-
-		if ( false === $this->dr_products ) {
+		if ( false === $this->dr_products ) {	
+			$this->get_store_locales_and_currencies();
 			$this->fetch_and_cache_products();
 		}
 	}
@@ -67,20 +80,6 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 		$batch_size     = 1;
 		$index_start    = 0;
 		$entries_count  = count( $this->dr_products['product'] );
-		$local_currencies = DRGC()->cart->retrieve_currencies();
-		$_locale_currencies_option = array();
-
-		if ( is_array( $local_currencies ) && isset( $local_currencies['site'] ) ) {
-			$_locale_currencies_option['default_locale'] = $local_currencies['site']['defaultLocale'];
-
-			if ( isset( $local_currencies['site']['localeOptions']['localeOption'] ) ) {
-				foreach ( $local_currencies['site']['localeOptions']['localeOption'] as $locale ) {
-					$_locale_currencies_option['locales'][ $locale['locale'] ] = $locale['primaryCurrency'];
-				}
-			}
-		}
-
-		update_option( 'drgc_store_locales', $_locale_currencies_option, 'yes' );
 
 		return array(
 			'entries_count'    => $entries_count,
@@ -125,9 +124,13 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 						if ( $currencies['default_locale'] === $locale || in_array( $currency, $imported_currencies ) ) {
 							continue;
 						}
+
 						$imported_currencies[] = $currency;
 						$loc_price = $this->get_product_pricing_for_currency( $gc_id, $currency );
-						$parent_product->set_pricing_for_currency( $loc_price );
+						
+						if ( ! empty( $loc_price ) ) {
+							$parent_product->set_pricing_for_currency( $loc_price );
+						}
 					}
 				}
 
@@ -171,9 +174,13 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 							if ( $currencies['default_locale'] === $locale || in_array( $currency, $imported_currencies ) ) {
 								continue;
 							}
+
 							$imported_currencies[] = $currency;
 							$loc_price = $this->get_product_pricing_for_currency( $_gc_id, $currency );
-							$variation_product->set_pricing_for_currency( $loc_price );
+
+							if ( ! empty( $loc_price ) ) {
+								$variation_product->set_pricing_for_currency( $loc_price );
+							}
 						}
 					}
 
@@ -317,11 +324,36 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 			}
 			wp_reset_postdata();
 		}
-
+		
 		return array(
 			'persist'   => array(),
 			'url'       => add_query_arg( 'import-complete', true, admin_url( 'edit.php?post_type=dr_product' ) ),
 		);
+	}
+
+	/**
+	 * Retrieve and update store locales and currencies
+	 */
+	public function get_store_locales_and_currencies() {
+		$local_currencies = DRGC()->cart->retrieve_currencies();
+		$_locale_currencies_option = array();
+
+		if ( is_array( $local_currencies ) && isset( $local_currencies['site'] ) ) {
+			$_locale_currencies_option['default_locale'] = $local_currencies['site']['defaultLocale'];
+			$this->default_locale = $local_currencies['site']['defaultLocale'];
+
+			if ( isset( $local_currencies['site']['localeOptions']['localeOption'] ) ) {
+				foreach ( $local_currencies['site']['localeOptions']['localeOption'] as $locale ) {
+					$_locale_currencies_option['locales'][ $locale['locale'] ] = $locale['primaryCurrency'];
+
+					if ( $locale['locale'] === $this->default_locale ) {
+						$this->default_currency = $locale['primaryCurrency'];
+					}
+				}
+			}
+		}
+
+		update_option( 'drgc_store_locales', $_locale_currencies_option, 'yes' );
 	}
 
 	/**
@@ -330,25 +362,7 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 	public function fetch_and_cache_products() {
 		$this->dr_products = $this->get_api_products();
 
-		wp_cache_set(
-			'dr_products',
-			$this->dr_products
-		);
-	}
-
-	public function get_access_token() {
-		$params = array(
-			'apiKey' => $this->api_key
-		);
-
-		$url = $this->authUrl() . '?' . http_build_query( $params );
-
-		try {
-			$res = $this->getNoAuth( $url );
-			return $res;
-		} catch (\Exception $e) {
-			return false;
-		}
+		wp_cache_set( 'dr_products', $this->dr_products	);
 	}
 
 	/**
@@ -358,8 +372,7 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 	 */
 	public function get_api_products() {
 		$params = array(
-			'apiKey'         => $this->api_key,
-			'expand'         => 'all',
+			'expand'         => 'all'
 		);
 
 		$url = '/v1/shoppers/me/products?' . http_build_query( $params );
@@ -395,11 +408,7 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 	 * @return array|bool
 	 */
 	public function get_api_product_category( $id ) {
-		$params = array(
-			'apiKey'         => $this->api_key,
-		);
-
-		$url = '/v1/shoppers/me/products/' . $id . '/categories?' . http_build_query( $params );
+		$url = '/v1/shoppers/me/products/' . $id . '/categories';
 
 		try {
 			$res = $this->get( $url );
@@ -417,16 +426,11 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 	 * Retrieve API data
 	 *
 	 * @param integer $id dr product id
-	 * @param string $currency currency code
+	 *
 	 * @return array|bool
 	 */
-	public function get_product_pricing_for_currency( $id, $currency ) {
-		$params = array(
-			'apiKey'         => $this->api_key,
-			'currency'       => $currency,
-		);
-
-		$url = '/v1/shoppers/me/products/' . $id . '/pricing?' . http_build_query( $params );
+	public function get_product_pricing( $id ) {
+		$url = '/v1/shoppers/me/products/' . $id . '/pricing';
 
 		try {
 			$res = $this->get( $url );
@@ -437,4 +441,52 @@ class DRGC_Ajx_Importer extends AbstractHttpService {
 		}
 	}
 
+	/**
+	 * Update locale and currency for the current shopper
+	 *
+	 * @param string $locale locale
+	 * @param string $currency currency code
+	 * 
+	 * @return bool
+	 */
+	public function update_locale_and_currency( $locale, $currency ) {
+		$params = array(
+			'locale'         => $locale,
+			'currency'       => $currency
+		);
+
+		$url = '/v1/shoppers/me?' . http_build_query( $params );
+
+		try {
+			$this->post( $url );
+
+			return true;
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Retrieve API data
+	 *
+	 * @param integer $id dr product id
+	 * @param string $currency currency code
+	 * 
+	 * @return array|bool
+	 */
+	public function get_product_pricing_for_currency( $id, $currency ) {
+		$params = array(
+			'currency'       => $currency,
+		);
+
+		$url = '/v1/shoppers/me/products/' . $id . '/pricing?' . http_build_query( $params );
+		
+		try {
+			$res = $this->get( $url, array(), true );
+
+			return isset( $res['pricing'] ) ? $res['pricing'] : array();
+		} catch (\Exception $e) {
+			return false;
+		}
+	}
 }

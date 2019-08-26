@@ -57,6 +57,7 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .drgc-wrapper .form-control::-ms-expand{background-color:transparent;border:0}
 .drgc-wrapper .form-control:focus{color:#495057;background-color:#fff;border-color:#80bdff;outline:0;-webkit-box-shadow:0 0 0 .2rem rgba(0,123,255,0.25);box-shadow:0 0 0 .2rem rgba(0,123,255,0.25)}
 .drgc-wrapper .form-control::-webkit-input-placeholder{color:#6c757d;opacity:1}
+.drgc-wrapper .form-control::-moz-placeholder{color:#6c757d;opacity:1}
 .drgc-wrapper .form-control:-ms-input-placeholder{color:#6c757d;opacity:1}
 .drgc-wrapper .form-control::-ms-input-placeholder{color:#6c757d;opacity:1}
 .drgc-wrapper .form-control::placeholder{color:#6c757d;opacity:1}
@@ -241,6 +242,7 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .is-focused .drgc-wrapper textarea,.drgc-wrapper textarea:focus,.is-focused .drgc-wrapper select,.drgc-wrapper select:focus,.is-focused .drgc-wrapper input[type=""],.drgc-wrapper input[type=""]:focus,.is-focused .drgc-wrapper [type="email"],.drgc-wrapper [type="email"]:focus,.is-focused .drgc-wrapper [type="tel"],.drgc-wrapper [type="tel"]:focus,.is-focused .drgc-wrapper [type="number"],.drgc-wrapper [type="number"]:focus,.is-focused .drgc-wrapper [type="search"],.drgc-wrapper [type="search"]:focus,.is-focused .drgc-wrapper [type="url"],.drgc-wrapper [type="url"]:focus,.is-focused .drgc-wrapper [type="password"],.drgc-wrapper [type="password"]:focus,.is-focused .drgc-wrapper [type="text"],.drgc-wrapper [type="text"]:focus,.is-focused .drgc-wrapper input[type=""].form-control,.drgc-wrapper input[type=""].form-control:focus,.is-focused .drgc-wrapper input[type="email"].form-control,.drgc-wrapper input[type="email"].form-control:focus,.is-focused .drgc-wrapper input[type="tel"].form-control,.drgc-wrapper input[type="tel"].form-control:focus,.is-focused .drgc-wrapper input[type="number"].form-control,.drgc-wrapper input[type="number"].form-control:focus,.is-focused .drgc-wrapper input[type="search"].form-control,.drgc-wrapper input[type="search"].form-control:focus,.is-focused .drgc-wrapper input[type="url"].form-control,.drgc-wrapper input[type="url"].form-control:focus,.is-focused .drgc-wrapper input[type="password"].form-control,.drgc-wrapper input[type="password"].form-control:focus,.is-focused .drgc-wrapper input[type="text"].form-control,.drgc-wrapper input[type="text"].form-control:focus{border:1px solid #d1d1d1}
 .drgc-wrapper textarea[disabled],.drgc-wrapper textarea:disabled,.drgc-wrapper select[disabled],.drgc-wrapper select:disabled,.drgc-wrapper input[type=""][disabled],.drgc-wrapper input[type=""]:disabled,.drgc-wrapper [type="email"][disabled],.drgc-wrapper [type="email"]:disabled,.drgc-wrapper [type="tel"][disabled],.drgc-wrapper [type="tel"]:disabled,.drgc-wrapper [type="number"][disabled],.drgc-wrapper [type="number"]:disabled,.drgc-wrapper [type="search"][disabled],.drgc-wrapper [type="search"]:disabled,.drgc-wrapper [type="url"][disabled],.drgc-wrapper [type="url"]:disabled,.drgc-wrapper [type="password"][disabled],.drgc-wrapper [type="password"]:disabled,.drgc-wrapper [type="text"][disabled],.drgc-wrapper [type="text"]:disabled,.drgc-wrapper input[type=""].form-control[disabled],.drgc-wrapper input[type=""].form-control:disabled,.drgc-wrapper input[type="email"].form-control[disabled],.drgc-wrapper input[type="email"].form-control:disabled,.drgc-wrapper input[type="tel"].form-control[disabled],.drgc-wrapper input[type="tel"].form-control:disabled,.drgc-wrapper input[type="number"].form-control[disabled],.drgc-wrapper input[type="number"].form-control:disabled,.drgc-wrapper input[type="search"].form-control[disabled],.drgc-wrapper input[type="search"].form-control:disabled,.drgc-wrapper input[type="url"].form-control[disabled],.drgc-wrapper input[type="url"].form-control:disabled,.drgc-wrapper input[type="password"].form-control[disabled],.drgc-wrapper input[type="password"].form-control:disabled,.drgc-wrapper input[type="text"].form-control[disabled],.drgc-wrapper input[type="text"].form-control:disabled{opacity:.8;cursor:not-allowed}
 .drgc-wrapper ::-webkit-input-placeholder{opacity:.5;white-space:nowrap}
+.drgc-wrapper ::-moz-placeholder{opacity:.5;white-space:nowrap}
 .drgc-wrapper :-ms-input-placeholder{opacity:.5;white-space:nowrap}
 .drgc-wrapper ::-ms-input-placeholder{opacity:.5;white-space:nowrap}
 .drgc-wrapper ::placeholder{opacity:.5;white-space:nowrap}
@@ -286,6 +288,7 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .dr-summary__products .dr-product__info .product-name{margin-bottom:8px}
 .dr-summary__products .dr-product .qty-text{display:block;font-size:14px;color:#757575;line-height:16px}
 .dr-summary__products .dr-product .remove-icon,.dr-summary__products .dr-product .value-button-decrease,.dr-summary__products .dr-product .value-button-increase,.dr-summary__products .dr-product .product-qty-number{display:none}
+.dr-candyRackProduct__img{height:40px}
 .dr-summary{display:inline-block;width:100%;height:100%}
 .dr-summary--checkout,.dr-summary--thank-you{width:100%;margin-bottom:16px;padding:20px;float:right;background-color:#fff}
 .dr-summary--checkout .dr-summary__subtotal,.dr-summary--thank-you .dr-summary__subtotal{margin-bottom:24px;padding:0 24px}
@@ -328,15 +331,7 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .dr-checkout-wrapper__actions .back-link>a{font-size:14px;font-weight:300;text-decoration:none;color:#000}
 .dr-checkout-wrapper__content{width:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;font-size:16px}
 .dr-login .dr-login-sections{display:-webkit-box;display:-ms-flexbox;display:flex}
-.dr-login .dr-login-sections__section{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;padding:16px 16px 48px 16px;text-align:center}
-.dr-login .dr-login-sections__section.section-returning .dr-login-form{position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;margin-top:auto}
-.dr-login .dr-login-sections__section.section-returning .dr-login-form input{height:51px;padding:0 10px}
-.dr-login .dr-login-sections__section.section-returning .dr-login-form input::-webkit-input-placeholder{font-family:"Open Sans",sans-serif}
-.dr-login .dr-login-sections__section.section-returning .dr-login-form input:-ms-input-placeholder{font-family:"Open Sans",sans-serif}
-.dr-login .dr-login-sections__section.section-returning .dr-login-form input::-ms-input-placeholder{font-family:"Open Sans",sans-serif}
-.dr-login .dr-login-sections__section.section-returning .dr-login-form input::placeholder{font-family:"Open Sans",sans-serif}
-.dr-login .dr-login-sections__section.section-returning .dr-login-form input:focus{outline:0}
-.dr-login .dr-login-sections__section.section-returning .dr-login-form a{font-family:"Open Sans",sans-serif;font-size:14px;color:#000;-webkit-text-decoration:underline solid #000;text-decoration:underline solid #000}
+.dr-login .dr-login-sections__section{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;padding:16px 16px 48px 16px;text-align:center}
 .dr-login .dr-login-sections__section .dr-signup-form{margin-bottom:0}
 .dr-login .dr-login-sections__section.reset-password button{width:100%}
 .dr-login .dr-login-sections__section.reset-password .dr-form-error-msg{color:#dc3545}
@@ -346,6 +341,7 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .dr-login .dr-login-sections__section h2{margin-bottom:8px;font-family:"Open Sans",sans-serif;color:#000;font-weight:700;text-transform:uppercase;font-size:20px}
 .dr-login .dr-login-sections__section h2:before{content:none}
 .dr-login .dr-login-sections__section p{margin-top:0;font-family:"Open Sans",sans-serif;color:#000;font-weight:300;font-size:16px}
+.dr-login .dr-login-sections__section h2+p{min-height:55px}
 .dr-login .dr-login-sections__section span{font-family:"Open Sans",sans-serif;font-size:16px;color:#6e6e6e;line-height:24px}
 .dr-login .dr-login-sections__section .forgotten-password{font-weight:300}
 .dr-login .dr-login-sections .dr-btn{font-weight:normal;margin-top:8px;margin-bottom:8px}

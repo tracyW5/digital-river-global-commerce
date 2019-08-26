@@ -66,6 +66,15 @@ class DRGC_Admin {
 	private $drgc_api_key;
 
 	/**
+	 * API Secret
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string
+	 */
+	private $drgc_api_secret;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -78,6 +87,7 @@ class DRGC_Admin {
 		$this->drgc_ajx = $drgc_ajx;
 		$this->drgc_site_id = get_option( 'drgc_site_id' );
 		$this->drgc_api_key = get_option( 'drgc_api_key' );
+		$this->drgc_api_secret = get_option( 'drgc_api_secret' );
 	}
 
 	/**
@@ -104,10 +114,11 @@ class DRGC_Admin {
 		wp_localize_script( $this->drgc, 'drgc_admin_params',
 			array(
 				'api_key'               => $this->drgc_api_key,
+				'api_secret'            => $this->drgc_api_secret,
 				'site_id'               => $this->drgc_site_id,
 				'drgc_ajx_instance_id'  => $this->drgc_ajx->instance_id,
 				'ajax_url'              => admin_url( 'admin-ajax.php' ),
-				'ajax_nonce'            => wp_create_nonce( 'drgc_ajx' ),
+				'ajax_nonce'            => wp_create_nonce( 'drgc_admin_ajax' ),
 			)
 		);
 	}
@@ -176,6 +187,15 @@ class DRGC_Admin {
 		);
 
 		add_settings_field(
+			$this->option_name . '_api_secret',
+			__( 'API Secret', 'digital-river-global-commerce' ),
+			array( $this, $this->option_name . '_api_secret_cb' ),
+			$this->plugin_name,
+			$this->option_name . '_general',
+			array( 'label_for' => $this->option_name . '_api_secret' )
+		);
+
+		add_settings_field(
 			$this->option_name . '_domain',
 			__( 'Domain', 'digital-river-global-commerce' ),
 			array( $this, $this->option_name . '_domain_cb' ),
@@ -220,6 +240,7 @@ class DRGC_Admin {
 
 		register_setting( $this->plugin_name, $this->option_name . '_site_id', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ) );
 		register_setting( $this->plugin_name, $this->option_name . '_api_key', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ) );
+		register_setting( $this->plugin_name, $this->option_name . '_api_secret', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ) );
 		register_setting( $this->plugin_name, $this->option_name . '_domain', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ) );
 		register_setting( $this->plugin_name, $this->option_name . '_digitalRiver_key', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ) );
     register_setting( $this->plugin_name, $this->option_name . '_cron_handler', array( 'sanitize_callback' => array( $this, 'dr_sanitize_checkbox' ), 'default' => '' ) );
@@ -262,6 +283,16 @@ class DRGC_Admin {
 	public function drgc_api_key_cb() {
 		$api_key = get_option( $this->option_name . '_api_key' );
 		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_api_key' . '" id="' . $this->option_name . '_api_key' . '" value="' . $api_key . '"> ';
+	}
+
+	/**
+	 * Render input text field for API Secret.
+	 *
+	 * @since    1.0.0
+	 */
+	public function drgc_api_secret_cb() {
+		$api_secret = get_option( $this->option_name . '_api_secret' );
+		echo '<input type="text" class="regular-text" name="' . $this->option_name . '_api_secret' . '" id="' . $this->option_name . '_api_secret' . '" value="' . $api_secret . '"> ';
 	}
 
 	/**

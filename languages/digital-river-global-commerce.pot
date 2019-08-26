@@ -1,0 +1,410 @@
+# Copyright (C) 2019 Digital_River_Global_Commerce
+# This file is distributed under the same license as the Digital_River_Global_Commerce package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Digital_River_Global_Commerce\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: GCTemplates <gcTemplates@digitalriver.com>\n"
+"Last-Translator: GCTemplates <gcTemplates@digitalriver.com>\n"
+"Report-Msgid-Bugs-To: https://github.digitalriverws.net/gc-templates/digital-river-global-commerce\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: admin/class-drgc-admin.php:123, admin/class-drgc-admin.php:124
+msgid "Settings"
+msgstr ""
+
+#: admin/class-drgc-admin.php:162
+msgid "Site ID"
+msgstr ""
+
+#: admin/class-drgc-admin.php:171
+msgid "API Key"
+msgstr ""
+
+#: admin/class-drgc-admin.php:180
+msgid "Domain"
+msgstr ""
+
+#: admin/class-drgc-admin.php:189
+msgid "Digital River Plugin Key"
+msgstr ""
+
+#: admin/class-drgc-admin.php:198
+msgid "Scheduled Products Import"
+msgstr ""
+
+#: admin/class-drgc-admin.php:207
+msgid "Test Order"
+msgstr ""
+
+#: admin/class-drgc-admin.php:244
+msgid "Please contact your account representative for assistance with these settings."
+msgstr ""
+
+#: admin/class-drgc-admin.php:302
+msgid "Enable Test Order."
+msgstr ""
+
+#: admin/class-drgc-admin.php:313
+msgid "Twice daily product synchronization with GC."
+msgstr ""
+
+#: admin/class-drgc-post-types.php:43, admin/class-drgc-post-types.php:45
+msgid "Products"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:44
+msgid "Product"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:46
+msgid "Digital River"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:47
+msgid "Add New"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:48
+msgid "Add new product"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:49, public/templates/checkout/checkout-billing.php:29, public/templates/checkout/checkout-shipping.php:29
+msgid "Edit"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:50
+msgid "Edit product"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:51
+msgid "New product"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:52
+msgid "View product"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:53
+msgid "View products"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:54
+msgid "Search products"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:55
+msgid "No products found"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:56
+msgid "No products found in trash"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:83
+msgid "DR Variations"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:84
+msgid "DR Variation"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:85, admin/partials/drgc-product-variations.php:17
+msgid "Variations"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:115
+msgid "Product Categories"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:116
+msgid "Category"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:117
+msgid "Categories"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:118
+msgid "Search categories"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:119
+msgid "All categories"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:120
+msgid "Parent category"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:121
+msgid "Parent category:"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:122
+msgid "Edit category"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:123
+msgid "Update category"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:124
+msgid "Add new category"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:125
+msgid "New category name"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:126
+msgid "No categories found"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:162
+msgid "Product Details"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:214
+msgid "Product ID"
+msgstr ""
+
+#: admin/class-drgc-post-types.php:215, admin/partials/drgc-product-details-meta-box.php:62
+msgid "SKU"
+msgstr ""
+
+#: admin/partials/drgc-product-details-meta-box.php:40, admin/partials/drgc-product-variations.php:23
+msgid "Variation Attributes"
+msgstr ""
+
+#: admin/partials/drgc-product-details-meta-box.php:54
+msgid "GC Product ID"
+msgstr ""
+
+#: admin/partials/drgc-product-details-meta-box.php:58
+msgid "External Reference ID"
+msgstr ""
+
+#: admin/partials/drgc-product-details-meta-box.php:66
+msgid "Price"
+msgstr ""
+
+#: admin/partials/drgc-product-details-meta-box.php:70
+msgid "Short Description"
+msgstr ""
+
+#: admin/partials/drgc-product-details-meta-box.php:74
+msgid "Long Description"
+msgstr ""
+
+#: admin/partials/drgc-product-details-meta-box.php:78
+msgid "Thumbnail"
+msgstr ""
+
+#: admin/partials/drgc-product-details-meta-box.php:82
+msgid "Product Image"
+msgstr ""
+
+#: admin/partials/drgc-product-variations.php:21
+msgid "ID"
+msgstr ""
+
+#: admin/partials/drgc-product-variations.php:22
+msgid "Internal Variation Name"
+msgstr ""
+
+#: admin/partials/drgc-products-import-btn.php:20
+msgid "You must enable Javascript in order to proceed!"
+msgstr ""
+
+#: admin/partials/drgc-products-import-btn.php:28
+msgid "Import Products"
+msgstr ""
+
+#: includes/class-drgc-activator.php:30
+msgid "cart"
+msgstr ""
+
+#: includes/class-drgc-activator.php:31, public/templates/login/login.php:26
+msgid "Cart"
+msgstr ""
+
+#: includes/class-drgc-activator.php:38
+msgid "checkout"
+msgstr ""
+
+#: includes/class-drgc-activator.php:39, public/templates/login/login.php:27
+msgid "Checkout"
+msgstr ""
+
+#: includes/class-drgc-activator.php:46
+msgid "login"
+msgstr ""
+
+#: includes/class-drgc-activator.php:47, public/templates/login/login.php:91
+msgid "Login"
+msgstr ""
+
+#: includes/class-drgc-activator.php:54
+msgid "thank-you"
+msgstr ""
+
+#: includes/class-drgc-activator.php:55
+msgid "Thank You"
+msgstr ""
+
+#: includes/drgc-core-functions.php:124
+msgid "Showing %s out of %s"
+msgstr ""
+
+#: includes/shortcodes/class-dr-shortcode-checkout.php:35
+msgid "Email"
+msgstr ""
+
+#: includes/shortcodes/class-dr-shortcode-checkout.php:36
+msgid "Shipping information"
+msgstr ""
+
+#: includes/shortcodes/class-dr-shortcode-checkout.php:37
+msgid "Billing information"
+msgstr ""
+
+#: includes/shortcodes/class-dr-shortcode-checkout.php:38
+msgid "Delivery options"
+msgstr ""
+
+#: includes/shortcodes/class-dr-shortcode-checkout.php:39
+msgid "Payment"
+msgstr ""
+
+#: public/partials/drgc-buy-button.php:31, public/templates/parts/content-archive.php:68, public/templates/parts/content-single.php:130
+msgid "Add to Cart"
+msgstr ""
+
+#: public/partials/drgc-minicart.php:19, public/partials/minicart.php:19
+msgid "Shopping Cart"
+msgstr ""
+
+#: public/partials/drgc-product-details.php:22
+msgid "Buy Now"
+msgstr ""
+
+#: public/partials/minicart.php:16
+msgid "ITEM(S)"
+msgstr ""
+
+#: public/templates/cart/cart.php:27
+msgid "Your cart is empty."
+msgstr ""
+
+#: public/templates/cart/cart.php:44, public/templates/checkout/checkout.php:80
+msgid "Continue Shopping"
+msgstr ""
+
+#: public/templates/checkout/checkout.php:16
+msgid "Your cart is empty!"
+msgstr ""
+
+#: public/templates/login/login.php:23
+msgid "Welcome "
+msgstr ""
+
+#: public/templates/login/login.php:30
+msgid "Logout"
+msgstr ""
+
+#: public/templates/login/login.php:37
+msgid "New password"
+msgstr ""
+
+#: public/templates/login/login.php:38
+msgid "Please enter secure password twice to continue"
+msgstr ""
+
+#: public/templates/login/login.php:59, public/templates/login/login.php:136
+msgid "Reset Password"
+msgstr ""
+
+#: public/templates/login/login.php:69
+msgid "Returning Customer"
+msgstr ""
+
+#: public/templates/login/login.php:70
+msgid "If you have an existing account, please sign in."
+msgstr ""
+
+#: public/templates/login/login.php:96
+msgid "Forgot password?"
+msgstr ""
+
+#: public/templates/login/login.php:103
+msgid "Forgot Password"
+msgstr ""
+
+#: public/templates/login/login.php:111
+msgid ""
+"To reset your password, please enter your email \n"
+"                                    address below and an email with instructions on\n"
+"                                    resetting your password will be sent to you."
+msgstr ""
+
+#: public/templates/login/login.php:117
+msgid "Email Address:"
+msgstr ""
+
+#: public/templates/login/login.php:124
+msgid "Verify Email Address:"
+msgstr ""
+
+#: public/templates/login/login.php:150
+msgid "NEW CUSTOMER"
+msgstr ""
+
+#: public/templates/login/login.php:153
+msgid ""
+"You can checkout as a guest or become a \n"
+"		                member for faster checkout and great offers."
+msgstr ""
+
+#: public/templates/login/login.php:189
+msgid "Sign Up"
+msgstr ""
+
+#: public/templates/login/login.php:191
+msgid "Continue As Guest"
+msgstr ""
+
+#: public/templates/login/login.php:201
+msgid "PAYPAL CUSTOMERS"
+msgstr ""
+
+#: public/templates/login/login.php:203
+msgid "Make your payment with PayPal's secure services."
+msgstr ""
+
+#: public/templates/login/login.php:204
+msgid "You can still add promotion codes before you complete your order."
+msgstr ""
+
+#: public/templates/parts/content-none.php:17
+msgid "Nothing Found"
+msgstr ""
+
+#: public/templates/parts/content-none.php:21
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr ""
+
+#: public/templates/parts/content-none.php:23
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr ""
+
+#: public/templates/parts/content-none.php:26
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr ""

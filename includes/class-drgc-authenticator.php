@@ -98,7 +98,7 @@ class DRGC_Authenticator extends AbstractHttpService {
 			$this->refresh_token = $session_data['refresh_token'];
 		} else {
 			$this->generate_dr_session_token();
-			$this->generate_access_token( $this->drgc_api_key );
+			$this->generate_access_token( '' );
 		}
 		
 		$this->set_schedule_refresher();
@@ -128,17 +128,17 @@ class DRGC_Authenticator extends AbstractHttpService {
 	}
 
 	/**
-	 * Generate anonymous and full access tokens
+	 * Generate session-aware access token
 	 *
-	 * @param string $key
-	 * @param array $data
+	 * @param string $key - public API key
+	 * @param array $data - post body
 	 * 
 	 * @return array $res
 	 */
 	public function generate_access_token( $key = '', $data = array() ) {
 		try {
 			if ( empty( $key ) ) {
-				// Generate anonymous by default
+				// via Oauth 2.0
 				if ( ! $data ) {
 					$data = array(
 						"dr_session_token" => $this->dr_session_token,
@@ -149,6 +149,7 @@ class DRGC_Authenticator extends AbstractHttpService {
 				$this->setFormContentType();
 				$res = $this->post( "/oauth20/token",  $this->prepareParams( $data ) );
 			} else {
+				// via a public API key
 				$params = array(
 					'apiKey' => $key
 				);
@@ -188,7 +189,6 @@ class DRGC_Authenticator extends AbstractHttpService {
 		$data = array (
 			'username' => $username,
 			'password' => base64_encode($password),
-			'client_id' => $this->drgc_api_key,
 			'grant_type' => 'password'
 		);
 

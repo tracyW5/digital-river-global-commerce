@@ -82,7 +82,7 @@ class DRGC_Ajx {
 			return;
 		}
 
-		check_ajax_referer( 'drgc_ajx', 'nonce' );
+		check_ajax_referer( 'drgc_admin_ajax', 'nonce' );
 		$step_slug = self::get_post_value( 'step' );
 
 		$steps = new DRGC_Ajx_Importer( $instance_id );
@@ -106,7 +106,7 @@ class DRGC_Ajx {
 		if ( ! isset( $_POST[ $key ] ) ) {
 			return $default;
 		}
-		return $_POST[ $key ];
+		return  $_POST[ $key ] ;
 	}
 
 }

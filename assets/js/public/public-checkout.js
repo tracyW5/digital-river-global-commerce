@@ -1,12 +1,9 @@
 jQuery(document).ready(($) => {
     if ($('#checkout-payment-form').length) {
-        const siteID = drgc_params.siteID;
-        const apiKey = drgc_params.apiKey;
         const domain = drgc_params.domain;
         const isLogin = drgc_params.isLogin;
         const apiBaseUrl = 'https://' + domain + '/v1/shoppers';
         const drLocale = drgc_params.drLocale || 'en_US';
-
 
         function getAddress(addressType) {
             const address = {
@@ -30,14 +27,12 @@ jQuery(document).ready(($) => {
         function saveShippingAddress() {
             var address = getAddress('shipping');
             address.address.isDefault = true;
-            console.log('save shipping: ', address);
             saveShopperAddress(JSON.stringify(address))
         }
 
         function saveBillingAddress() {
             var address = getAddress('billing');
             address.address.isDefault = false;
-            console.log('save billing: ', address);
             saveShopperAddress(JSON.stringify(address))
         }
 
@@ -49,9 +44,9 @@ jQuery(document).ready(($) => {
                     Authorization: `Bearer ${drgc_params.accessToken}`
                 },
                 data: address,
-                url: `${apiBaseUrl}/me/addresses?client_id=${apiKey}&format=json`,
-                success: (data) => {
-                    console.log('address update success:',data);
+                url: `${apiBaseUrl}/me/addresses`,
+                success: () => {
+                    console.log('address update success.');
                 },
                 error: (jqXHR) => {
                     console.log(jqXHR);
@@ -206,11 +201,11 @@ jQuery(document).ready(($) => {
         function displayAddressErrMsg(jqXHR, $target) {
             if (jqXHR.status === 409) {
                 if (jqXHR.responseJSON.errors.error[0].code === 'restricted-bill-to-country') {
-                    $target.text('Address not accepted for current currency.').show();
+                    $target.text(drgc_params.translations.address_error_msg).show();
                 }
 
                 if (jqXHR.responseJSON.errors.error[0].code === 'restricted-ship-to-country') {
-                    $target.text('Address not accepted for current currency.').show();
+                    $target.text(drgc_params.translations.address_error_msg).show();
                 }
             } else {
                 $target.text(jqXHR.responseJSON.errors.error[0].description).show();
@@ -241,7 +236,7 @@ jQuery(document).ready(($) => {
             const {formattedOrderTotal, formattedTax} = cart.pricing;
 
             if (Object.keys(cart.shippingMethod).length > 0) {
-                const formattedShippingAndHandling = (cart.pricing.shippingAndHandling.value === 0) ? 'FREE' : cart.pricing.formattedShippingAndHandling;
+                const formattedShippingAndHandling = (cart.pricing.shippingAndHandling.value === 0) ? drgc_params.translations.free_label : cart.pricing.formattedShippingAndHandling;
 
                 $('div.dr-summary__shipping > .item-value').text(formattedShippingAndHandling);
             }
@@ -275,9 +270,9 @@ jQuery(document).ready(($) => {
 
         function updateTaxLabel() {
             if ($('.dr-checkout__el.active').hasClass('dr-checkout__payment') || $('.dr-checkout__el.active').hasClass('dr-checkout__confirmation')) {
-                $('.dr-summary__tax > .item-label').text('Tax');
+                $('.dr-summary__tax > .item-label').text(drgc_params.translations.tax_label);
             } else {
-                $('.dr-summary__tax > .item-label').text('Estimated Tax');
+                $('.dr-summary__tax > .item-label').text(drgc_params.translations.estimated_tax_label);
             }
         }
 
@@ -341,13 +336,19 @@ jQuery(document).ready(($) => {
             const $button = $form.find('button[type="submit"]');
             const billingSameAsShipping = $('[name="checkbox-billing"]').is(':visible:checked');
             const isFormValid = prepareAddress($form);
+            const requestShipping = $('.dr-checkout__shipping').length ? true : false;
 
             if (!isFormValid) return;
             if (billingSameAsShipping) payload.billing = Object.assign({}, payload.shipping);
 
             $button.addClass('sending').blur();
             updateCart({ expand: 'all' }, { billingAddress: payload.billing }).then((data) => {
-                if ( isLogin == 'true') saveBillingAddress();
+                if (isLogin == 'true') {
+                    if ((requestShipping && !billingSameAsShipping) || !requestShipping) {
+                        saveBillingAddress();
+                    }
+                }
+                
                 $button.removeClass('sending').blur();
 
                 const $section = $('.dr-checkout__billing');
@@ -381,13 +382,7 @@ jQuery(document).ready(($) => {
                                 ${option.description}
                             </span>
                             <span class="black">
-                                ${freeShipping ? 'FREE' : option.formattedCost}
-                            </span>
-                            <span class="smoller">
-                                Estimated Arrival:
-                            </span>
-                            <span class="black">
-                                Apr 08 - Apr 11
+                                ${freeShipping ? drgc_params.translations.free_label : option.formattedCost}
                             </span>
                         </label>
                     </div>
@@ -429,7 +424,7 @@ jQuery(document).ready(($) => {
 
                     const $section = $('.dr-checkout__delivery');
                     const freeShipping = data.cart.pricing.shippingAndHandling.value === 0;
-                    const resultText = `${$input.data('desc')} ${freeShipping ? 'FREE' : $input.data('cost')}`;
+                    const resultText = `${$input.data('desc')} ${freeShipping ? drgc_params.translations.free_label : $input.data('cost')}`;
                     $section.find('.dr-panel-result__text').text(resultText);
                     moveToNextSection($section);
                     updateSummaryPricing(data.cart);
@@ -491,7 +486,7 @@ jQuery(document).ready(($) => {
                     $button.removeClass('sending').blur();
                     if (result.error) {
                         if (result.error.state === 'failed') {
-                            $('#dr-payment-failed-msg').text('Failed payment for specified credit card').show();
+                            $('#dr-payment-failed-msg').text(drgc_params.translations.credit_card_error_msg).show();
                         }
                         if (result.error.errors) {
                             $('#dr-payment-failed-msg').text(result.error.errors[0].message).show();
@@ -500,7 +495,7 @@ jQuery(document).ready(($) => {
                         if (result.source.state === 'chargeable') {
                             paymentSourceId = result.source.id;
                             $section.find('.dr-panel-result__text').text(
-                                `Credit card ending in ${result.source.creditCard.lastFourDigits}`
+                                `${drgc_params.translations.credit_card_ending_label} ${result.source.creditCard.lastFourDigits}`
                             );
                             moveToNextSection($section);
                         }
@@ -509,9 +504,9 @@ jQuery(document).ready(($) => {
             }
         });
 
-        $('form#checkout-confirmation-form').on('submit', function(e) {
+        $('#checkout-confirmation-form button[type="submit"]').on('click', (e) => {
             e.preventDefault();
-            $(this).find('button[type="submit"]').toggleClass('sending').blur();
+            $(e.target).toggleClass('sending').blur();
             $('#dr-payment-failed-msg').hide();
             applyPaymentToCart(paymentSourceId);
         });
@@ -573,45 +568,13 @@ jQuery(document).ready(($) => {
                 url: `${apiBaseUrl}/me/carts/active/apply-payment-method?expand=all`,
                 data: JSON.stringify(data),
                 success: () => {
-                    const billingSameAsShipping = $('[name="checkbox-billing"]').is(':checked');
-                    if (billingSameAsShipping) {
-                        submitCart();
-                    } else {
-                        applyBillingAddress(payload.billing).then(() => submitCart());
-                    }
+                    submitCart();
                 },
                 error: (jqXHR) => {
                     $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
                     $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
                     $('body').css({'pointer-events': 'auto', 'opacity': 1});
                 }
-            });
-        }
-
-        function applyBillingAddress(billingAddress) {
-            return new Promise((resolve, reject) => {
-                $.ajax({
-                    type: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type':'application/json',
-                        Authorization: `Bearer ${drgc_params.accessToken}`
-                    },
-                    url: `${apiBaseUrl}/me/carts/active`,
-                    data: JSON.stringify({
-                        cart: {
-                            billingAddress
-                        }
-                    })
-                })
-                .done((data) => {
-                    resolve(data);
-                })
-                .fail((jqXHR) => {
-                    $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
-                    $('#dr-checkout-err-field').text(jqXHR.responseJSON.errors.error[0].description).show();
-                    reject(jqXHR);
-                });
             });
         }
 
@@ -625,9 +588,8 @@ jQuery(document).ready(($) => {
                 },
                 url: `${apiBaseUrl}/me/carts/active/submit-cart?expand=all`,
                 success: (data) => {
-                    window.location.replace(
-                        `${drgc_params.thankYouEndpoint}?order=${data.submitCart.order.id}`
-                    )
+                    $('#checkout-confirmation-form input[name="order_id"]').val(data.submitCart.order.id);
+                    $('#checkout-confirmation-form').submit();
                 },
                 error: (jqXHR) => {
                     $('form#checkout-confirmation-form').find('button[type="submit"]').removeClass('sending').blur();
@@ -671,16 +633,6 @@ jQuery(document).ready(($) => {
             updateTaxLabel();
         });
 
-        // print thank you page
-        $('#print-button').on('click', function (ev) {
-            var printContents = $('.dr-thank-you-wrapper').html();
-
-            var originalContents = document.body.innerHTML;
-            document.body.innerHTML = printContents;
-            window.print();
-            document.body.innerHTML = originalContents;
-        });
-
         if ($('#radio-credit-card').is(':checked')) {
             $('.credit-card-info').show();
         }
@@ -690,14 +642,14 @@ jQuery(document).ready(($) => {
                 case 'credit-card':
                     $('#dr-paypal-button').hide();
                     $('.credit-card-info').show();
-                    $('#dr-submit-payment').text('pay with card'.toUpperCase()).show();
+                    $('#dr-submit-payment').text(drgc_params.translations.pay_with_card_label.toUpperCase()).show();
 
                     break;
                 case 'paypal':
                     $('#dr-submit-payment').hide();
                     $('.credit-card-info').hide();
                     $('#dr-paypal-button').show();
-                    $('#dr-submit-payment').text('pay with paypal'.toUpperCase());
+                    $('#dr-submit-payment').text(drgc_params.translations.pay_with_paypal_label.toUpperCase());
 
                     break;
             }

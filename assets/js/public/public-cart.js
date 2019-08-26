@@ -3,7 +3,7 @@
 
 jQuery(document).ready(($) => {
     const apiBaseUrl = 'https://' + drgc_params.domain + '/v1/shoppers';
-
+    const productLabel = $("#dr-cart-page-wrapper div.product-sku span:first-child").html();
     // Very basic throttle function,
     // does not store calls white in limit period
     const throttle = (func, limit) => {
@@ -30,13 +30,11 @@ jQuery(document).ready(($) => {
         $.ajax({
             type: 'DELETE',
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/json",
+                "Content-Type":"application/json",
+                "Authorization": `Bearer ${drgc_params.accessToken}`
             },
-            url: (() => {
-                let url = `${apiBaseUrl}/me/carts/active/line-items/${lineItemId}?`;
-                url += `&token=${drgc_params.accessToken}`
-                return url;
-            })(),
+            url: `${apiBaseUrl}/me/carts/active/line-items/${lineItemId}`,
             success: (data, textStatus, xhr) => {
                 if ( xhr.status === 204 ) {
                     $(`.dr-product[data-line-item-id="${lineItemId}"]`).remove();
@@ -84,7 +82,6 @@ jQuery(document).ready(($) => {
         }
 
         let params = {
-            'token'               : drgc_params.accessToken,
             'action'              : 'update',
             'quantity'            : $qty.val(),
             'expand'              : 'all',
@@ -94,12 +91,11 @@ jQuery(document).ready(($) => {
         $.ajax({
             type: 'POST',
             headers: {
-                "Accept": "application/json"
+              "Accept": "application/json",
+              "Content-Type":"application/json",
+              "Authorization": `Bearer ${drgc_params.accessToken}`
             },
-            url: (() => {
-                let url = `${apiBaseUrl}/me/carts/active/line-items/${lineItemId}?${$.param(params)}`;
-                return url;
-            })(),
+            url: `${apiBaseUrl}/me/carts/active/line-items/${lineItemId}?${$.param(params)}`,
             success: (data, textStatus, xhr) => {
                 if (xhr.status === 200) {
                     let { formattedListPriceWithQuantity, formattedSalePriceWithQuantity } = data.lineItem.pricing;
@@ -137,18 +133,12 @@ jQuery(document).ready(($) => {
         $.ajax({
             type: 'GET',
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/json",
+                "Authorization": `Bearer ${drgc_params.accessToken}`
             },
-            url: (() => {
-                let url = `${apiBaseUrl}/me/carts/active?`;
-                url += `&expand=all`
-                url += `&token=${drgc_params.accessToken}`
-                return url;
-            })(),
+            url: `${apiBaseUrl}/me/carts/active?expand=all`,
             success: (data) => {
                 renderCartProduct(data);
-                displayMiniCart(data.cart);
-                merchandisingInit(data);
             },
             error: (jqXHR) => {
                 console.log(jqXHR);
@@ -156,31 +146,22 @@ jQuery(document).ready(($) => {
         });
     }
 
-    function merchandisingInit(data){
-      $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
-        candyRackCheckAndRender(lineitem.product.id);
-        tightBundleRemoveElements(lineitem.product.id);
-      });
-      shoppingCartBanner();
-      $('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
-    }
 
-    function shoppingCartBanner(){
+    function shoppingCartBannerAndOutputLineItems(){
       $.ajax({
         type: 'GET',
-        url: (() => {
-            let url = `${apiBaseUrl}/me/point-of-promotions/Banner_ShoppingCartLocal/offers?`;
-            url += `format=json`
-            url += `&expand=all`
-            url += `&token=${drgc_params.accessToken}`
-            return url;
-        })(),
+        headers: {
+          "Content-Type": 'application/json',
+          "Authorization": `Bearer ${drgc_params.accessToken}`
+        },
+        url: `${apiBaseUrl}/me/point-of-promotions/Banner_ShoppingCartLocal/offers?format=json&expand=all`,
         success: (shoppingCartOfferData, textStatus, xhr) => {
           $.each(shoppingCartOfferData.offers.offer, function( index, offer ) {
             let shoppingCartHTML = `
             <div class="dr-product"><div class="dr-product-content">${offer.salesPitch[0]}</div><img src="${offer.image}"></div>
             `;
-            $(".dr-cart__products").append(shoppingCartHTML);
+            $("#tempCartProducts").append(shoppingCartHTML);
+            $(".dr-cart__products").html($("#tempCartProducts").html());
           });
         },
         error: (jqXHR) => {
@@ -192,19 +173,19 @@ jQuery(document).ready(($) => {
     function tightBundleRemoveElements(productID){
       $.ajax({
         type: 'GET',
-        url: (() => {
-            let url = `${apiBaseUrl}/me/products/${productID}/offers?`;
-            url += `format=json`
-            url += `&expand=all`
-            url += `&token=${drgc_params.accessToken}`
-            return url;
-        })(),
+        headers: {
+          "Content-Type": 'application/json',
+          "Authorization": `Bearer ${drgc_params.accessToken}`
+        },
+        url: `${apiBaseUrl}/me/products/${productID}/offers?format=json&expand=all`,
         success: (tightData, textStatus, xhr) => {
           $.each(tightData.offers.offer, function( index, offer ) {
             if(offer.type =="Bundling" && offer.policyName == "Tight Bundle Policy"){
              $.each(offer.productOffers.productOffer, function( index, productOffer ) {
                /*if product have  tight policy and it is not tight itself, remove the action button*/
-               if(productOffer.product.id != productID)$('div.dr-product[data-product-id="'+productOffer.product.id+'"]').find('.remove-icon,.value-button-increase,.value-button-decrease').remove();
+               if(productOffer.product.id != productID){
+                 $('div.dr-product[data-product-id="'+productOffer.product.id+'"]').find('.remove-icon,.value-button-increase,.value-button-decrease').remove();
+               }
              });
             }
           });
@@ -220,30 +201,27 @@ jQuery(document).ready(($) => {
     function candyRackCheckAndRender(productID){
       $.ajax({
         type: 'GET',
-        url: (() => {
-            let url = `${apiBaseUrl}/me/products/${productID}/point-of-promotions/CandyRack_ShoppingCart/offers?`;
-            url += `format=json`
-            url += `&expand=all`
-            url += `&token=${drgc_params.accessToken}`
-            return url;
-        })(),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${drgc_params.accessToken}`
+        },
+        url: `${apiBaseUrl}/me/products/${productID}/point-of-promotions/CandyRack_ShoppingCart/offers?format=json&expand=all`,
         success: (candyRackData, textStatus, xhr) => {
           $.each(candyRackData.offers.offer, function( index, offer ) {
             let promoText = offer.salesPitch[0].length > 0 ? offer.salesPitch[0]   : "";
-            let buyButtonText = (offer.type == "Up-sell") ? "Upgrade" : "Add";
+            let buyButtonText = (offer.type == "Up-sell") ? drgc_params.translations.upgrade_label : drgc_params.translations.add_label;
             $.each(offer.productOffers.productOffer, function( index, productOffer ) {
               let candyRackProductHTML = `
-              <div  class="dr-product dr-candyRackProduct" data-product-id="${productOffer.product.id}">
+              <div  class="dr-product dr-candyRackProduct" data-product-id="${productOffer.product.id}" data-parent-product-id="${productID}">
                 <div class="dr-product-content">
-                    <img src="${productOffer.product.thumbnailImage}" height="40px"/>
-                    <!-- <div class="dr-product__img" style="background-image: url(${productOffer.product.thumbnailImage});background-size:50%;background-repeat: no-repeat;background-position: right; height:40px;"></div> -->
+                    <img src="${productOffer.product.thumbnailImage}" class="dr-candyRackProduct__img"/>
                     <div class="dr-product__info">
                       <div class="product-color">
                         <span style="background-color: yellow;">${promoText}</span>
                       </div>
                       ${productOffer.product.displayName}
                       <div class="product-sku">
-                        <span>Product </span>
+                        <span>${productLabel}  </span>
                         <span>#${productOffer.product.id}</span>
                       </div>
                     </div>
@@ -272,12 +250,13 @@ jQuery(document).ready(($) => {
       $.ajax({
           type: 'POST',
           headers: {
-              "Accept": "application/json"
+              "Accept": "application/json",
+              "Content-Type":"application/json",
+              "Authorization": `Bearer ${drgc_params.accessToken}`
           },
           url: (() => {
               let url = buyUri;
               if(drgc_params.testOrder == "true")url += '&testOrder=true';
-              url += `&token=${drgc_params.accessToken}`
               return url;
           })(),
           success: (data, textStatus, xhr) => {
@@ -296,15 +275,11 @@ jQuery(document).ready(($) => {
             $.ajax({
                 type: 'POST',
                 headers: {
-                    Accept: 'application/json',
-                    'Content-Type':'application/json',
-                    Authorization: `Bearer ${drgc_params.accessToken}`,
+                    "Accept": "application/json",
+                    "Content-Type":"application/json",
+                    "Authorization": `Bearer ${drgc_params.accessToken}`,
                 },
-                url: (() => {
-                    let url = `${apiBaseUrl}/me/carts/active?`;
-                    url += `&token=${drgc_params.accessToken}&${queryStr}`;
-                    return url;
-                })(),
+                url:  `${apiBaseUrl}/me/carts/active?&${queryStr}`,
                 data: JSON.stringify({
                     cart: cartRequest
                 }),
@@ -318,53 +293,26 @@ jQuery(document).ready(($) => {
         });
     }
 
-    function renderCartProduct(data){
-      $('.dr-cart__products').html("");
-      let hasPhysicalProduct = false;
-      $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
-        let permalink = '';
-        let permalinkProductId = lineitem.product.id;
-        if(lineitem.product.parentProduct)permalinkProductId = lineitem.product.parentProduct.id;
-        if(lineitem.product.productType == "PHYSICAL")hasPhysicalProduct = true;
+    function getpermalink(permalinkProductId){
+      return new Promise((resolve, reject) => {
         $.ajax({
           type: 'POST',
-          async: false,
           url: drgc_params.ajaxUrl,
           data: {
             action: 'get_permalink',
             productID: permalinkProductId
           },
-          success: (response) => {
-            permalink = response;
-            let lineItemHTML = `
-            <div data-line-item-id="${lineitem.id}" class="dr-product" data-product-id="${lineitem.product.id}">
-              <div class="dr-product-content">
-                  <div class="dr-product__img" style="background-image: url(${lineitem.product.thumbnailImage})"></div>
-                  <div class="dr-product__info">
-                      <a class="product-name" href="${permalink}">${lineitem.product.displayName}</a>
-                      <div class="product-sku">
-                          <span>Product </span>
-                          <span>#${lineitem.product.id}</span>
-                      </div>
-                      <div class="product-qty">
-                          <span class="qty-text">Qty ${lineitem.quantity}</span>
-                          <span class="dr-pd-cart-qty-minus value-button-decrease"></span>
-                          <input type="number" class="product-qty-number" step="1" min="1" max="999" value="${lineitem.quantity}" maxlength="5" size="2" pattern="[0-9]*" inputmode="numeric" readonly="true">
-                          <span class="dr-pd-cart-qty-plus value-button-increase"></span>
-                      </div>
-                  </div>
-              </div>
-              <div class="dr-product__price">
-                  <button class="dr-prd-del remove-icon"></button>
-                  <span class="sale-price">${lineitem.pricing.formattedSalePriceWithQuantity}</span>
-                  <span class="regular-price">${lineitem.pricing.formattedListPriceWithQuantity}</span>
-              </div>
-            </div>
-            `;
-            $('.dr-cart__products').append(lineItemHTML);
+          success: (data) => {
+            resolve(data);
+          },
+          error: (jqXHR) => {
+            reject(jqXHR);
           }
         });
-      });
+    });
+    }
+
+    function updateSummary(data,hasPhysicalProduct){
       const pricing = data.cart.pricing;
       if(hasPhysicalProduct){
         $('.dr-summary__shipping').show();
@@ -373,7 +321,7 @@ jQuery(document).ready(($) => {
       }
       $('div.dr-summary__shipping .shipping-value').text(pricing.formattedShippingAndHandling);
       //overwrite $0.00 to FREE
-      if(pricing.shippingAndHandling.value === 0 )$('div.dr-summary__shipping .shipping-value').text("FREE");
+      if(pricing.shippingAndHandling.value === 0 )$('div.dr-summary__shipping .shipping-value').text(drgc_params.translations.free_label);
       $('div.dr-summary__discount .discount-value').text(`-${pricing.formattedDiscount}`);
       $('div.dr-summary__discounted-subtotal .discounted-subtotal-value').text(pricing.formattedSubtotalWithDiscount);
 
@@ -382,13 +330,91 @@ jQuery(document).ready(($) => {
       } else {
         $('.dr-summary__discount').hide();
       }
-      if ($('.dr-cart__products').children().length <= 0) {
-        $('.dr-cart__products').text('Your cart is empty!');
+
+    }
+
+    function renderLineItemsAndSummary(data,hasPhysicalProductinLineItem){
+      let lineItemCount =0;
+      $.each(data.cart.lineItems.lineItem, function( index, lineitem ){
+        if(lineitem.product.productType == "PHYSICAL")hasPhysicalProductinLineItem = true;
+        let permalinkProductId = lineitem.product.id;
+        if(lineitem.product.parentProduct)permalinkProductId = lineitem.product.parentProduct.id;
+        getpermalink(permalinkProductId).then((response) => {
+          const permalink = response;
+          const lineItemHTML = `
+          <div   data-line-item-id="${lineitem.id}" class="dr-product dr-product-lineitem" data-product-id="${lineitem.product.id}" data-sort="${index}">
+            <div class="dr-product-content">
+                <div class="dr-product__img" style="background-image: url(${lineitem.product.thumbnailImage})"></div>
+                <div class="dr-product__info">
+                    <a class="product-name" href="${permalink}">${lineitem.product.displayName}</a>
+                    <div class="product-sku">
+                        <span>${productLabel} </span>
+                        <span>#${lineitem.product.id}</span>
+                    </div>
+                    <div class="product-qty">
+                        <span class="qty-text">Qty ${lineitem.quantity}</span>
+                        <span class="dr-pd-cart-qty-minus value-button-decrease"></span>
+                        <input type="number" class="product-qty-number" step="1" min="1" max="999" value="${lineitem.quantity}" maxlength="5" size="2" pattern="[0-9]*" inputmode="numeric" readonly="true">
+                        <span class="dr-pd-cart-qty-plus value-button-increase"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="dr-product__price">
+                <button class="dr-prd-del remove-icon"></button>
+                <span class="sale-price">${lineitem.pricing.formattedSalePriceWithQuantity}</span>
+                <span class="regular-price">${lineitem.pricing.formattedListPriceWithQuantity}</span>
+            </div>
+          </div>
+          `;
+          $('#tempCartProducts').append(lineItemHTML);
+        }).then(() => {
+          lineItemCount++;
+          if(lineItemCount === data.cart.lineItems.lineItem.length){
+            updateSummary(data,hasPhysicalProductinLineItem);
+            reOrderCartAndMerchandising(data);
+          }
+        }).catch((jqXHR) => {
+          if (jqXHR.responseJSON.errors) {
+            const errMsgs = jqXHR.responseJSON.errors.error.map((err) => {
+              return err.description;
+            });
+            console.log(errMsgs);
+          }
+        });
+      });
+    }
+
+    function reOrderCartAndMerchandising(data){
+      //1.Order dr-product-lineitem in temp area
+      let $wrapper = $('#tempCartProducts');
+      $wrapper.find('.dr-product-lineitem').sort(function (a, b) {
+          return +a.dataset.sort - +b.dataset.sort;
+      }).appendTo( $wrapper );
+      //2. Add banner at last and output lineitems
+      shoppingCartBannerAndOutputLineItems();
+      //3. Main cart item displayed, Finish loading icon
+      $('body').css({ 'pointer-events': 'auto', 'opacity': 1 });
+      //4. Execute candyRackCheckAndRender and tightBundleRemoveElements
+      $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
+        candyRackCheckAndRender(lineitem.product.id);
+        tightBundleRemoveElements(lineitem.product.id);
+      });
+    }
+
+    function renderCartProduct(data){
+      let hasPhysicalProduct = false;
+      $("#tempCartProducts").remove();
+      $("<div id='tempCartProducts' style='display:none;'></div>").appendTo('body');
+
+      if(data.cart.lineItems.lineItem){
+        renderLineItemsAndSummary(data,hasPhysicalProduct);
+      }else{
+        $('.dr-cart__products').text(drgc_params.translations.empty_cart_msg);
         $('#cart-estimate').hide();
       }
     }
 
-    $('.dr-currency-select').on('change', function(e) {
+    $('body').on('change', '.dr-currency-select', function(e) {
         e.preventDefault();
 
         let data = {
@@ -398,14 +424,12 @@ jQuery(document).ready(($) => {
 
         $.ajax({
             type: 'POST',
-            url: (() => {
-                let url = `${apiBaseUrl}/me?`;
-                url += `format=json`
-                url += `&token=${drgc_params.accessToken}`
-                url += `&currency=${data.currency}`
-                url += `&locale=${data.locale}`
-                return url;
-            })(),
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${drgc_params.accessToken}`
+            },
+            url: `${apiBaseUrl}/me?currency=${data.currency}&locale=${data.locale}`,
             success: (data, textStatus, xhr) => {
                 if (xhr.status === 204) {
                     location.reload();
@@ -417,67 +441,6 @@ jQuery(document).ready(($) => {
         });
     });
 
-
-
-    function displayMiniCart(cart) {
-
-        if ( cart === undefined || cart === null ) {
-            return;
-        }
-
-        const $display = $('.dr-minicart-display');
-        const $body = $('<div class="dr-minicart-body"></div>');
-        const $footer = $('<div class="dr-minicart-footer"></div>');
-
-        let lineItems = (cart.lineItems && cart.lineItems.lineItem) ? cart.lineItems.lineItem : [];
-
-        $('.dr-minicart-count').text(cart.totalItemsInCart);
-        $('.dr-minicart-header').siblings().remove();
-
-        if (!lineItems.length) {
-            const emptyMsg = '<p class="dr-minicart-empty-msg">Your shopping cart is currently empty.</p>';
-            $body.append(emptyMsg);
-            $display.append($body);
-        } else {
-            let miniCartLineItems = '<ul class="dr-minicart-list">';
-            const miniCartSubtotal = `<p class="dr-minicart-subtotal"><label>Sub-Total</label><span>${cart.pricing.formattedSubtotal}</span></p>`;
-            const miniCartViewCartBtn = `<a class="dr-btn" id="dr-minicart-view-cart-btn" href="${drgc_params.cartUrl}">View Cart</a>`;
-            const miniCartCheckoutBtn = `<a class="dr-btn" id="dr-minicart-checkout-btn" href="${drgc_params.checkoutUrl}">Checkout</a>`;
-
-            lineItems.forEach((li) => {
-                const productId = li.product.uri.replace(`${apiBaseUrl}/me/products/`, '');
-                const listPrice = Number(li.pricing.listPriceWithQuantity.value);
-                const salePrice = Number(li.pricing.salePriceWithQuantity.value);
-                const formattedSalePrice = li.pricing.formattedSalePriceWithQuantity;
-                let priceContent = '';
-
-                if (listPrice > salePrice) {
-                    priceContent = `<del class="dr-strike-price">${listPrice}</del><span class="dr-sale-price">${formattedSalePrice}</span>`;
-                } else {
-                    priceContent = formattedSalePrice;
-                }
-
-                const miniCartLineItem = `
-                <li class="dr-minicart-item clearfix">
-                    <div class="dr-minicart-item-thumbnail">
-                        <img src="${li.product.thumbnailImage}" alt="${li.product.displayName}" />
-                    </div>
-                    <div class="dr-minicart-item-info" data-product-id="${productId}">
-                        <span class="dr-minicart-item-title">${li.product.displayName}</span>
-                        <span class="dr-minicart-item-qty">Qty.${li.quantity}</span>
-                        <p class="dr-pd-price dr-minicart-item-price">${priceContent}</p>
-                    </div>
-                    <a href="#" class="dr-minicart-item-remove-btn" aria-label="Remove" data-line-item-id="${li.id}">Remove</a>
-                </li>`;
-                miniCartLineItems += miniCartLineItem;
-            });
-            miniCartLineItems += '</ul>';
-            $body.append(miniCartLineItems, miniCartSubtotal);
-            $footer.append(miniCartViewCartBtn, miniCartCheckoutBtn);
-            $display.append($body, $footer);
-        }
-    }
-
     $('.promo-code-toggle').click(() => {
         $('.promo-code-wrapper').toggle();
     });
@@ -486,7 +449,7 @@ jQuery(document).ready(($) => {
         const promoCode = $('#promo-code').val();
 
         if (!promoCode) {
-          $('#dr-promo-code-err-field').text('Please enter a valid promo code.').show();
+          $('#dr-promo-code-err-field').text(drgc_params.translations.invalid_promo_code_msg).show();
           return;
         }
 
