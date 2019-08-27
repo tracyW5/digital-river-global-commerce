@@ -12,7 +12,7 @@
  * Description:       The Digital River Global Commerce plugin from Digital River allows you to easily integrate with Digital River's Global Commerce platform
  * Version:           1.0.0
  * Author:            Digital River
- * Author URI:        https://www.digitalriver.com
+ * Author URI:        https://www.digitalriver.com/company/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       digital-river-global-commerce
