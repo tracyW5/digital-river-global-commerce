@@ -21,7 +21,7 @@
 
                 <?php if ( 1 < count($cart['cart']['lineItems'] )) : ?>
                     <?php foreach ($cart['cart']['lineItems']['lineItem'] as $line_item): ?>
-                        <?php include PLUGIN_DIR . 'public/templates/cart/cart-product.php'; ?>
+                        <?php include DRGC_PLUGIN_DIR . 'public/templates/cart/cart-product.php'; ?>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <?php echo __( 'Your cart is empty.', 'digital-river-global-commerce' ); ?>
@@ -33,7 +33,7 @@
 
                 <?php drgc_currency_toggler(); ?>
 
-                <?php include_once PLUGIN_DIR . 'public/templates/cart/cart-summary.php'; ?>
+                <?php include_once DRGC_PLUGIN_DIR . 'public/templates/cart/cart-summary.php'; ?>
 
             </div>
             <?php endif; ?>

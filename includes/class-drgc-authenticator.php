@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-if ( ! defined('PLUGIN_DIR') ) {
+if ( ! defined('DRGC_PLUGIN_DIR') ) {
 	require_once 'abstract-http-service.php';
 }
 

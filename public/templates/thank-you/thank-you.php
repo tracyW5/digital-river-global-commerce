@@ -89,7 +89,7 @@ if($billing_city !== '' && $billing_code !== '') {
             <?php if ( isset($order['order']) && isset($order['order']['lineItems']['lineItem'] )) : ?>
                 <?php if ( $order['order']['lineItems']['lineItem'] ) : ?>
                     <?php foreach ($order['order']['lineItems']['lineItem'] as $line_item): ?>
-                        <?php include PLUGIN_DIR . 'public/templates/cart/cart-product.php'; ?>
+                        <?php include DRGC_PLUGIN_DIR . 'public/templates/cart/cart-product.php'; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
             <?php endif; ?>
@@ -134,7 +134,7 @@ if($billing_city !== '' && $billing_code !== '') {
 
         <div class="dr-summary dr-summary--thank-you order-summary">
         
-            <?php include_once PLUGIN_DIR . 'public/templates/thank-you/thank-you-summary.php'; ?>
+            <?php include_once DRGC_PLUGIN_DIR . 'public/templates/thank-you/thank-you-summary.php'; ?>
                 
         </div>
 

@@ -74,7 +74,7 @@ class DRGC_Public {
 	public function enqueue_scripts() {
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-		wp_enqueue_script( $this->drgc, PLUGIN_URL . 'assets/js/drgc-public' . $suffix . '.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->drgc, DRGC_PLUGIN_URL . 'assets/js/drgc-public' . $suffix . '.js', array( 'jquery' ), $this->version, false );
 
 		if ( is_page( 'checkout' ) ) {
 			wp_enqueue_script( 'digital-river-js', 'https://js.digitalriver.com/v1/DigitalRiver.js', array( $this->drgc ), null, true );
@@ -482,9 +482,9 @@ class DRGC_Public {
 		$theme = wp_get_theme();
 		if ( 'Digital River' != $theme->name ) {
 			if ( is_singular( 'dr_product' ) ) {
-				$template = PLUGIN_DIR . 'public/templates/single.php';
+				$template = DRGC_PLUGIN_DIR . 'public/templates/single.php';
 			} else if ( is_post_type_archive( 'dr_product' ) || is_tax( 'dr_product_category' ) ) {
-				$template = PLUGIN_DIR . 'public/templates/archive.php';
+				$template = DRGC_PLUGIN_DIR . 'public/templates/archive.php';
 			}
 		}
 		return $template;

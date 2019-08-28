@@ -227,9 +227,9 @@ $checkout_URI = drgc_get_page_link( 'checkout' );
             </div>
 
             <div class="section-paypal-img">
-                <a href="<?php echo esc_url( add_query_arg( 'type', 'paypal', $checkout_URI ) ); ?>"><img src="<?php echo PLUGIN_URL . 'assets/images/paypal-checkout.png' ?>" alt="Checkout PayPal"></a>
+                <a href="<?php echo esc_url( add_query_arg( 'type', 'paypal', $checkout_URI ) ); ?>"><img src="<?php echo DRGC_PLUGIN_URL . 'assets/images/paypal-checkout.png' ?>" alt="Checkout PayPal"></a>
 
-                <a href="<?php echo esc_url( add_query_arg( 'type', 'paypal-credit', $checkout_URI ) ); ?>"><img src="<?php echo PLUGIN_URL . 'assets/images/paypal-credit.png' ?>" alt="Credit PayPal"></a>
+                <a href="<?php echo esc_url( add_query_arg( 'type', 'paypal-credit', $checkout_URI ) ); ?>"><img src="<?php echo DRGC_PLUGIN_URL . 'assets/images/paypal-credit.png' ?>" alt="Credit PayPal"></a>
             </div>
         </section> -->
 

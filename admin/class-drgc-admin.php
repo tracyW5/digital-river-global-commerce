@@ -96,8 +96,7 @@ class DRGC_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style( $this->drgc, PLUGIN_URL . 'assets/css/drgc-admin.css', array(), $this->version, 'all' );
-
+		wp_enqueue_style( $this->drgc, DRGC_PLUGIN_URL . 'assets/css/drgc-admin.css', array(), $this->version, 'all' );
 	}
 
 	/**
@@ -108,7 +107,7 @@ class DRGC_Admin {
 	public function enqueue_scripts() {
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-		wp_enqueue_script( $this->drgc, PLUGIN_URL . 'assets/js/drgc-admin' . $suffix . '.js', array( 'jquery', 'jquery-ui-progressbar' ), $this->version, false );
+		wp_enqueue_script( $this->drgc, DRGC_PLUGIN_URL . 'assets/js/drgc-admin' . $suffix . '.js', array( 'jquery', 'jquery-ui-progressbar' ), $this->version, false );
 
 		// transfer drgc options from PHP to JS
 		wp_localize_script( $this->drgc, 'drgc_admin_params',
@@ -355,7 +354,7 @@ class DRGC_Admin {
 	 * @since    1.0.0
 	 */
 	public function render_products_import_button( $views ) {
-		include_once PLUGIN_DIR . 'admin/partials/drgc-products-import-btn.php';
+		include_once DRGC_PLUGIN_DIR . 'admin/partials/drgc-products-import-btn.php';
 		return $views;
 	}
 
