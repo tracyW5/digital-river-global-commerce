@@ -28,13 +28,13 @@ if ( !defined( 'WPINC' ) ) {
  * Current Plugin Version
  */
 define( 'DRGC_VERSION', '1.0.0.' . time() );
-define( 'PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'DRGC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'DRGC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 /**
  * Plugin Activation
  */
-function activate_drgc() {
+function drgc_activate_plugin() {
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-drgc-activator.php';
     DRGC_Activator::activate();
 }
@@ -42,13 +42,13 @@ function activate_drgc() {
 /**
  * Plugin Deactivation
  */
-function deactivate_drgc() {
+function drgc_deactivate_plugin() {
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-drgc-deactivator.php';
     DRGC_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_drgc' );
-register_deactivation_hook( __FILE__, 'deactivate_drgc' );
+register_activation_hook( __FILE__, 'drgc_activate_plugin' );
+register_deactivation_hook( __FILE__, 'drgc_deactivate_plugin' );
 
 /**
  * Core Plugin Class
@@ -65,9 +65,9 @@ function DRGC() {
 /**
  * Initialization
  */
-function run_drgc() {
+function drgc_init() {
     $plugin = new DRGC();
     $plugin->run();
 }
 
-run_drgc();
+drgc_init();

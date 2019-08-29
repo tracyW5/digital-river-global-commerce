@@ -136,69 +136,69 @@ class DRGC {
 		/**
 		 * Core functions
 		 */
-		require_once PLUGIN_DIR . 'includes/drgc-core-functions.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/drgc-core-functions.php';
 
 		/**
 		 * Creates DB Tables
 		 */
-		require_once PLUGIN_DIR . 'includes/class-drgc-tables.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-tables.php';
 
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once PLUGIN_DIR . 'includes/class-drgc-loader.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-loader.php';
 
 		/**
 		 * The class responsible for handling the sessions
 		 */
-		require_once PLUGIN_DIR . 'includes/class-drgc-session.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-session.php';
 
-		require_once PLUGIN_DIR . 'includes/abstract-http-service.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/abstract-http-service.php';
 
 		/**
 		 * The class responsible for create special kinds of content (e.g. forms, content generators)
 		 * that users can attach to certain pages.
 		 */
-		require_once PLUGIN_DIR . 'includes/shortcodes/class-dr-shortcode-cart.php';
-		require_once PLUGIN_DIR . 'includes/shortcodes/class-dr-shortcode-login.php';
-		require_once PLUGIN_DIR . 'includes/shortcodes/class-dr-shortcode-checkout.php';
-		require_once PLUGIN_DIR . 'includes/shortcodes/class-dr-shortcode-thank-you.php';
-		require_once PLUGIN_DIR . 'includes/class-drgc-shortcodes.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/shortcodes/class-dr-shortcode-cart.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/shortcodes/class-dr-shortcode-login.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/shortcodes/class-dr-shortcode-checkout.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/shortcodes/class-dr-shortcode-thank-you.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-shortcodes.php';
 
-		require_once PLUGIN_DIR . 'includes/class-drgc-authenticator.php';
-		require_once PLUGIN_DIR . 'includes/class-drgc-shopper.php';
-		require_once PLUGIN_DIR . 'includes/class-drgc-cart.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-authenticator.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-shopper.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-cart.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once PLUGIN_DIR . 'includes/class-drgc-i18n.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once PLUGIN_DIR . 'admin/class-drgc-admin.php';
-		require_once PLUGIN_DIR . 'admin/class-drgc-post-types.php';
+		require_once DRGC_PLUGIN_DIR . 'admin/class-drgc-admin.php';
+		require_once DRGC_PLUGIN_DIR . 'admin/class-drgc-post-types.php';
 
-		require_once PLUGIN_DIR . 'includes/class-drgc-ajx.php';
-		require_once PLUGIN_DIR . 'includes/class-drgc-ajx-importer.php';
-		require_once PLUGIN_DIR . 'includes/class-drgc-cron.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-ajx.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-ajx-importer.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-cron.php';
 
-		require_once PLUGIN_DIR . 'includes/class-drgc-product.php';
-		require_once PLUGIN_DIR . 'includes/class-drgc-category.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-product.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/class-drgc-category.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once PLUGIN_DIR . 'public/class-drgc-public.php';
+		require_once DRGC_PLUGIN_DIR . 'public/class-drgc-public.php';
 
 		/**
 		 * Global variables and functions.
 		 */
-		require_once PLUGIN_DIR . 'includes/drgc-locale-mapping.php';
+		require_once DRGC_PLUGIN_DIR . 'includes/drgc-locale-mapping.php';
 
 		// Start the loader
 		$this->loader = new DRGC_Loader();
