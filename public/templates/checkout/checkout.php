@@ -37,21 +37,21 @@
 
         <div class="dr-checkout">
 
-            <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-email.php'; ?>
+            <?php include_once DRGC_PLUGIN_DIR . 'public/templates/checkout/checkout-email.php'; ?>
 
             <?php if( $cart['cart']['hasPhysicalProduct'] ) :
-                include_once PLUGIN_DIR . 'public/templates/checkout/checkout-shipping.php';
+                include_once DRGC_PLUGIN_DIR . 'public/templates/checkout/checkout-shipping.php';
             endif; ?>
 
-            <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-billing.php'; ?>
+            <?php include_once DRGC_PLUGIN_DIR . 'public/templates/checkout/checkout-billing.php'; ?>
 
             <?php if( $cart['cart']['hasPhysicalProduct'] ) :
-                include_once PLUGIN_DIR . 'public/templates/checkout/checkout-delivery.php';
+                include_once DRGC_PLUGIN_DIR . 'public/templates/checkout/checkout-delivery.php';
             endif; ?>
 
-            <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-payment.php'; ?>
+            <?php include_once DRGC_PLUGIN_DIR . 'public/templates/checkout/checkout-payment.php'; ?>
 
-            <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-confirmation.php'; ?>
+            <?php include_once DRGC_PLUGIN_DIR . 'public/templates/checkout/checkout-confirmation.php'; ?>
 
         </div>
 
@@ -63,13 +63,13 @@
 
                 <?php if ( 1 < count($cart['cart']['lineItems']) ) : ?>
                     <?php foreach ($cart['cart']['lineItems']['lineItem'] as $line_item): ?>
-                        <?php include PLUGIN_DIR . 'public/templates/cart/cart-product.php'; ?>
+                        <?php include DRGC_PLUGIN_DIR . 'public/templates/cart/cart-product.php'; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
 
             </div>
 
-            <?php include_once PLUGIN_DIR . 'public/templates/checkout/checkout-summary.php'; ?>
+            <?php include_once DRGC_PLUGIN_DIR . 'public/templates/checkout/checkout-summary.php'; ?>
 
         </div>
 

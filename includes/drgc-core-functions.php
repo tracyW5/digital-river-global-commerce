@@ -88,7 +88,7 @@ function drgc_get_page_link( $name = '' ) {
  * Get template part in plugin just like theme.
  */
 function drgc_get_template_part( $slug, $name = '' ) {
-	$template = PLUGIN_DIR . "public/templates/parts/{$slug}-{$name}.php";
+	$template = DRGC_PLUGIN_DIR . "public/templates/parts/{$slug}-{$name}.php";
 	if ( file_exists( $template ) ) {
 		load_template( $template, false );
 	}
@@ -106,7 +106,7 @@ function drgc_get_template( $template_name, $args = array(), $template_path = ''
 		$template_path = 'templates';
 	}
 
-	$template_dir = PLUGIN_DIR . '/public/' . trailingslashit( $template_path );
+	$template_dir = DRGC_PLUGIN_DIR . '/public/' . trailingslashit( $template_path );
 	$template = (string) $template_dir  . $template_name;
 
 	if ( ! empty( $args ) && is_array( $args ) ) {
