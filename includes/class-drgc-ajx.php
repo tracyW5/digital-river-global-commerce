@@ -103,10 +103,33 @@ class DRGC_Ajx {
 	 * @return bool|mixed
 	 */
 	public static function get_post_value( $key, $default = false ) {
-		if ( ! isset( $_POST[ $key ] ) ) {
+		if ( ! isset( $_POST[$key] ) ) {
 			return $default;
 		}
-		return  $_POST[ $key ] ;
+
+		if ( is_array( $_POST[$key] ) ) {
+			return self::recursive_sanitize_text_field( $_POST[$key] );
+		} else {
+			return sanitize_text_field( $_POST[$key] );
+		}
+	}
+
+	/**
+	 * Recursive sanitation for an array
+	 *
+	 * @param $array
+	 * @return mixed
+	 */
+	private function recursive_sanitize_text_field( $array ) {
+		foreach ( $array as $key => &$value ) {
+			if ( is_array( $value ) ) {
+				$value = self::recursive_sanitize_text_field( $value );
+			} else {
+				$value = sanitize_text_field( $value );
+			}
+		}
+
+		return $array;
 	}
 
 }
