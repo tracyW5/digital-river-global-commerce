@@ -33,9 +33,9 @@ Activate the free Digital River plugin and start selling anywhere in the world. 
 *   Chargeback mitigation and dispute management
 *   Global regulatory compliance (e.g., GDPR and PSD2)
 
-OUR FLEXIBLE API ARCHITECTURE ALLOWS YOU TO CUSTOMIZE YOUR ECOMMERCE SOLUTION. DIGITAL RIVER CAN BE YOUR COMPLETE SOLUTION OR WE CAN EASILY PLUG INTO YOUR EXISTING SYSTEMS.
+Our flexible API architecture allows you to customize your ecommerce solution. Digital River can be your complete solution or we can easily plug into your existing systems.
 
-WANT A FAST AND EASY WAY TO SELL INTO NEW MARKETS? ACTIVATE THE DIGITAL RIVER PLUGIN AND WE’LL WORK BEHIND THE SCENES TO PROCESS PAYMENTS, FIGHT FRAUD, FULFILL ORDERS, AND SHIELD YOUR BUSINESS FROM GLOBAL TAX AND REGULATORY RISK.
+Want a fast and easy way to sell into new markets? Activate the Digital River plugin and we’ll work behind the scenes to process payments, fight fraud, fulfill orders, and shield your business from global tax and regulatory risk.
 
 == INSTALLATION ==
 
@@ -62,21 +62,17 @@ By giving you the onshore advantage over cross-border processing, you can increa
 Avoid fatal fines, litigation, and damage to your brand’s reputation by staying compliant with ever-changing tax and data privacy regulations. Worried about filing VAT taxes to multiple tax authorities? We do that for you. Worried about staying compliant with GDPR, PSD2 and other consumer protection regulations? We manage that for you. And we do all this through our unique merchant and seller of record business model.
 
 == Frequently Asked Questions ==
-= Does a client need to do custom integration on their WordPress storefront in order to get DR commerce features? =
+= Do I need to do a custom integration on my WordPress storefront in order to get Digital River’s commerce features? =
 
 No, a full checkout flow is included as part of the plugin. Login, Cart, Checkout, and Thank You pages are all included and can be called by the storefront as needed.
 
 = Is merchandising included in the plugin? =
 
-Yes, but not at full parity to GC. The plugin offers the most-used merchandising offer types of Coupon Code, Bum M Get N, Candy Rack, Free Shipping, and basic Bundles.
+Yes. The plugin offers commonly-used merchandising offer types.
 
-= Is there a limitation on what currencies and locales from GC the WordPress plugin supports? =
+= Does Digital River host my WordPress site/storefront? =
 
-No, the plugin supports any currency or locale which is supported by GC. Some locales like Brazil require additional legal/contractual effort but not specific to the plugin.
-
-= Does DR host the client's WordPress site/storefront? =
-
-No, the client is responsible for bringing their own hosting. Some common hosts for WordPress, depending on client size, are Wordpress.org, Wordpress.com, WordPress.vip, and WPEngine.
+No, you are responsible for hosting your own site.
 
 
 == Changelog ==
