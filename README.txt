@@ -38,6 +38,7 @@ Our flexible API architecture allows you to customize your ecommerce solution. D
 Want a fast and easy way to sell into new markets? Activate the Digital River plugin and we’ll work behind the scenes to process payments, fight fraud, fulfill orders, and shield your business from global tax and regulatory risk.
 
 == INSTALLATION ==
+*   A Digital River account is required for use of this plugin. To inquire contact <info@digitalriver.com>.
 
 Follow these steps to setup Digital River Global Commerce
 
