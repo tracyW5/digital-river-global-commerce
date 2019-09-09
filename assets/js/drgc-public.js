@@ -417,7 +417,7 @@ jQuery(document).ready(function ($) {
       url: "".concat(apiBaseUrl, "/me/point-of-promotions/Banner_ShoppingCartLocal/offers?format=json&expand=all"),
       success: function success(shoppingCartOfferData, textStatus, xhr) {
         $.each(shoppingCartOfferData.offers.offer, function (index, offer) {
-          var shoppingCartHTML = "\n            <div class=\"dr-product\"><div class=\"dr-product-content\">".concat(offer.salesPitch[0], "</div><img src=\"").concat(offer.image, "\"></div>\n            ");
+          var shoppingCartHTML = "\n            <div class=\"dr-product\"><div class=\"dr-product-content\">".concat(offer.salesPitch[0], "</div><img style=\"max-width: 100%; height: auto;\" src=\"").concat(offer.image, "\"></div>\n            ");
           $("#tempCartProducts").append(shoppingCartHTML);
           $(".dr-cart__products").html($("#tempCartProducts").html());
         });
@@ -647,7 +647,7 @@ jQuery(document).ready(function ($) {
       url: "".concat(apiBaseUrl, "/me?currency=").concat(data.currency, "&locale=").concat(data.locale),
       success: function success(data, textStatus, xhr) {
         if (xhr.status === 204) {
-          location.reload();
+          location.reload(true);
         }
       },
       error: function error(jqXHR) {
@@ -838,6 +838,9 @@ jQuery(document).ready(function ($) {
 
       adjustColumns($section);
       updateTaxLabel();
+      $('html, body').animate({
+        scrollTop: $nextSection.first().offset().top - 80
+      }, 500);
     };
 
     var updateSummaryPricing = function updateSummaryPricing(cart) {
@@ -1932,10 +1935,6 @@ jQuery(document).ready(function ($) {
 
   function errorCallback(jqXHR) {
     console.log('errorStatus', jqXHR.status);
-
-    if (jqXHR.status === 401) {
-      init(); // eslint-disable-line no-use-before-define
-    }
   }
 
   (function () {

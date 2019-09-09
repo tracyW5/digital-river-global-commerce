@@ -208,7 +208,11 @@ function drgc_get_product_by_sku( $sku, $variation = false ) {
 	$gc_query = new WP_Query( $args );
 
 	if ( $gc_query->have_posts() ) {
-		return $gc_query->posts[0];
+		if ( $variation ) {
+			return $gc_query->posts[0]->post_parent;
+		} else {
+			return $gc_query->posts[0];
+		}
 	} else {
 		return 0;
 	}
