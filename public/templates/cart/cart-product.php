@@ -20,6 +20,7 @@ $product_sku = $line_item['product']['id'];
 $sale_price = $line_item['pricing']['formattedSalePriceWithQuantity'];
 $price = $line_item['pricing']['formattedListPriceWithQuantity'];
 $product_qty = $line_item['quantity'];
+$is_variation = isset( $line_item['product']['parentProduct'] );
 
 
 ?>
@@ -32,7 +33,7 @@ $product_qty = $line_item['quantity'];
 
         <div class="dr-product__info">
 
-            <a class="product-name" href="<?php echo get_permalink( drgc_get_product_by_sku( $product_sku, true ) ); ?>" >
+            <a class="product-name" href="<?php echo get_permalink( drgc_get_product_by_gcid( $product_sku, $is_variation ) ); ?>" >
                 <?php echo $product_name; ?>
             </a>
             <div class="product-sku">
