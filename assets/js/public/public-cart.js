@@ -158,7 +158,10 @@ jQuery(document).ready(($) => {
         success: (shoppingCartOfferData, textStatus, xhr) => {
           $.each(shoppingCartOfferData.offers.offer, function( index, offer ) {
             let shoppingCartHTML = `
-            <div class="dr-product"><div class="dr-product-content">${offer.salesPitch[0]}</div><img style="max-width: 100%; height: auto;" src="${offer.image}"></div>
+            <div class="dr-banner">
+              <div class="dr-banner__content">${offer.salesPitch[0]}</div>
+              <div class="dr-banner__img"><img src="${offer.image}"></div>
+            </div>
             `;
             $("#tempCartProducts").append(shoppingCartHTML);
             $(".dr-cart__products").html($("#tempCartProducts").html());

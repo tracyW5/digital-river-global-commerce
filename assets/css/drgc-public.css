@@ -834,6 +834,14 @@ input[type=radio] { position: relative; opacity: 1; width: -webkit-max-content; 
 
 .dr-summary__products .dr-product .remove-icon, .dr-summary__products .dr-product .value-button-decrease, .dr-summary__products .dr-product .value-button-increase, .dr-summary__products .dr-product .product-qty-number { display: none; }
 
+.dr-banner { display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; padding: 24px 0; }
+
+.dr-banner__content { width: 150px; }
+
+.dr-banner__img { -webkit-box-flex: 1; -ms-flex: 1; flex: 1; }
+
+.dr-banner__img img { max-width: 100%; }
+
 .dr-candyRackProduct__img { height: 40px; }
 
 .dr-summary { display: inline-block; width: 100%; height: 100%; }

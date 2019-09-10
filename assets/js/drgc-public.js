@@ -417,7 +417,7 @@ jQuery(document).ready(function ($) {
       url: "".concat(apiBaseUrl, "/me/point-of-promotions/Banner_ShoppingCartLocal/offers?format=json&expand=all"),
       success: function success(shoppingCartOfferData, textStatus, xhr) {
         $.each(shoppingCartOfferData.offers.offer, function (index, offer) {
-          var shoppingCartHTML = "\n            <div class=\"dr-product\"><div class=\"dr-product-content\">".concat(offer.salesPitch[0], "</div><img style=\"max-width: 100%; height: auto;\" src=\"").concat(offer.image, "\"></div>\n            ");
+          var shoppingCartHTML = "\n            <div class=\"dr-banner\">\n              <div class=\"dr-banner__content\">".concat(offer.salesPitch[0], "</div>\n              <div class=\"dr-banner__img\"><img src=\"").concat(offer.image, "\"></div>\n            </div>\n            ");
           $("#tempCartProducts").append(shoppingCartHTML);
           $(".dr-cart__products").html($("#tempCartProducts").html());
         });

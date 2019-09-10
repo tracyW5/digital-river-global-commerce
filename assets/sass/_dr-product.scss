@@ -211,3 +211,21 @@
 
     }
 }
+
+.dr-banner {
+    display: flex;
+    align-items: center;
+    padding: 24px 0;
+
+    &__content {
+        width: 150px;
+    }
+
+    &__img {
+        flex: 1;
+
+        img {
+            max-width: 100%;
+        }
+    }
+}
