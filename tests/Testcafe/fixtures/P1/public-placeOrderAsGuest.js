@@ -16,6 +16,10 @@ const checkoutPage = new CheckoutPage();
 const tyPage = new TYPage();
 
 fixture `===== DRGC Automation Test =====`
+  .httpAuth({
+    username: 'gcwpdemo',
+    password: '33a5b9f5',
+  })
   .beforeEach(async t => {
     await t
       .navigateTo(baseURL)
