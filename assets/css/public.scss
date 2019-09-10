@@ -97,7 +97,6 @@ iframe {
             text-align: left;
             top: 61px;
             right: 0;
-            width: 19.5rem;
             min-height: 300px;
             max-height: 400px;
             background-color: #fff;
@@ -300,6 +299,10 @@ body.page-thank-you #dr-minicart {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+
+        &:hover {
+            text-decoration: none;
+        }
     }
 
     &-thumbnail {
