@@ -2,7 +2,7 @@ import AdminPage from '../../page-models/admin/admin-page-model';
 import user from '../../utils/admin-login';
 import config from '../../config';
 
-fixture `DR Express Settings`;
+fixture `DRGC Settings`;
 
 const adminPage = new AdminPage();
 
