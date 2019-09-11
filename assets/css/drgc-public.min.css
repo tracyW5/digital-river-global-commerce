@@ -267,6 +267,7 @@ input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-m
 .dr-cart__estimate{width:100%;margin-bottom:16px;float:right}
 .dr-currency-toggler{padding:0 0 16px 0;float:right}
 .dr-pd-cart-qty-plus,.dr-pd-cart-qty-minus{cursor:pointer}
+.dr-pd-cart-qty-plus.disabled,.dr-pd-cart-qty-minus.disabled{cursor:auto}
 .dr-product{position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;width:100%;padding:24px 0;border-bottom:1px solid #ebebeb}
 .dr-product .dr-product-content{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-print-color-adjust:exact}
 .dr-product__img{width:100px;height:100px;min-width:100px;margin:0;background-size:contain;background-position:center;background-repeat:no-repeat;background-color:#fff;-webkit-print-color-adjust:exact}

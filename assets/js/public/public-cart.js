@@ -62,6 +62,8 @@ jQuery(document).ready(($) => {
         const step = parseInt($qty.attr('step'), 10);
         const initialVal = $qty.val();
 
+        if ($this.hasClass('disabled')) return;
+
         if (val) {
             // Change the value if plus or minus
             if ($(e.currentTarget).is('.dr-pd-cart-qty-plus')) {
@@ -336,8 +338,11 @@ jQuery(document).ready(($) => {
 
     }
 
-    function renderLineItemsAndSummary(data,hasPhysicalProductinLineItem){
-      let lineItemCount =0;
+    function renderLineItemsAndSummary(data,hasPhysicalProductinLineItem) {
+      const min = 1;
+      const max = 999;
+      let lineItemCount = 0;
+
       $.each(data.cart.lineItems.lineItem, function( index, lineitem ){
         if(lineitem.product.productType == "PHYSICAL")hasPhysicalProductinLineItem = true;
         let permalinkProductId = lineitem.product.id;
@@ -345,7 +350,7 @@ jQuery(document).ready(($) => {
         getpermalink(permalinkProductId).then((response) => {
           const permalink = response;
           const lineItemHTML = `
-          <div   data-line-item-id="${lineitem.id}" class="dr-product dr-product-lineitem" data-product-id="${lineitem.product.id}" data-sort="${index}">
+          <div data-line-item-id="${lineitem.id}" class="dr-product dr-product-lineitem" data-product-id="${lineitem.product.id}" data-sort="${index}">
             <div class="dr-product-content">
                 <div class="dr-product__img" style="background-image: url(${lineitem.product.thumbnailImage})"></div>
                 <div class="dr-product__info">
@@ -356,9 +361,9 @@ jQuery(document).ready(($) => {
                     </div>
                     <div class="product-qty">
                         <span class="qty-text">Qty ${lineitem.quantity}</span>
-                        <span class="dr-pd-cart-qty-minus value-button-decrease"></span>
-                        <input type="number" class="product-qty-number" step="1" min="1" max="999" value="${lineitem.quantity}" maxlength="5" size="2" pattern="[0-9]*" inputmode="numeric" readonly="true">
-                        <span class="dr-pd-cart-qty-plus value-button-increase"></span>
+                        <span class="dr-pd-cart-qty-minus value-button-decrease ${lineitem.quantity <= min ? 'disabled' : ''}"></span>
+                        <input type="number" class="product-qty-number" step="1" min="${min}" max="${max}" value="${lineitem.quantity}" maxlength="5" size="2" pattern="[0-9]*" inputmode="numeric" readonly="true">
+                        <span class="dr-pd-cart-qty-plus value-button-increase ${lineitem.quantity >= max ? 'disabled' : ''}"></span>
                     </div>
                 </div>
             </div>

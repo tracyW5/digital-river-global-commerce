@@ -86,4 +86,8 @@
 .dr-pd-cart-qty-plus,
 .dr-pd-cart-qty-minus {
     cursor: pointer;
+
+    &.disabled {
+        cursor: auto;
+    }
 }

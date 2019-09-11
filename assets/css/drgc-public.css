@@ -780,6 +780,8 @@ input[type=radio] { position: relative; opacity: 1; width: -webkit-max-content; 
 
 .dr-pd-cart-qty-plus, .dr-pd-cart-qty-minus { cursor: pointer; }
 
+.dr-pd-cart-qty-plus.disabled, .dr-pd-cart-qty-minus.disabled { cursor: auto; }
+
 .dr-product { position: relative; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-pack: justify; -ms-flex-pack: justify; justify-content: space-between; width: 100%; padding: 24px 0; border-bottom: 1px solid #ebebeb; }
 
 @media (min-width: 768px) { .dr-product { -webkit-box-align: center; -ms-flex-align: center; align-items: center; } }

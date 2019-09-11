@@ -318,6 +318,7 @@ jQuery(document).ready(function ($) {
     var min = parseInt($qty.attr('min'), 10);
     var step = parseInt($qty.attr('step'), 10);
     var initialVal = $qty.val();
+    if ($this.hasClass('disabled')) return;
 
     if (val) {
       // Change the value if plus or minus
@@ -571,6 +572,8 @@ jQuery(document).ready(function ($) {
   }
 
   function renderLineItemsAndSummary(data, hasPhysicalProductinLineItem) {
+    var min = 1;
+    var max = 999;
     var lineItemCount = 0;
     $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
       if (lineitem.product.productType == "PHYSICAL") hasPhysicalProductinLineItem = true;
@@ -578,7 +581,7 @@ jQuery(document).ready(function ($) {
       if (lineitem.product.parentProduct) permalinkProductId = lineitem.product.parentProduct.id;
       getpermalink(permalinkProductId).then(function (response) {
         var permalink = response;
-        var lineItemHTML = "\n          <div   data-line-item-id=\"".concat(lineitem.id, "\" class=\"dr-product dr-product-lineitem\" data-product-id=\"").concat(lineitem.product.id, "\" data-sort=\"").concat(index, "\">\n            <div class=\"dr-product-content\">\n                <div class=\"dr-product__img\" style=\"background-image: url(").concat(lineitem.product.thumbnailImage, ")\"></div>\n                <div class=\"dr-product__info\">\n                    <a class=\"product-name\" href=\"").concat(permalink, "\">").concat(lineitem.product.displayName, "</a>\n                    <div class=\"product-sku\">\n                        <span>").concat(productLabel, " </span>\n                        <span>#").concat(lineitem.product.id, "</span>\n                    </div>\n                    <div class=\"product-qty\">\n                        <span class=\"qty-text\">Qty ").concat(lineitem.quantity, "</span>\n                        <span class=\"dr-pd-cart-qty-minus value-button-decrease\"></span>\n                        <input type=\"number\" class=\"product-qty-number\" step=\"1\" min=\"1\" max=\"999\" value=\"").concat(lineitem.quantity, "\" maxlength=\"5\" size=\"2\" pattern=\"[0-9]*\" inputmode=\"numeric\" readonly=\"true\">\n                        <span class=\"dr-pd-cart-qty-plus value-button-increase\"></span>\n                    </div>\n                </div>\n            </div>\n            <div class=\"dr-product__price\">\n                <button class=\"dr-prd-del remove-icon\"></button>\n                <span class=\"sale-price\">").concat(lineitem.pricing.formattedSalePriceWithQuantity, "</span>\n                <span class=\"regular-price\">").concat(lineitem.pricing.formattedListPriceWithQuantity, "</span>\n            </div>\n          </div>\n          ");
+        var lineItemHTML = "\n          <div data-line-item-id=\"".concat(lineitem.id, "\" class=\"dr-product dr-product-lineitem\" data-product-id=\"").concat(lineitem.product.id, "\" data-sort=\"").concat(index, "\">\n            <div class=\"dr-product-content\">\n                <div class=\"dr-product__img\" style=\"background-image: url(").concat(lineitem.product.thumbnailImage, ")\"></div>\n                <div class=\"dr-product__info\">\n                    <a class=\"product-name\" href=\"").concat(permalink, "\">").concat(lineitem.product.displayName, "</a>\n                    <div class=\"product-sku\">\n                        <span>").concat(productLabel, " </span>\n                        <span>#").concat(lineitem.product.id, "</span>\n                    </div>\n                    <div class=\"product-qty\">\n                        <span class=\"qty-text\">Qty ").concat(lineitem.quantity, "</span>\n                        <span class=\"dr-pd-cart-qty-minus value-button-decrease ").concat(lineitem.quantity <= min ? 'disabled' : '', "\"></span>\n                        <input type=\"number\" class=\"product-qty-number\" step=\"1\" min=\"").concat(min, "\" max=\"").concat(max, "\" value=\"").concat(lineitem.quantity, "\" maxlength=\"5\" size=\"2\" pattern=\"[0-9]*\" inputmode=\"numeric\" readonly=\"true\">\n                        <span class=\"dr-pd-cart-qty-plus value-button-increase ").concat(lineitem.quantity >= max ? 'disabled' : '', "\"></span>\n                    </div>\n                </div>\n            </div>\n            <div class=\"dr-product__price\">\n                <button class=\"dr-prd-del remove-icon\"></button>\n                <span class=\"sale-price\">").concat(lineitem.pricing.formattedSalePriceWithQuantity, "</span>\n                <span class=\"regular-price\">").concat(lineitem.pricing.formattedListPriceWithQuantity, "</span>\n            </div>\n          </div>\n          ");
         $('#tempCartProducts').append(lineItemHTML);
       }).then(function () {
         lineItemCount++;
