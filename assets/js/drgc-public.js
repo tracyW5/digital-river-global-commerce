@@ -664,7 +664,7 @@ jQuery(document).ready(function ($) {
   $('#apply-promo-code-btn').click(function (e) {
     var promoCode = $('#promo-code').val();
 
-    if (!promoCode) {
+    if (!$.trim(promoCode)) {
       $('#dr-promo-code-err-field').text(drgc_params.translations.invalid_promo_code_msg).show();
       return;
     }
@@ -1430,6 +1430,19 @@ window.onpageshow = function (event) {
     window.location.reload();
   }
 };
+
+jQuery(document).ready(function ($) {
+  $('input[type=text]:required').on('input', function (e) {
+    var elem = e.target;
+    elem.setCustomValidity(elem.value && !$.trim(elem.value) ? drgc_params.translations.required_field_msg : '');
+
+    if (elem.validity.valueMissing) {
+      $(elem).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
+    } else if (elem.validity.customError) {
+      $(elem).next('.invalid-feedback').text(elem.validationMessage);
+    }
+  });
+});
 "use strict";
 
 /* global drgc_params, iFrameResize */

@@ -19,3 +19,16 @@ window.onpageshow = function(event) {
     window.location.reload();
   }
 };
+
+jQuery(document).ready(($) => {
+  $('input[type=text]:required').on('input', (e) => {
+    const elem = e.target;
+
+    elem.setCustomValidity((elem.value && !$.trim(elem.value)) ? drgc_params.translations.required_field_msg : '');
+    if (elem.validity.valueMissing) {
+      $(elem).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
+    } else if (elem.validity.customError) {
+      $(elem).next('.invalid-feedback').text(elem.validationMessage);
+    }
+  });
+});

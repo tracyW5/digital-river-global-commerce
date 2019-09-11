@@ -456,7 +456,7 @@ jQuery(document).ready(($) => {
     $('#apply-promo-code-btn').click((e) => {
         const promoCode = $('#promo-code').val();
 
-        if (!promoCode) {
+        if (!$.trim(promoCode)) {
           $('#dr-promo-code-err-field').text(drgc_params.translations.invalid_promo_code_msg).show();
           return;
         }
