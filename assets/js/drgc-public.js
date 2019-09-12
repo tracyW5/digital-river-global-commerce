@@ -1215,7 +1215,7 @@ jQuery(document).ready(function ($) {
             address: {
               line1: payload.billing.line1,
               city: payload.billing.city,
-              state: payload.billing.state,
+              state: payload.billing.countrySubdivision,
               country: payload.billing.country,
               postalCode: payload.billing.postalCode
             }
@@ -1382,7 +1382,7 @@ jQuery(document).ready(function ($) {
                 'line1': cart.shippingAddress.line1,
                 'line2': cart.shippingAddress.line2,
                 'city': cart.shippingAddress.city,
-                'state': cart.shippingAddress.state,
+                'state': cart.shippingAddress.countrySubdivision,
                 'country': cart.shippingAddress.country,
                 'postalCode': cart.shippingAddress.postalCode
               }

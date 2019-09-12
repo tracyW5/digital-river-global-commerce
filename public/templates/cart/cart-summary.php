@@ -54,7 +54,7 @@ $delivery_info = 'Delivery in 2-5 working days and extended 30 days return perio
     <div class="dr-summary__promo-code">
         <a class="promo-code-toggle" href="javascript:void(0);"><?php echo __('Add Promo Code +') ?></a>
         <div class="promo-code-wrapper" style="display: none;">
-            <input type="text" id="promo-code" name="promo_code" placeholder="<?php echo __('Promo Code') ?>">
+            <input type="text" class="form-control" id="promo-code" name="promo_code" placeholder="<?php echo __('Promo Code') ?>">
             <button type="button" class="dr-btn" id="apply-promo-code-btn"><?php echo __('Apply') ?></button>
             <div class="invalid-feedback" id="dr-promo-code-err-field"></div>
         </div>
