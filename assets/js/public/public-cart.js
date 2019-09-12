@@ -216,6 +216,9 @@ jQuery(document).ready(($) => {
             let promoText = offer.salesPitch[0].length > 0 ? offer.salesPitch[0]   : "";
             let buyButtonText = (offer.type == "Up-sell") ? drgc_params.translations.upgrade_label : drgc_params.translations.add_label;
             $.each(offer.productOffers.productOffer, function( index, productOffer ) {
+              const salePrice = productOffer.pricing.formattedSalePriceWithQuantity;
+              const listPrice = productOffer.pricing.formattedListPriceWithQuantity;
+
               let candyRackProductHTML = `
               <div  class="dr-product dr-candyRackProduct" data-product-id="${productOffer.product.id}" data-parent-product-id="${productID}">
                 <div class="dr-product-content">
@@ -233,8 +236,8 @@ jQuery(document).ready(($) => {
                 </div>
                 <div class="dr-product__price">
                     <button type="button" class="dr-btn dr-buy-candyRack" data-buy-uri="${productOffer.addProductToCart.uri}">${buyButtonText}</button>
-                    <span class="sale-price">${productOffer.pricing.formattedSalePriceWithQuantity}</span>
-                    <span class="regular-price dr-strike-price">${productOffer.pricing.formattedListPriceWithQuantity}</span>
+                    <span class="sale-price">${salePrice}</span>
+                    <span class="regular-price dr-strike-price ${salePrice === listPrice ? 'd-none' : ''}">${listPrice}</span>
                 </div>
               </div>
               `;
@@ -343,10 +346,13 @@ jQuery(document).ready(($) => {
       const max = 999;
       let lineItemCount = 0;
 
-      $.each(data.cart.lineItems.lineItem, function( index, lineitem ){
+      $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
         if(lineitem.product.productType == "PHYSICAL")hasPhysicalProductinLineItem = true;
         let permalinkProductId = lineitem.product.id;
         if(lineitem.product.parentProduct)permalinkProductId = lineitem.product.parentProduct.id;
+        const salePrice = lineitem.pricing.formattedSalePriceWithQuantity;
+        const listPrice = lineitem.pricing.formattedListPriceWithQuantity;
+
         getpermalink(permalinkProductId).then((response) => {
           const permalink = response;
           const lineItemHTML = `
@@ -369,8 +375,8 @@ jQuery(document).ready(($) => {
             </div>
             <div class="dr-product__price">
                 <button class="dr-prd-del remove-icon"></button>
-                <span class="sale-price">${lineitem.pricing.formattedSalePriceWithQuantity}</span>
-                <span class="regular-price">${lineitem.pricing.formattedListPriceWithQuantity}</span>
+                <span class="sale-price">${salePrice}</span>
+                <span class="regular-price ${salePrice === listPrice ? 'd-none' : ''}">${listPrice}</span>
             </div>
           </div>
           `;

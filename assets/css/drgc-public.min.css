@@ -54,6 +54,7 @@ body.page-cart #dr-minicart,body.page-checkout #dr-minicart,body.page-thank-you 
 .dr-pd-qty-minus,.dr-pd-qty-plus{display:inline-block;width:20px;height:20px;vertical-align:middle;cursor:pointer;background-size:cover;background-position:center;background-repeat:no-repeat}
 input[type=radio]{position:relative;opacity:1;width:-webkit-max-content;width:-moz-max-content;width:max-content;height:-webkit-max-content;height:-moz-max-content;height:max-content}
 .dr-pd-info{margin-top:30px}
+.d-none{display:none !important}
 .drgc-wrapper .form-control{display:block;width:100%;height:calc(1.5em + 0.75rem + 2px);padding:.375rem .75rem;font-size:1rem;font-weight:400;line-height:1.5;color:#495057;background-color:#fff;background-clip:padding-box;border:1px solid #ced4da;border-radius:.25rem;-webkit-transition:border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;transition:border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;transition:border-color .15s ease-in-out,box-shadow .15s ease-in-out;transition:border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out}
 .drgc-wrapper .form-control::-ms-expand{background-color:transparent;border:0}
 .drgc-wrapper .form-control:focus{color:#495057;background-color:#fff;border-color:#80bdff;outline:0;-webkit-box-shadow:0 0 0 .2rem rgba(0,123,255,0.25);box-shadow:0 0 0 .2rem rgba(0,123,255,0.25)}

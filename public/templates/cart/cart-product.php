@@ -75,8 +75,8 @@ $is_variation = isset( $line_item['product']['parentProduct'] );
 
         <button class="dr-prd-del remove-icon"></button>
 
-        <span id="<?php echo $line_item['id']; ?>" class="sale-price"><?php echo $sale_price; ?></span>
-        <span id="<?php echo $line_item['id']; ?>" class="regular-price"><?php echo $price; ?></span>
+        <span class="sale-price"><?php echo $sale_price; ?></span>
+        <span class="regular-price <?php echo $sale_price === $price ? 'd-none' : ''; ?>"><?php echo $price; ?></span>
 
     </div>
 
