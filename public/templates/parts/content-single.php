@@ -27,8 +27,11 @@ if ( $variations && isset( $variations[0] ) ) {
     $variation->sort_pricing = $var_pricing['sale_price_value'];
     array_push($variations_sort,$variation);
   }
-  usort($variations_sort, function($a, $b){
-    return bccomp($a->sort_pricing, $b->sort_pricing);
+  usort( $variations_sort, function( $a, $b ) {
+    if ( $a == $b ) {
+        return 0;
+    }
+    return ( $a->sort_pricing < $b->sort_pricing ) ? -1 : 1;
   });
   $variations = $variations_sort;
 	$gc_id = get_post_meta( $variations[0]->ID, 'gc_product_id', true );
