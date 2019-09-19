@@ -33,7 +33,7 @@ $is_variation = isset( $line_item['product']['parentProduct'] );
 
         <div class="dr-product__info">
 
-            <a class="product-name" href="<?php echo get_permalink( drgc_get_product_by_gcid( $product_sku, $is_variation ) ); ?>" >
+            <a class="product-name" href="<?php echo get_permalink( drgc_get_parent_product_by_gcid( $product_sku, $is_variation ) ); ?>" >
                 <?php echo $product_name; ?>
             </a>
             <div class="product-sku">
