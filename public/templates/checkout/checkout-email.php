@@ -1,6 +1,6 @@
 <div class="dr-checkout__el dr-checkout__email active">
 
-    <button class="dr-accordion">
+    <div class="dr-accordion">
 
         <span class="dr-accordion__name">
 
@@ -12,7 +12,7 @@
             <span class="dr-accordion__edit">Edit></span>
         <?php } ?>
   
-    </button>
+    </div>
 
     <form id="checkout-email-form" class="dr-panel-edit dr-panel-edit--email needs-validation" novalidate>
 

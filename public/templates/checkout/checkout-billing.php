@@ -11,7 +11,7 @@ if ( $cart['cart']['billingAddress']['line1'] != '') {
 }
 ?>
 <div class="dr-checkout__billing dr-checkout__el">
-    <button class="dr-accordion">
+    <div class="dr-accordion">
 
         <span class="dr-accordion__name">
 
@@ -31,7 +31,7 @@ if ( $cart['cart']['billingAddress']['line1'] != '') {
 
         <span class="dr-accordion__edit"><?php echo __( 'Edit', 'digital-river-global-commerce' ); ?>></span>
 
-    </button>
+    </div>
 
     <form id="checkout-billing-form" class="dr-panel-edit dr-panel-edit--billing needs-validation" novalidate>
 
