@@ -227,9 +227,6 @@ jQuery(document).ready(($) => {
 
     function errorCallback(jqXHR) {
         console.log('errorStatus', jqXHR.status);
-        if (jqXHR.status === 401) {
-            init(); // eslint-disable-line no-use-before-define
-        }
     }
 
     (function() {

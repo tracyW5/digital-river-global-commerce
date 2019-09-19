@@ -164,7 +164,7 @@ class DRGC_Product {
 				//Store images
 				if ( preg_match( '/productImage/', $attribute['name'] ) ) {
 					$parts = parse_url( $_product_meta['gc_product_images_url'] );
-					$_product_meta['product_images'][] = $parts['scheme'] . '://' . $parts['host'] . $parts['path'] . $attribute['value'];
+					$_product_meta['product_images'][] = $parts['scheme'] . '://' . $parts['host'] . preg_replace('#[^/]*$#', '', $parts['path'] ) . $attribute['value'];
 				}
 
 				switch ( $attribute['name'] ) {

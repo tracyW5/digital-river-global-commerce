@@ -230,6 +230,9 @@ jQuery(document).ready(($) => {
 
             adjustColumns($section);
             updateTaxLabel();
+            $('html, body').animate({
+                scrollTop: ($nextSection.first().offset().top - 80)
+            }, 500);
         }
 
         function updateSummaryPricing(cart) {

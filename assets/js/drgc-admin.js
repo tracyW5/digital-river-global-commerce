@@ -101,7 +101,7 @@ jQuery(document).ready(function ($) {
   function ajaxBatchSuccess(data, textStatus, jqXHR) {
     var lastIndex;
     $.each(data.results, function (key, value) {
-      if ('success' === value) {
+      if (value.success) {
         itemsCompleted.push(key);
       } else if ('failure' === value) {
         itemsFailed.push(key);

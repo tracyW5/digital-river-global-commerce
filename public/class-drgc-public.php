@@ -73,6 +73,8 @@ class DRGC_Public {
 	 */
 	public function enqueue_scripts() {
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+		// Adds support for ES6
+		wp_enqueue_script( 'js-polyfill', '//cdn.polyfill.io/v3/polyfill.js' );
 
 		wp_enqueue_script( $this->drgc, DRGC_PLUGIN_URL . 'assets/js/drgc-public' . $suffix . '.js', array( 'jquery' ), $this->version, false );
 
@@ -480,7 +482,7 @@ class DRGC_Public {
 	 */
 	public function overwrite_template( $template ) {
 		$theme = wp_get_theme();
-		if ( 'Digital River' != $theme->name ) {
+		if ( 'Digital River Global Commerce' != $theme->name ) {
 			if ( is_singular( 'dr_product' ) ) {
 				$template = DRGC_PLUGIN_DIR . 'public/templates/single.php';
 			} else if ( is_post_type_archive( 'dr_product' ) || is_tax( 'dr_product_category' ) ) {
