@@ -90,7 +90,7 @@ class DRGC_Product {
 
 		foreach ( $args as $key => $value ) {
 			switch ( $key ) {
-				case 'name':
+				case 'displayName':
 					// Set Post Name
 					$_product_data['post_title'] = wp_strip_all_tags( $value );
 					break;
