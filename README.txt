@@ -79,3 +79,19 @@ No, you are responsible for hosting your own site.
 == Changelog ==
 = 1.0 =
 * Initial release
+
+= 1.0.1 =
+* Add scrolling animation at checkout page (when finishing one section, it will automatically scroll to the next one)
+* Banner (in cart page) width is now responsive
+* Fixed variation product's permalink on cart page when PHP rendering
+* Consistent with new theme name "Digital River Global Commerce"
+* Alignment of legal footer
+* Fix IE 11 compatibility issues
+* Type only spaces in fields for shipping and billing information and they are invalid now
+* Product price should be displayed only once for product if it doesn't have reduced price
+* Replace bccomp() PHP function
+* Modify dr-btn CSS to make it more compatible
+* Add readonly attribute at qty on PD page
+* In cart page's line item, minus button now is disabled when qty is 1
+* Fix null state of credit card & PayPal's payload
+* Display site name instead of internal product name
