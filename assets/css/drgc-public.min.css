@@ -10,7 +10,7 @@ iframe{width:1px;min-width:100%;border:0}
 .dr-loader{position:relative;margin:0 auto;text-align:center}
 .dr-legal-footer a{font-family:"Open Sans",sans-serif;font-size:16px;color:#000;line-height:16px;margin-right:10px;text-decoration:underline}
 .dr-legal-footer .dr-aboutDigitalRiver{margin-right:0}
-#dr-minicart .dr-minicart-display{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;position:absolute;text-align:left;top:61px;right:0;min-height:300px;max-height:400px;background-color:#fff;border:1px solid #ddd;-webkit-box-shadow:0 3px 10px rgba(0,0,0,0.2);box-shadow:0 3px 10px rgba(0,0,0,0.2);z-index:99;font-size:18px}
+#dr-minicart .dr-minicart-display{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;position:absolute;text-align:left;top:61px;right:0;width:330px;min-height:300px;max-height:400px;background-color:#fff;border:1px solid #ddd;-webkit-box-shadow:0 3px 10px rgba(0,0,0,0.2);box-shadow:0 3px 10px rgba(0,0,0,0.2);z-index:99;font-size:18px}
 #dr-minicart .dr-minicart-header,#dr-minicart .dr-minicart-body,#dr-minicart .dr-minicart-footer{padding:0 10px}
 #dr-minicart .dr-minicart-header{padding:1rem 0 1rem 1rem;border-bottom:1px solid #eee}
 #dr-minicart .dr-minicart-body{-webkit-box-flex:1;-ms-flex:1 1 auto;flex:1 1 auto;padding-top:15px;padding-bottom:15px;overflow-y:auto;max-height:15rem}
