@@ -75,7 +75,7 @@ Yes. The plugin offers commonly-used merchandising offer types.
 
 No, you are responsible for hosting your own site.
 
-= Does Digital River support IE ? =
+= Does Digital River Plugin support IE ? =
 
 Digital River Plugin only support IE Edge.
 
