@@ -187,20 +187,20 @@ function drgc_get_product_by_gcid( $gc_id , $variation = false ) {
 }
 
 /**
- * Get product post by external sku code
+ * Get product post by gc_id
  *
- * @param int $sku
+ * @param int $gc_id
  * @param boolean $variation
  * @return bool|object post
  */
-function drgc_get_product_by_sku( $sku, $variation = false ) {
+function drgc_get_parent_product_by_gcid( $gc_id, $variation = false ) {
 	$args = array(
 		'posts_per_page'   => 1,
-		'post_type'        =>  $variation ? 'dr_product_variation' : 'dr_product',
+		'post_type'        => $variation ? 'dr_product_variation' : 'dr_product',
 		'meta_query' => array(
 			array(
 				'key' => 'gc_product_id',
-				'value' => $sku
+				'value' => absint( $gc_id )
 			)
 		),
 	);
@@ -208,7 +208,11 @@ function drgc_get_product_by_sku( $sku, $variation = false ) {
 	$gc_query = new WP_Query( $args );
 
 	if ( $gc_query->have_posts() ) {
-		return $gc_query->posts[0];
+		if ( $variation ) {
+			return $gc_query->posts[0]->post_parent;
+		} else {
+			return $gc_query->posts[0];
+		}
 	} else {
 		return 0;
 	}

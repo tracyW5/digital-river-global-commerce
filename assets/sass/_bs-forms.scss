@@ -2,6 +2,10 @@
 //
 // Textual form controls
 //
+.d-none {
+  display: none !important;
+}
+
 .drgc-wrapper {
   .form-control {
     display: block;

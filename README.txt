@@ -75,7 +75,19 @@ Yes. The plugin offers commonly-used merchandising offer types.
 
 No, you are responsible for hosting your own site.
 
+= Does Digital River Plugin support IE ? =
+
+Digital River Plugin only support IE Edge.
 
 == Changelog ==
 = 1.0 =
 * Initial release
+
+= 1.0.1 =
+* Updated checkout section transition animation
+* Cart banner width is now responsive.
+* Aligned legal footer.
+* Additional validation to shipping and billing information inputs.
+* Fixed an issue where a product would show an additional reduced price value even when an offer was not applied. Now only the full price will appear if there are no offers applied.
+* Fixed an issue where you could reduce line item quantity to zero without removing the entire line item. You can no longer reduce quantity lower than one during checkout for a line item without removing the whole line.
+

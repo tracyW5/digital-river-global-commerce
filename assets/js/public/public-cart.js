@@ -62,6 +62,8 @@ jQuery(document).ready(($) => {
         const step = parseInt($qty.attr('step'), 10);
         const initialVal = $qty.val();
 
+        if ($this.hasClass('disabled')) return;
+
         if (val) {
             // Change the value if plus or minus
             if ($(e.currentTarget).is('.dr-pd-cart-qty-plus')) {
@@ -158,7 +160,10 @@ jQuery(document).ready(($) => {
         success: (shoppingCartOfferData, textStatus, xhr) => {
           $.each(shoppingCartOfferData.offers.offer, function( index, offer ) {
             let shoppingCartHTML = `
-            <div class="dr-product"><div class="dr-product-content">${offer.salesPitch[0]}</div><img src="${offer.image}"></div>
+            <div class="dr-banner">
+              <div class="dr-banner__content">${offer.salesPitch[0]}</div>
+              <div class="dr-banner__img"><img src="${offer.image}"></div>
+            </div>
             `;
             $("#tempCartProducts").append(shoppingCartHTML);
             $(".dr-cart__products").html($("#tempCartProducts").html());
@@ -211,6 +216,9 @@ jQuery(document).ready(($) => {
             let promoText = offer.salesPitch[0].length > 0 ? offer.salesPitch[0]   : "";
             let buyButtonText = (offer.type == "Up-sell") ? drgc_params.translations.upgrade_label : drgc_params.translations.add_label;
             $.each(offer.productOffers.productOffer, function( index, productOffer ) {
+              const salePrice = productOffer.pricing.formattedSalePriceWithQuantity;
+              const listPrice = productOffer.pricing.formattedListPriceWithQuantity;
+
               let candyRackProductHTML = `
               <div  class="dr-product dr-candyRackProduct" data-product-id="${productOffer.product.id}" data-parent-product-id="${productID}">
                 <div class="dr-product-content">
@@ -228,8 +236,8 @@ jQuery(document).ready(($) => {
                 </div>
                 <div class="dr-product__price">
                     <button type="button" class="dr-btn dr-buy-candyRack" data-buy-uri="${productOffer.addProductToCart.uri}">${buyButtonText}</button>
-                    <span class="sale-price">${productOffer.pricing.formattedSalePriceWithQuantity}</span>
-                    <span class="regular-price dr-strike-price">${productOffer.pricing.formattedListPriceWithQuantity}</span>
+                    <span class="sale-price">${salePrice}</span>
+                    <span class="regular-price dr-strike-price ${salePrice === listPrice ? 'd-none' : ''}">${listPrice}</span>
                 </div>
               </div>
               `;
@@ -333,16 +341,22 @@ jQuery(document).ready(($) => {
 
     }
 
-    function renderLineItemsAndSummary(data,hasPhysicalProductinLineItem){
-      let lineItemCount =0;
-      $.each(data.cart.lineItems.lineItem, function( index, lineitem ){
+    function renderLineItemsAndSummary(data,hasPhysicalProductinLineItem) {
+      const min = 1;
+      const max = 999;
+      let lineItemCount = 0;
+
+      $.each(data.cart.lineItems.lineItem, function( index, lineitem ) {
         if(lineitem.product.productType == "PHYSICAL")hasPhysicalProductinLineItem = true;
         let permalinkProductId = lineitem.product.id;
         if(lineitem.product.parentProduct)permalinkProductId = lineitem.product.parentProduct.id;
+        const salePrice = lineitem.pricing.formattedSalePriceWithQuantity;
+        const listPrice = lineitem.pricing.formattedListPriceWithQuantity;
+
         getpermalink(permalinkProductId).then((response) => {
           const permalink = response;
           const lineItemHTML = `
-          <div   data-line-item-id="${lineitem.id}" class="dr-product dr-product-lineitem" data-product-id="${lineitem.product.id}" data-sort="${index}">
+          <div data-line-item-id="${lineitem.id}" class="dr-product dr-product-lineitem" data-product-id="${lineitem.product.id}" data-sort="${index}">
             <div class="dr-product-content">
                 <div class="dr-product__img" style="background-image: url(${lineitem.product.thumbnailImage})"></div>
                 <div class="dr-product__info">
@@ -353,16 +367,16 @@ jQuery(document).ready(($) => {
                     </div>
                     <div class="product-qty">
                         <span class="qty-text">Qty ${lineitem.quantity}</span>
-                        <span class="dr-pd-cart-qty-minus value-button-decrease"></span>
-                        <input type="number" class="product-qty-number" step="1" min="1" max="999" value="${lineitem.quantity}" maxlength="5" size="2" pattern="[0-9]*" inputmode="numeric" readonly="true">
-                        <span class="dr-pd-cart-qty-plus value-button-increase"></span>
+                        <span class="dr-pd-cart-qty-minus value-button-decrease ${lineitem.quantity <= min ? 'disabled' : ''}"></span>
+                        <input type="number" class="product-qty-number" step="1" min="${min}" max="${max}" value="${lineitem.quantity}" maxlength="5" size="2" pattern="[0-9]*" inputmode="numeric" readonly="true">
+                        <span class="dr-pd-cart-qty-plus value-button-increase ${lineitem.quantity >= max ? 'disabled' : ''}"></span>
                     </div>
                 </div>
             </div>
             <div class="dr-product__price">
                 <button class="dr-prd-del remove-icon"></button>
-                <span class="sale-price">${lineitem.pricing.formattedSalePriceWithQuantity}</span>
-                <span class="regular-price">${lineitem.pricing.formattedListPriceWithQuantity}</span>
+                <span class="sale-price">${salePrice}</span>
+                <span class="regular-price ${salePrice === listPrice ? 'd-none' : ''}">${listPrice}</span>
             </div>
           </div>
           `;
@@ -432,7 +446,7 @@ jQuery(document).ready(($) => {
             url: `${apiBaseUrl}/me?currency=${data.currency}&locale=${data.locale}`,
             success: (data, textStatus, xhr) => {
                 if (xhr.status === 204) {
-                    location.reload();
+                    location.reload(true);
                 }
             },
             error: (jqXHR) => {
@@ -448,7 +462,7 @@ jQuery(document).ready(($) => {
     $('#apply-promo-code-btn').click((e) => {
         const promoCode = $('#promo-code').val();
 
-        if (!promoCode) {
+        if (!$.trim(promoCode)) {
           $('#dr-promo-code-err-field').text(drgc_params.translations.invalid_promo_code_msg).show();
           return;
         }

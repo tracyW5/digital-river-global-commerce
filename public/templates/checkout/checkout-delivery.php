@@ -12,7 +12,7 @@ $result = 'Standard $0.00';
 
 <div class="dr-checkout__delivery dr-checkout__el">
 
-    <button class="dr-accordion">
+    <div class="dr-accordion">
         
         <span class="dr-accordion__name">
 
@@ -34,7 +34,7 @@ $result = 'Standard $0.00';
        <span class="dr-accordion__edit">Edit></span>
   
         
-    </button>
+    </div>
 
     <form id="checkout-delivery-form" class="dr-panel-edit dr-panel-edit--delivery">
 

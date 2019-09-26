@@ -97,7 +97,7 @@ iframe {
             text-align: left;
             top: 61px;
             right: 0;
-            width: 19.5rem;
+            width: 330px;
             min-height: 300px;
             max-height: 400px;
             background-color: #fff;
@@ -300,6 +300,10 @@ body.page-thank-you #dr-minicart {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+
+        &:hover {
+            text-decoration: none;
+        }
     }
 
     &-thumbnail {
@@ -378,8 +382,8 @@ body.page-thank-you #dr-minicart {
 input[type=radio] {
     position: relative;
     opacity: 1;
-    width: max-content;
-    height: max-content;
+    width: auto;
+    height: auto;
 }
 
 .dr-pd-info {

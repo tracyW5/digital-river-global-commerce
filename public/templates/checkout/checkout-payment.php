@@ -1,7 +1,7 @@
 
 <div class="dr-checkout__payment dr-checkout__el">
 
-<button class="dr-accordion">
+<div class="dr-accordion">
     
     <span class="dr-accordion__name">
 
@@ -11,7 +11,7 @@
 
     <span class="dr-accordion__edit">Edit></span>
     
-</button>
+</div>
 
 <form id="checkout-payment-form" class="dr-panel-edit dr-panel-edit--payment needs-validation" novalidate>
 

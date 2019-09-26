@@ -318,6 +318,7 @@ jQuery(document).ready(function ($) {
     var min = parseInt($qty.attr('min'), 10);
     var step = parseInt($qty.attr('step'), 10);
     var initialVal = $qty.val();
+    if ($this.hasClass('disabled')) return;
 
     if (val) {
       // Change the value if plus or minus
@@ -417,7 +418,7 @@ jQuery(document).ready(function ($) {
       url: "".concat(apiBaseUrl, "/me/point-of-promotions/Banner_ShoppingCartLocal/offers?format=json&expand=all"),
       success: function success(shoppingCartOfferData, textStatus, xhr) {
         $.each(shoppingCartOfferData.offers.offer, function (index, offer) {
-          var shoppingCartHTML = "\n            <div class=\"dr-product\"><div class=\"dr-product-content\">".concat(offer.salesPitch[0], "</div><img src=\"").concat(offer.image, "\"></div>\n            ");
+          var shoppingCartHTML = "\n            <div class=\"dr-banner\">\n              <div class=\"dr-banner__content\">".concat(offer.salesPitch[0], "</div>\n              <div class=\"dr-banner__img\"><img src=\"").concat(offer.image, "\"></div>\n            </div>\n            ");
           $("#tempCartProducts").append(shoppingCartHTML);
           $(".dr-cart__products").html($("#tempCartProducts").html());
         });
@@ -467,7 +468,9 @@ jQuery(document).ready(function ($) {
           var promoText = offer.salesPitch[0].length > 0 ? offer.salesPitch[0] : "";
           var buyButtonText = offer.type == "Up-sell" ? drgc_params.translations.upgrade_label : drgc_params.translations.add_label;
           $.each(offer.productOffers.productOffer, function (index, productOffer) {
-            var candyRackProductHTML = "\n              <div  class=\"dr-product dr-candyRackProduct\" data-product-id=\"".concat(productOffer.product.id, "\" data-parent-product-id=\"").concat(productID, "\">\n                <div class=\"dr-product-content\">\n                    <img src=\"").concat(productOffer.product.thumbnailImage, "\" class=\"dr-candyRackProduct__img\"/>\n                    <div class=\"dr-product__info\">\n                      <div class=\"product-color\">\n                        <span style=\"background-color: yellow;\">").concat(promoText, "</span>\n                      </div>\n                      ").concat(productOffer.product.displayName, "\n                      <div class=\"product-sku\">\n                        <span>").concat(productLabel, "  </span>\n                        <span>#").concat(productOffer.product.id, "</span>\n                      </div>\n                    </div>\n                </div>\n                <div class=\"dr-product__price\">\n                    <button type=\"button\" class=\"dr-btn dr-buy-candyRack\" data-buy-uri=\"").concat(productOffer.addProductToCart.uri, "\">").concat(buyButtonText, "</button>\n                    <span class=\"sale-price\">").concat(productOffer.pricing.formattedSalePriceWithQuantity, "</span>\n                    <span class=\"regular-price dr-strike-price\">").concat(productOffer.pricing.formattedListPriceWithQuantity, "</span>\n                </div>\n              </div>\n              ");
+            var salePrice = productOffer.pricing.formattedSalePriceWithQuantity;
+            var listPrice = productOffer.pricing.formattedListPriceWithQuantity;
+            var candyRackProductHTML = "\n              <div  class=\"dr-product dr-candyRackProduct\" data-product-id=\"".concat(productOffer.product.id, "\" data-parent-product-id=\"").concat(productID, "\">\n                <div class=\"dr-product-content\">\n                    <img src=\"").concat(productOffer.product.thumbnailImage, "\" class=\"dr-candyRackProduct__img\"/>\n                    <div class=\"dr-product__info\">\n                      <div class=\"product-color\">\n                        <span style=\"background-color: yellow;\">").concat(promoText, "</span>\n                      </div>\n                      ").concat(productOffer.product.displayName, "\n                      <div class=\"product-sku\">\n                        <span>").concat(productLabel, "  </span>\n                        <span>#").concat(productOffer.product.id, "</span>\n                      </div>\n                    </div>\n                </div>\n                <div class=\"dr-product__price\">\n                    <button type=\"button\" class=\"dr-btn dr-buy-candyRack\" data-buy-uri=\"").concat(productOffer.addProductToCart.uri, "\">").concat(buyButtonText, "</button>\n                    <span class=\"sale-price\">").concat(salePrice, "</span>\n                    <span class=\"regular-price dr-strike-price ").concat(salePrice === listPrice ? 'd-none' : '', "\">").concat(listPrice, "</span>\n                </div>\n              </div>\n              ");
             if ($('div.dr-product[data-product-id="' + productOffer.product.id + '"]:not(.dr-candyRackProduct)').length == 0) $('div[data-product-id="' + productID + '"]').after(candyRackProductHTML);
           });
         });
@@ -571,14 +574,18 @@ jQuery(document).ready(function ($) {
   }
 
   function renderLineItemsAndSummary(data, hasPhysicalProductinLineItem) {
+    var min = 1;
+    var max = 999;
     var lineItemCount = 0;
     $.each(data.cart.lineItems.lineItem, function (index, lineitem) {
       if (lineitem.product.productType == "PHYSICAL") hasPhysicalProductinLineItem = true;
       var permalinkProductId = lineitem.product.id;
       if (lineitem.product.parentProduct) permalinkProductId = lineitem.product.parentProduct.id;
+      var salePrice = lineitem.pricing.formattedSalePriceWithQuantity;
+      var listPrice = lineitem.pricing.formattedListPriceWithQuantity;
       getpermalink(permalinkProductId).then(function (response) {
         var permalink = response;
-        var lineItemHTML = "\n          <div   data-line-item-id=\"".concat(lineitem.id, "\" class=\"dr-product dr-product-lineitem\" data-product-id=\"").concat(lineitem.product.id, "\" data-sort=\"").concat(index, "\">\n            <div class=\"dr-product-content\">\n                <div class=\"dr-product__img\" style=\"background-image: url(").concat(lineitem.product.thumbnailImage, ")\"></div>\n                <div class=\"dr-product__info\">\n                    <a class=\"product-name\" href=\"").concat(permalink, "\">").concat(lineitem.product.displayName, "</a>\n                    <div class=\"product-sku\">\n                        <span>").concat(productLabel, " </span>\n                        <span>#").concat(lineitem.product.id, "</span>\n                    </div>\n                    <div class=\"product-qty\">\n                        <span class=\"qty-text\">Qty ").concat(lineitem.quantity, "</span>\n                        <span class=\"dr-pd-cart-qty-minus value-button-decrease\"></span>\n                        <input type=\"number\" class=\"product-qty-number\" step=\"1\" min=\"1\" max=\"999\" value=\"").concat(lineitem.quantity, "\" maxlength=\"5\" size=\"2\" pattern=\"[0-9]*\" inputmode=\"numeric\" readonly=\"true\">\n                        <span class=\"dr-pd-cart-qty-plus value-button-increase\"></span>\n                    </div>\n                </div>\n            </div>\n            <div class=\"dr-product__price\">\n                <button class=\"dr-prd-del remove-icon\"></button>\n                <span class=\"sale-price\">").concat(lineitem.pricing.formattedSalePriceWithQuantity, "</span>\n                <span class=\"regular-price\">").concat(lineitem.pricing.formattedListPriceWithQuantity, "</span>\n            </div>\n          </div>\n          ");
+        var lineItemHTML = "\n          <div data-line-item-id=\"".concat(lineitem.id, "\" class=\"dr-product dr-product-lineitem\" data-product-id=\"").concat(lineitem.product.id, "\" data-sort=\"").concat(index, "\">\n            <div class=\"dr-product-content\">\n                <div class=\"dr-product__img\" style=\"background-image: url(").concat(lineitem.product.thumbnailImage, ")\"></div>\n                <div class=\"dr-product__info\">\n                    <a class=\"product-name\" href=\"").concat(permalink, "\">").concat(lineitem.product.displayName, "</a>\n                    <div class=\"product-sku\">\n                        <span>").concat(productLabel, " </span>\n                        <span>#").concat(lineitem.product.id, "</span>\n                    </div>\n                    <div class=\"product-qty\">\n                        <span class=\"qty-text\">Qty ").concat(lineitem.quantity, "</span>\n                        <span class=\"dr-pd-cart-qty-minus value-button-decrease ").concat(lineitem.quantity <= min ? 'disabled' : '', "\"></span>\n                        <input type=\"number\" class=\"product-qty-number\" step=\"1\" min=\"").concat(min, "\" max=\"").concat(max, "\" value=\"").concat(lineitem.quantity, "\" maxlength=\"5\" size=\"2\" pattern=\"[0-9]*\" inputmode=\"numeric\" readonly=\"true\">\n                        <span class=\"dr-pd-cart-qty-plus value-button-increase ").concat(lineitem.quantity >= max ? 'disabled' : '', "\"></span>\n                    </div>\n                </div>\n            </div>\n            <div class=\"dr-product__price\">\n                <button class=\"dr-prd-del remove-icon\"></button>\n                <span class=\"sale-price\">").concat(salePrice, "</span>\n                <span class=\"regular-price ").concat(salePrice === listPrice ? 'd-none' : '', "\">").concat(listPrice, "</span>\n            </div>\n          </div>\n          ");
         $('#tempCartProducts').append(lineItemHTML);
       }).then(function () {
         lineItemCount++;
@@ -647,7 +654,7 @@ jQuery(document).ready(function ($) {
       url: "".concat(apiBaseUrl, "/me?currency=").concat(data.currency, "&locale=").concat(data.locale),
       success: function success(data, textStatus, xhr) {
         if (xhr.status === 204) {
-          location.reload();
+          location.reload(true);
         }
       },
       error: function error(jqXHR) {
@@ -661,7 +668,7 @@ jQuery(document).ready(function ($) {
   $('#apply-promo-code-btn').click(function (e) {
     var promoCode = $('#promo-code').val();
 
-    if (!promoCode) {
+    if (!$.trim(promoCode)) {
       $('#dr-promo-code-err-field').text(drgc_params.translations.invalid_promo_code_msg).show();
       return;
     }
@@ -838,6 +845,9 @@ jQuery(document).ready(function ($) {
 
       adjustColumns($section);
       updateTaxLabel();
+      $('html, body').animate({
+        scrollTop: $nextSection.first().offset().top - 80
+      }, 500);
     };
 
     var updateSummaryPricing = function updateSummaryPricing(cart) {
@@ -1205,7 +1215,7 @@ jQuery(document).ready(function ($) {
             address: {
               line1: payload.billing.line1,
               city: payload.billing.city,
-              state: payload.billing.state,
+              state: payload.billing.countrySubdivision,
               country: payload.billing.country,
               postalCode: payload.billing.postalCode
             }
@@ -1372,7 +1382,7 @@ jQuery(document).ready(function ($) {
                 'line1': cart.shippingAddress.line1,
                 'line2': cart.shippingAddress.line2,
                 'city': cart.shippingAddress.city,
-                'state': cart.shippingAddress.state,
+                'state': cart.shippingAddress.countrySubdivision,
                 'country': cart.shippingAddress.country,
                 'postalCode': cart.shippingAddress.postalCode
               }
@@ -1424,6 +1434,19 @@ window.onpageshow = function (event) {
     window.location.reload();
   }
 };
+
+jQuery(document).ready(function ($) {
+  $('input[type=text]:required').on('input', function (e) {
+    var elem = e.target;
+    elem.setCustomValidity(elem.value && !$.trim(elem.value) ? drgc_params.translations.required_field_msg : '');
+
+    if (elem.validity.valueMissing) {
+      $(elem).next('.invalid-feedback').text(drgc_params.translations.required_field_msg);
+    } else if (elem.validity.customError) {
+      $(elem).next('.invalid-feedback').text(elem.validationMessage);
+    }
+  });
+});
 "use strict";
 
 /* global drgc_params, iFrameResize */
@@ -1932,10 +1955,6 @@ jQuery(document).ready(function ($) {
 
   function errorCallback(jqXHR) {
     console.log('errorStatus', jqXHR.status);
-
-    if (jqXHR.status === 401) {
-      init(); // eslint-disable-line no-use-before-define
-    }
   }
 
   (function () {
