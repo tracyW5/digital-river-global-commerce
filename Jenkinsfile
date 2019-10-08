@@ -1,13 +1,15 @@
 pipeline {
-    agent none
-    stages {
-				stage ('Deploy') {
-					steps{					
-						sshagent(credentials : ['root'] {
-							sh 'echo Hello World'
-						}
+	agent any
+
+	stages {
+		stage('Deploy') {
+			steps {
+				sshagent(credentials:['root']) {
+					sh 'touch HelloWorld.txt'
 				}
+			}
 		}
+	}
 }
 				
 //        stage('Stage 1') {
