@@ -4,9 +4,8 @@ pipeline {
 				stage ('Deploy') {
 					steps{					
 						sshagent(credentials : ['root'] {
-							sh 'ssh -v twang@35.225.184.146'
+							sh 'echo Hello World'
 						}
-   				}
 				}
 		}
 }
